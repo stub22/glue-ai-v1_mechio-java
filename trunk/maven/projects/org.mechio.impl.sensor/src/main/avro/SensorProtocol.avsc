@@ -1,0 +1,147 @@
+[
+    {"name": "HeaderRecord", "type": "record", "namespace":"org.mechio.impl.sensor",
+        "fields": [
+            {"name": "timestamp",   "type": "long"},
+            {"name": "sequenceId",   "type": "int"},
+            {"name": "frameId",     "type": "int"}
+        ],
+        "interface": "org.mechio.api.sensor.SensorEventHeader",
+        "jflux.source": "true"
+    },
+    {"name": "Vector3Record", "type": "record", "namespace":"org.mechio.impl.sensor",
+        "fields": [
+            {"name": "x",   "type": "double"},
+            {"name": "y",   "type": "double"},
+            {"name": "z",   "type": "double"}
+        ],
+        "interface": "org.mechio.api.sensor.Vector3Event",
+        "jflux.source": "true"
+    },
+    {"name": "StampedVector3Record", "type": "record", "namespace":"org.mechio.impl.sensor",
+        "fields": [
+            {"name": "header",   "type": "HeaderRecord"},
+            {"name": "vector",   "type": "Vector3Record"}
+        ],
+        "interface": "org.mechio.api.sensor.StampedVector3Event",
+        "jflux.source": "true"
+    },
+    {"name": "FilteredVector3Record", "type": "record", "namespace":"org.mechio.impl.sensor",
+        "fields": [
+            {"name": "header",   "type": "HeaderRecord"},
+            {"name": "rawVector",   "type": "Vector3Record"},
+            {"name": "filteredVector",   "type": "Vector3Record"}
+        ],
+        "interface": "org.mechio.api.sensor.FilteredVector3Event",
+        "jflux.source": "true"
+    },
+    {"name": "DeviceAnalogRecord", "type": "record", "namespace":"org.mechio.impl.sensor",
+        "fields": [
+            {"name": "header",   "type": "HeaderRecord"},
+            {"name": "channelId",   "type": "int"},
+            {"name": "analogValue",   "type": "double"}
+        ],
+        "interface": "org.mechio.api.sensor.DeviceAnalogEvent",
+        "jflux.source": "true"
+    },
+    {"name": "DeviceBoolRecord", "type": "record", "namespace":"org.mechio.impl.sensor",
+        "fields": [
+            {"name": "header",   "type": "HeaderRecord"},
+            {"name": "channelId",   "type": "int"},
+            {"name": "boolValue",   "type": "boolean"}
+        ],
+        "interface": "org.mechio.api.sensor.DeviceBoolEvent<HeaderRecord>",
+        "jflux.source": "true"
+    },
+    {"name": "GyroConfigRecord", "type": "record", "namespace":"org.mechio.impl.sensor",
+        "fields": [
+            {"name": "header",   "type": "HeaderRecord"},
+            {"name": "ctl1",   "type": "int"},
+            {"name": "ctl2",   "type": "int"},
+            {"name": "ctl3",   "type": "int"},
+            {"name": "ctl4",   "type": "int"},
+            {"name": "ctl5",   "type": "int"}
+		],
+        "interface": "org.mechio.api.sensor.GyroConfigEvent<HeaderRecord>",
+        "jflux.source": "true"
+	},
+    {"name": "AccelerometerConfigRecord", "type": "record", "namespace":"org.mechio.impl.sensor",
+        "fields": [
+            {"name": "header",   "type": "HeaderRecord"},
+            {"name": "registerAddress",   "type": "int"},
+            {"name": "registerValue",   "type": "int"}
+		],
+        "interface": "org.mechio.api.sensor.AccelerometerConfigEvent<HeaderRecord>",
+        "jflux.source": "true"
+	},
+    {"name": "CompassConfigRecord", "type": "record", "namespace":"org.mechio.impl.sensor",
+        "fields": [
+            {"name": "header",   "type": "HeaderRecord"},
+            {"name": "average",   "type": "int"},
+            {"name": "rate",   "type": "int"},
+            {"name": "bias",   "type": "int"},
+            {"name": "gain",   "type": "int"}
+		],
+        "interface": "org.mechio.api.sensor.CompassConfigEvent<HeaderRecord>",
+        "jflux.source": "true"
+	},
+    {"name": "AdcConfigRecord", "type": "record", "namespace":"org.mechio.impl.sensor",
+        "fields": [
+            {"name": "header",   "type": "HeaderRecord"},
+            {"name": "channelMask",   "type": "int"}
+		],
+        "interface": "org.mechio.api.sensor.AdcConfigEvent<HeaderRecord>",
+        "jflux.source": "true"
+	},
+    {"name": "GpioConfigRecord", "type": "record", "namespace":"org.mechio.impl.sensor",
+        "fields": [
+            {"name": "header",   "type": "HeaderRecord"},
+            {"name": "inputMask",   "type": "int"}
+		],
+        "interface": "org.mechio.api.sensor.GpioConfigEvent<HeaderRecord>",
+        "jflux.source": "true"
+	},
+    {"name": "DeviceReadPeriodRecord", "type": "record", "namespace":"org.mechio.impl.sensor",
+        "fields": [
+            {"name": "header",   "type": "HeaderRecord"},
+            {"name": "period",   "type": "double"}
+		],
+        "interface": "org.mechio.api.sensor.DeviceReadPeriodEvent<HeaderRecord>",
+        "jflux.source": "true"
+	},
+    {"name": "RGBOutputRecord", "type": "record", "namespace":"org.mechio.impl.sensor",
+        "fields": [
+            {"name": "header",   "type": "HeaderRecord"},
+            {"name": "channelId",   "type": "int"},
+            {"name": "red",   "type": "int"},
+            {"name": "green",   "type": "int"},
+            {"name": "blue",   "type": "int"}
+        ],
+        "interface": "org.mechio.api.sensor.RGBOutputEvent<HeaderRecord>",
+        "jflux.source": "true"
+    },
+    {"name": "I2CQpidConfigRecord", "type": "record", "namespace":"org.mechio.impl.sensor",
+        "fields": [
+            {"name": "brokerIPAddress",   "type": "string"},
+            {"name": "brokerOptions",   "type": "string"},
+            {"name": "accelerometerReadDestination",   "type": "string"},
+            {"name": "accelerometerEventDestination",   "type": "string"},
+            {"name": "accelerometerConfigDestination",   "type": "string"},
+            {"name": "compassReadDestination",   "type": "string"},
+            {"name": "compassEventDestination",   "type": "string"},
+            {"name": "compassConfigDestination",   "type": "string"},
+            {"name": "gyroReadDestination",   "type": "string"},
+            {"name": "gyroEventDestination",   "type": "string"},
+            {"name": "gyroConfigDestination",   "type": "string"},
+            {"name": "gpioReadDestination",   "type": "string"},
+            {"name": "gpioWriteDestination",   "type": "string"},
+            {"name": "gpioEventDestination",   "type": "string"},
+            {"name": "gpioConfigDestination",   "type": "string"},
+            {"name": "adcReadDestination",   "type": "string"},
+            {"name": "adcEventDestination",   "type": "string"},
+            {"name": "adcConfigDestination",   "type": "string"},
+            {"name": "ledConfigDestination",   "type": "string"}
+        ],
+        "interface": "org.mechio.api.sensor.I2CQpidConfigEvent",
+        "jflux.source": "true"
+    }
+]

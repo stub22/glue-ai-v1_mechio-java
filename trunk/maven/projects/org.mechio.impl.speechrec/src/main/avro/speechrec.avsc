@@ -1,0 +1,37 @@
+[
+    {"name": "SpeechRecEventRecord", "type": "record", "namespace": "org.mechio.impl.speechrec",
+        "fields": [
+            {"name": "recognizerId", "type": "string"},
+            {"name": "timestampMillisecUTC", "type": "long"},
+            {"name": "recognizedText", "type": "string"},
+            {"name": "confidence", "type": "double"}
+        ],
+        "interface": "org.mechio.api.speechrec.SpeechRecEvent",
+        "jflux.source": "true"
+    },
+
+    {"name": "SpeechRecEventListRecord", "type": "record", "namespace": "org.mechio.impl.speechrec",
+        "fields": [
+            {"name": "speechRecServiceId", "type": "string"},
+            {"name": "eventDestinationId", "type": "string"},
+            {"name": "timestampMillisecUTC", "type": "long"},
+            {"name": "speechRecEvents", "type":
+                {"type":"array", "items": "SpeechRecEventRecord"}
+            }
+        ],
+        "interface": "org.mechio.api.speechrec.SpeechRecEventList<SpeechRecEventRecord>",
+        "jflux.source": "true"
+    },
+
+    {"name": "SpeechRecConfigRecord", "type": "record", "namespace": "org.mechio.impl.speechrec",
+        "fields": [
+            {"name": "speechRecServiceId", "type": "string"},
+            {"name": "configSourceId", "type": "string"},
+            {"name": "timestampMillisecUTC", "type": "long"},
+            {"name": "vocabLocation", "type": "string"}
+        ],
+        "interface": "org.mechio.api.speechrec.SpeechRecConfig",
+        "jflux.source": "true"
+    }
+
+]
