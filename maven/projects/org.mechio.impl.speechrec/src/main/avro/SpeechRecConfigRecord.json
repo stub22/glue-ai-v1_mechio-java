@@ -1,0 +1,8 @@
+{"name": "SpeechRecConfigRecord", "type": "record",
+	"fields": [
+	    {"name": "speechRecServiceId", "type": "string"},
+	    {"name": "configSourceId", "type": "string"},
+	    {"name": "timestampMillisecUTC", "type": "long"},
+	    {"name": "vocabLocation", "type": "string"}
+	]
+}

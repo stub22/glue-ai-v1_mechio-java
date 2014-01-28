@@ -1,0 +1,117 @@
+[
+    {"name": "JointIdRecord", "type": "record", "namespace": "org.mechio.impl.motion.messaging",
+        "fields": [
+            {"name": "robotId",   "type": "string"},
+            {"name": "jointId",   "type": "int"}
+        ]
+    },
+    {"name": "JointPositionRecord", "type": "record", "namespace": "org.mechio.impl.motion.messaging",
+        "fields": [
+            {"name": "jointId", "type": "JointIdRecord"},
+            {"name": "normalizedPosition",   "type": "double"}
+        ]
+    },
+    {"name": "RobotPositionMapRecord", "type": "record", "namespace": "org.mechio.impl.motion.messaging",
+        "fields": [
+            {"name": "jointPositions", "type": 
+                {"type":"array", "items": "JointPositionRecord"}
+            }
+        ]
+    },
+    {"name": "MotionFrameRecord", "type": "record", "namespace": "org.mechio.impl.motion.messaging",
+        "fields": [
+            {"name": "timestampMillisecUTC",   "type": "long"},
+            {"name": "moveDurationMillisec",   "type": "long"},
+            {"name": "goalPositions",   "type": "RobotPositionMapRecord"},
+            {"name" : "startPositions", "type": ["RobotPositionMapRecord", "null"]}
+        ]
+    },
+    {"name": "MotionFrameEventRecord", "type": "record", "namespace": "org.mechio.impl.motion.messaging",
+        "fields": [
+            {"name": "sourceId", "type": "string"},
+            {"name": "destinationId", "type": "string"},
+            {"name": "currentTimeMillisecUTC", "type": "long"},
+            {"name": "motionFrame", "type": "MotionFrameRecord"}
+        ]
+    },
+    {"name": "SynchronizedJointConfigRecord", "type": "record", "namespace": "org.mechio.impl.motion.messaging",
+        "fields": [
+            {"name": "jointId", "type": "int"},
+            {"name": "name", "type": "string"},
+            {"name": "defaultPosition", "type": ["double", "null"]}
+        ]
+    },
+    {"name": "SynchronizedRobotConfigRecord", "type": "record", "namespace": "org.mechio.impl.motion.messaging",
+        "fields": [
+            {"name": "robotId", "type": "string"},
+            {"name": "joints", "type": 
+                {"type":"array", "items": "SynchronizedJointConfigRecord"}
+            }
+        ]
+    },
+    {"name": "RobotRequestRecord", "type": "record", "namespace": "org.mechio.impl.motion.messaging",
+        "fields": [
+            {"name": "robotId", "type": "string"},
+            {"name": "requestSourceId", "type": "string"},
+            {"name": "requestDestinationId", "type": "string"},
+            {"name": "requestType", "type": "string"},
+            {"name": "timestampMillisecUTC",   "type": "long"},
+            {"name": "intParam",   "type": ["int", "null"]}
+        ]
+    },
+    {"name": "RobotResponseHeaderRecord", "type": "record", "namespace": "org.mechio.impl.motion.messaging",
+        "fields": [
+            {"name": "robotId", "type": "string"},
+            {"name": "requestSourceId", "type": "string"},
+            {"name": "requestDestinationId", "type": "string"},
+            {"name": "requestType", "type": "string"},
+            {"name": "requestTimestampMillisecUTC", "type": "long"},
+            {"name": "responseTimestampMillisecUTC", "type": "long"}
+        ]
+    },
+    {"name": "RobotStatusResponseRecord", "type": "record", "namespace": "org.mechio.impl.motion.messaging",
+        "fields": [
+            {"name": "responseHeader", "type": "RobotResponseHeaderRecord"},
+            {"name": "statusResponse",   "type": "boolean"}
+        ]
+    },
+    {"name": "RobotPositionResponseRecord", "type": "record", "namespace": "org.mechio.impl.motion.messaging",
+        "fields": [
+            {"name": "responseHeader", "type": "RobotResponseHeaderRecord"},
+            {"name": "positionResponse",   "type": "RobotPositionMapRecord"}
+        ]
+    },
+    {"name": "JointPropDefinitionRecord", "type": "record", "namespace": "org.mechio.impl.motion.messaging",
+        "fields": [
+            {"name": "propertyName", "type": "string"},
+            {"name": "displayName", "type": "string"},
+            {"name": "minValue", "type": "double"},
+            {"name": "maxValue", "type": "double"},
+            {"name": "initialValue", "type": "double"}
+        ],
+        "interface": "org.mechio.api.motion.protocol.RobotDefinitionResponse.JointPropDefinition",
+        "jflux.source": "true"
+    },
+    {"name": "JointDefinitionRecord", "type": "record", "namespace": "org.mechio.impl.motion.messaging",
+        "fields": [
+            {"name": "jointId", "type": "int"},
+            {"name": "name", "type": "string"},
+            {"name": "defaultPosition", "type": "double"},
+            {"name": "goalPosition", "type": "double"},
+            {"name": "enabled", "type": "boolean"},
+            {"name": "properties", "type": 
+                {"type":"array", "items": "JointPropDefinitionRecord"}
+            }
+        ]
+    },
+    {"name": "RobotDefinitionResponseRecord", "type": "record", "namespace": "org.mechio.impl.motion.messaging",
+        "fields": [
+            {"name": "responseHeader", "type": "RobotResponseHeaderRecord"},
+            {"name": "connected", "type": "boolean"},
+            {"name": "enabled", "type": "boolean"},
+            {"name": "joints", "type": 
+                {"type":"array", "items": "JointDefinitionRecord"}
+            }
+        ]
+    }
+]

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.mechio</groupId>
+		<artifactId>org.mechio.project.root</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+		<relativePath>../../pom.xml</relativePath>
+	</parent>	
+	
+	<artifactId>org.mechio.modules.all</artifactId>
+	<name>${project.artifactId} - All Modules</name>
+	<packaging>pom</packaging>
+    <repositories>
+		<!-- This declaration allows us to use the Sonatype "public" repo to find releases of JFlux and Appdapter 
+			immediately, without waiting for the final sync to maven-central.   We are continuing to review the full 
+			impact of this policy,	but there is currently no known significant practical downside.
+		-->
+		<repository>
+			<id>sonatype-public</id>
+			<name>sonatype public</name>
+			<url>https://oss.sonatype.org/content/groups/public/</url>
+		</repository>		
+	</repositories>
+		
+	<modules>
+		<module>../org.mechio.modules.motion</module>
+		<module>../org.mechio.modules.animation</module>
+		<module>../org.mechio.modules.audio</module>
+		<module>../org.mechio.modules.speech</module>
+		<module>../org.mechio.modules.speechrec</module>
+		<module>../org.mechio.modules.vision</module>
+		<module>../org.mechio.modules.sensor</module>
+		<module>../org.mechio.modules.integration</module>
+	</modules>
+	<properties>
+		<maven.compiler.source>1.6</maven.compiler.source>
+		<maven.compiler.target>1.6</maven.compiler.target>
+		<encoding>UTF-8</encoding>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<netbeans.hint.license>mechio-apache20</netbeans.hint.license>
+		
+			<!-- We use this version for the Avro + QPid messaging bundles provided by Appdapter.org 
+				project.
+				Cogchar relies on this same version of those messaging bundles.
+			-->
+		<appdapter.msg.version>1.0.5</appdapter.msg.version>
+		<appdapter.version>1.1.4</appdapter.version>
+        <jflux.version>0.1.9-SNAPSHOT</jflux.version>
+	</properties>	
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>2.3.2</version>
+					<configuration>
+						<source>1.6</source>
+						<target>1.6</target>
+						<encoding>${project.build.sourceEncoding}</encoding>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>2.4.3</version>
+					<configuration>
+						<encoding>${project.build.sourceEncoding}</encoding>
+					</configuration>
+				</plugin>				
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.9</version>
+					<configuration>
+						<skipTests>true</skipTests>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+</project>
