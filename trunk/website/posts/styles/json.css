@@ -1,0 +1,20 @@
+.javascript  {font-family:monospace;border: 1px dotted #a0a0a0; font-family: 'Courier New', Courier, monospace; font-size: 100%; background-color: #f0f0f0; margin: 0; line-height: 120%; padding: 0;color: #000000;}
+.javascript a:link {color: #006;}
+.javascript a:hover {background-color: #d6d6e6;}
+.javascript .head {font-family: Verdana, Arial, sans-serif; color: #808080; font-size: 70%; font-weight: bold; background-color: #f0f0ff; border-bottom: 1px solid #d0d0d0; padding: 2px;}
+.javascript .foot {font-family: Verdana, Arial, sans-serif; color: #808080; font-size: 70%; font-weight: bold; background-color: #f0f0ff; border-top: 1px solid #d0d0d0; padding: 2px;}
+.javascript .imp {font-weight: bold; color: red;}
+.javascript .kw1 {color: #000066; font-weight: bold;}
+.javascript .kw2 {color: #003366; font-weight: bold;}
+.javascript .kw3 {color: #000066;}
+.javascript .co1 {color: #006600; font-style: italic;font-style: normal;}
+.javascript .co2 {color: #009966; font-style: italic;}
+.javascript .coMULTI {color: #006600; font-style: italic;font-style: normal;}
+.javascript .es0 {color: #000099; font-weight: bold;font-weight: normal;}
+.javascript .br0 {color: #009900;}
+.javascript .sy0 {color: #339933;}
+.javascript .st0 {color: #3366CC;}
+.javascript .nu0 {color: #CC0000;}
+.javascript .me1 {color: #660066;}
+.javascript .me {1}
+.javascript span.xtra { display:block; }

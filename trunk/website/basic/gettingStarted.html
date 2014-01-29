@@ -1,0 +1,148 @@
+<html>
+<head>
+<link rel="stylesheet" href="../styles/stylesheet.css" type="text/css"></link>
+<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+<title>Getting Started with Basic API</title>
+</head>
+<body>
+<h1>Getting Started with Basic API with Netbeans</h1>
+<p> This document assumes basic Java programming competence. Look to the <a href="../javadocs/index.html">javadocs for the MechIO Basic API</a> for more information and a complete list of classes and methods.   The following details how to get started using the API for the first time and covers version requirements, creating a Maven project, and sending commands to a robot or avatar. A demo project demonstraiting the use of basic API can be found <a href="gettingStarted/Demo_Project.zip">here</a>.</p>
+<ul>
+  <li><a href="#Version">Version</a></li>
+  <li><a href="#New">Creating a New Project</a></li>
+  <li><a href="#POM">Your pom.xml and App.java</a>
+    <ul>
+      <li><a href="#Dependencies">Important Dependencies</a></li>
+    </ul>
+  </li>
+  <li><a href="#Connecting">Connecting to an Avatar or Robot</a><br />
+  </li>
+  <li><a href="#Commands">Sending Commands</a>
+    <ul>
+      <li><a href="#Animations">Loading and Playing Animations</a><br />
+      </li>
+      <li><a href="#Moving">Moving Joints </a><br />
+      </li>
+      <li><a href="#Speech">Speech</a></li>
+    </ul>
+  </li>
+</ul>
+<p>&nbsp;</p>
+<a name="Version" id="Version">
+<h2>Version</h2>
+</a>
+<p>The MechIO Basic API uses the Maven build tool and Java 7. You can download a <a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk-7-netbeans-download-432126.html">package containing Netbeans with the Maven plugin and JDK 7 directly from Oracle</a>. <!--An excerpt from the documentation detailing this follows.</p>-->
+<!--<p>&nbsp;</p>
+<p><img src="gettingStarted/Netbeans_Demo_0.0.1.jpg" width="600" height="465" alt="Netbeans and JDK 6" /></p>
+<p>&nbsp;</p>-->
+<a name="New" id="New">
+<h2>Creating a New Project</h2>
+</a>
+<p>To create a new project, start by clicking on the 'File' menu and selecting 'New Project' (Ctrl+Shift+N)</p>
+<p><img src="gettingStarted/newProject.jpg" width="512" height="768" /></p>
+<p>Select 'Maven' in 'Categories' and 'Java Application' in 'Projects' then select 'Next' <br />
+  Fill in the Name and Location as you normally would (note there and suggestions in the <a href="maven.apache.org/guide/mini/guide-naming-conventions.html">Maven Standard</a> though) and select 'Ok'</p>
+<p><img src="gettingStarted/newProject2.jpg" alt="New Project dialogue box" width="728" height="510" /></p>
+<a name="POM" id="POM">
+<h2>Your pom.xml and App.java</h2>
+</a>
+<p>A Maven project will automatically contain a pom.xml in the 'Project Files'. This file is an XML representation of the project. It contains all the necessary information about the project and the configurations of the plugins.  Include your dependencies here. With all the necessary dependencies in the pom.xml, you will never have to manually add 'imports'. After making your 'main' class, press Ctrl+Shift+I to add all needed imports.<br />
+More information on the POM can be found in the Apache Maven &quot;<a href="http://maven.apache.org/pom.html">POM Reference</a>&quot;</p>
+
+<a name="Dependencies" id="Dependencies">
+<h3>Important Dependencies </h3>
+</a>
+<p>The following two dependencies are necessary for any mechio project so the following code snippets should be in the pom.xml for every MechIO Basic project.</p>
+<pre class="prettyprint">&lt;dependency&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;groupId&gt;org.mechio&lt;/groupId&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;artifactId&gt;org.mechio.client.basic&lt;/artifactId&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;version&gt;${mechio.version}&lt;/version&gt;
+&lt;/dependency&gt;
+&lt;dependency&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;groupId&gt;org.mechio&lt;/groupId&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;artifactId&gt;org.jflux.impl.messaging.rk&lt;/artifactId&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;version&gt;${mechio.version}&lt;/version&gt;
+&lt;/dependency&gt;</pre>
+<p>The 'basic' dependency is needed to use the API and 'messaging' is used to communicate with the robot or avatar.<br />
+  Documentation on all the the dependencies can be find in the <a href="../javadocs/index.html">java docs</a>.</p>
+<p>Include the following dependencies in the pom.xml as needed.</p>
+<p><a name="motion" id="motion"> <strong>Motion</strong><br />
+<strong>Getting positions</strong> from and <strong>sending new goal positions</strong> to servos:</a></p>
+<pre class="prettyprint">&lt;dependency&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;groupId&gt;org.mechio&lt;/groupId&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;artifactId&gt;org.mechio.impl.motion&lt;/artifactId&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;version&gt;${mechio.version}&lt;/version&gt;
+&lt;/dependency&gt;</pre>
+  <br />
+<p><a name="animationsD" id="animationsD"><strong>Animation</strong><br />
+<strong>Loading and playing animations</strong>:</a></p>
+<pre class="prettyprint">&lt;dependency&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;groupId&gt;org.mechio&lt;/groupId&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;artifactId&gt;org.mechio.impl.animation&lt;/artifactId&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;version&gt;${mechio.version}&lt;/version&gt;
+&lt;/dependency&gt;</pre>
+ <br />
+   <p><a name="speech" id="speech"><strong>Speech</strong><br />
+   <strong>Sending speech</strong> commands to the robot:<br /></a></p>
+<pre class="prettyprint">&lt;dependency&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;groupId&gt;org.mechio&lt;/groupId&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;artifactId&gt;org.mechio.impl.speech&lt;/artifactId&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;version&gt;${mechio.version}&lt;/version&gt;
+&lt;/dependency&gt;</pre>
+<br />
+<p><a name="sensors" id="sensors"><strong>Sensor</strong><br />
+<strong>Reading sensor data:</strong><br /></a></p>
+<pre class="prettyprint">&lt;dependency&gt;
+  &nbsp;&nbsp;&nbsp;&nbsp;&lt;groupId&gt;org.mechio&lt;/groupId&gt;
+  &nbsp;&nbsp;&nbsp;&nbsp;&lt;artifactId&gt;org.mechio.impl.sensor&lt;/artifactId&gt;
+  &nbsp;&nbsp;&nbsp;&nbsp;&lt;version&gt;${mechio.version}&lt;/version&gt;
+&lt;/dependency&gt;</pre>
+<a name="Connecting" id="Connecting"></a>
+<h2>Connecting to your robot or avatar</h2>
+Use the <a href="apidocs/org/mechio/client/basic/MechIO.html#connectRobot()">connect method</a> in the <a href="apidocs/org/mechio/client/basic/MechIO.html">MechIO</a> class to connect to your robot.<br />
+<pre class="LCommand">public static org.mechio.api.motion.messaging.RemoteRobot <strong>connectRobot</strong>()</pre>
+<br />
+The <a href="apidocs/org/mechio/client/basic/UserSettings.html#setRobotAddress(java.lang.String)">setRobotAddress</a> method of the <a href="apidocs/org/mechio/client/basic/UserSettings.html">UserSettings</a> class sets the IP address of the robot.<br />
+<pre class="LCommand">public static void <strong>setRobotAddress</strong>(<a href="http://docs.oracle.com/javase/6/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a> address)</pre>
+<p>&nbsp;</p>
+<a name="Commands" id="Commands"></a>
+<h2>Sending Commands</h2>
+
+<p>There are four main commands you might send to the robot. You can load and play animations, have the robot/avatar move joints individually, and have it speak. Each has its own dependency that should be included in the POM in order to use it. See the following examples or the example project for implementation.</p>
+<a name="Animations" id="Animations"></a>
+<h3>Loading and Playing Animations</h3>
+ Needs dependency: <a href="#animationsD">animations</a>
+<pre class="prettyprint">
+//Create animPlayer and load animation
+RemoteAnimationPlayerClient animPlayer = MechIO.connectAnimationPlayer();
+Animation introAnim = MechIO.loadAnimation(&quot;intro.anim.xml&quot;);
+
+//Create introJob, tell it to play introAnim with animPlayer, get the length of the animation and tell the thread to wait for that length of time plus 500 milliseconds (so the next command is issued AFTER the animation finishes playing.)
+AnimationJob introJob = animPlayer.playAnimation(introAnim);
+MechIO.sleep(500 + introJob.getAnimationLength());</pre>
+
+<a name="Moving" id="Moving"></a>
+<h3>Moving Joints</h3>
+ Needs dependency: <a href="#motion">motion</a>
+<pre class="prettyprint">
+RemoteRobot robot = MechIO.connectRobot();
+JointId waist = new JointId(robot.getRobotId(), new Joint.Id(R50RobotJoints.WAIST));
+JointId leg = new JointId
+    robot.getRobotId(), new Joint.Id(R50RobotJoints.RIGHT_HIP_YAW));
+
+RobotPositionMap goalPositions = new RobotPositionHashMap();
+goalPositions.put(waist, new NormalizedDouble(1.0));
+goalPositions.put(leg, new NormalizedDouble(0.5));
+
+//Moves the joints to the specified goal positions over 1000 milliseconds
+robot.move(goalPositions, 1000);</pre>
+<a name="Speech" id="Speech"></a>
+<h3>Speech</h3>
+
+Needs dependency: <a href="#speech">speech</a>
+<pre class="prettyprint">
+RemoteSpeechServiceClient speechService = MechIO.connectSpeechService();
+SpeechJob speechJob = speechService.speak(&quot;Hello, I am your friend.&quot;);</pre>
+
+</body>
+</html>
