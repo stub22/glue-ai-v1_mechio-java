@@ -1,0 +1,111 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>Avro OSGi Dependencies</title>
+	<link rel="stylesheet" type="text/css" href="../styles/common.css"></link>
+		<script type="text/javascript">
+		  var _gaq = _gaq || [];
+		  _gaq.push(['_setAccount', 'UA-29480528-1']);
+		  _gaq.push(['_trackPageview']);
+
+		  (function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		  })();
+
+		</script>
+</head>
+<body><div class="title">
+Configuring Apache Avro for OSGi
+</div>
+<div class="article_author">By Matthew Stevenson - <span class="call">m<span class="gffsdakji">iamg&#x40;dnik</span>att.<span style="display:none">h.reut</span>robok<span class="emlgrt1">noshan</span>ind&#x40;<span class="bvnkdfh">obor.tta</span>gmai<span class="kfdsexas">ycrehp</span>&#x6c;&#x2e;&#99;&#111;&#x6d;</span>&nbsp;&nbsp;<span class="article_date">(July 29, 2011)</span></div>
+<br/>
+<div class="foot_nav">
+	<ol>
+		<li><a href="#overview">Overview</a></li>
+		<li><a href="#standardJava">Avro in a standard Java project</a></li>
+		<li><a href="#standardOSGi">Avro and OSGi - ClassLoader Problems</a></li>
+		<li><a href="#fragmentOSGi">Avro and OSGi with Bundle Fragments</a></li>
+	</ol>
+</div>
+<div class="header"><a name="overview">
+Part 1: Overview
+</a></div>
+<div class="text">
+In my <a href="../avro_qpid/avro_qpid.html">last post</a> I demonstrated how you can use Apache Avro as a serialization mechanism for a distributed messaging system<br/>
+Avro allows you to define classes in Json , and can serialize against that Json schema.
+In Java (and other static-typed languages), Avro allows you to generate language specific implementations of the json classes.  Generated avro classes are called SpecificRecords as opposed to GenericRecords which are created at runtime from a schema.  Using SpecificRecords is preffered as it improves performance and gives us type-safety.<br/><br/>
+In the last post we only looked at using Avro within the context of a standard Java project, which worked without any problems.  However, the MechIO project runs within a Felix OSGi container instead of running directly on the JVM as a standard project.<br/>
+This post shows a ClassLoader/Dependency issue with using Avro in multiple OSGi bundles, and how to fix it.
+</div><br/><br/>
+<div class="header"><a name="standardJava">
+Part 2: Avro in a standard Java project
+</a></div>
+<div class="text">
+This diagram shows the configuration in a standard Java project, where a shared ClassLoader is used.<br/>
+You have the SpeechAPI and VisionAPI libraries, which each have their own packages of generated Avro classes (AvroGen).<br/>
+The AvroQpid library has a Generic Loader method for deserializing generated Avro classes.<br/>
+<br/>
+
+The SpeechAPI and VisionAPI make a call AvroQpid to deserialize a record.<br/>
+Avro pulls the Class name from the Schema and uses the ClassLoader to find the Class.<br/>
+The Class is used to get the default constructor and create a new instance to populate.<br/>
+<br/>
+<div class="diagram_img">
+	<center><img class="diagram_img" src="./images/StandardJava.png"/></center>
+</div>
+<br/>
+Object creation time is found to be the slowest part of Avro.  In most cases you can avoid some of this cost by providing an instance to be populated.  However, when deserializing a complex type, all inner classes, arrays, or maps will be created from the ClassLoader.<br/>
+</div><br/><br/>
+<div class="header"><a name="standardOSGi">
+Part 3: Avro in OSGi - ClassLoader Problems
+</a></div>
+<div class="text">
+This diagram shows each library wrapped up in separate OSGi bundles.  The bundles are configured the same as the standard Java project.  As you can see, each OSGi bundle uses its own ClassLoader.  Classes from bundle X are available to bundle Y when bundle X exports their package and bundle Y imports it.<br/>
+By default, with the maven-bundle-plugin, a bundle will import all the packages exported bundles visible at compile time.  Additional imports can be declared, and will be resolved at runtime.<br/>
+<br/>
+<div class="diagram_img">
+	<center><img class="diagram_img" src="./images/OSGiFail.png"/></center>
+</div>
+<br/>
+Here we can see the AvroQpid library exporting a package containing the Generic Loader, and the SpeechAPI and VisionAPI libraries importing it.<br/>
+However, when the method is used, Avro fails to retreive the Class from the ClassLoader.<br/>
+Since the class is missing, Avro resorts to populating a GenericRecord which cannot be cast to our generated type.<br/>
+The generic method fails with this approach.<br/>
+<br/>
+The solution would be to move the AvroGen packages into separate bundles, then they could be safely imported by both the API and AvroQpid bundles.  The problem with this approach is that it forces us to declare the AvroGen packages as imports in the AvroQpid manifest.  We need an approach that will allow packages to be added to the AvroQpid ClassLoader without changing the AvroQpid library.<br/>
+<br/>
+What we need are Bunadle Fragments.<br/>
+
+</div><br/><br/>
+<div class="header"><a name="fragmentOSGi">
+Part 4: Avro in OSGi with Bundle Fragments
+</a></div>
+<div class="text">
+A bundle fragment attaches itself to a host bundle and shares its ClassLoader, making available all its exported packages.<br/>
+A fragment declares its host bundle in the manifest, and attaches itself without the host knowing.<br/>
+This allows us to move our AvroGen packages in bundle fragments attached to the AvroQpid bundle.<br/>
+Specify that a bundle is a fragment by adding the Fragment-Host: line to the manifest.<br/>
+In our pom.xml we can add &lt;Fragment-Host&gt;org.mechio.AvroQpidBridge&lt;/Fragment-Host&gt;<br/>
+When we add this to the pom.xml of our AvroGen project, when the bundle is loaded it will attach itself to the AvroQpidBridge bundle instead of running an activator.<br/>
+<br/>
+<div class="diagram_img">
+	<center><img class="diagram_img" src="./images/OSGiSuccess.png"/></center>
+</div>
+<br/>
+Now when we export the AvroGen packages from the fragments, the classes are injected into AvroQpid bundle ClassLoader automatically.  Since our AvroGen project is a dependency of the API project, the maven-bundle-plugin will automatically import the AvroGen packages.  This way, we can add and remove generated types from the AvroQpid ClassLoader automatically.<br/>
+
+</div><br/>
+<div class="foot_nav">
+	<ol>
+		<li><a href="#overview">Overview</a></li>
+		<li><a href="#standardJava">Avro in a standard Java project</a></li>
+		<li><a href="#standardOSGi">Avro and OSGi - ClassLoader Problems</a></li>
+		<li><a href="#fragmentOSGi">Avro and OSGi with Bundle Fragments</a></li>
+	</ol>
+</div>
+<br/>
+<div class="copyright">
+<a rel="license" href="http://creativecommons.org/licenses/by/3.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by/3.0/88x31.png" /></a><br /><span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/Text" property="dct:title" rel="dct:type">"Configuring Apache Avro for OSGi"</span> by <a xmlns:cc="http://creativecommons.org/ns#" href="http://www.mechio.org/posts/avro_osgi/avro_osgi.html" property="cc:attributionName" rel="cc:attributionURL">Matthew Stevenson</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution 3.0 Unported License</a>.
+</div>
+</html>

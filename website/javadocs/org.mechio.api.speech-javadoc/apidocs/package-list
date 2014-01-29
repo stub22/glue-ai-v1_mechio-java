@@ -1,0 +1,8 @@
+org.mechio.api.speech
+org.mechio.api.speech.lifecycle
+org.mechio.api.speech.messaging
+org.mechio.api.speech.osgi
+org.mechio.api.speech.utils
+org.mechio.api.speech.viseme
+org.mechio.api.speech.viseme.config
+org.mechio.api.speech.viseme.lifecycle
