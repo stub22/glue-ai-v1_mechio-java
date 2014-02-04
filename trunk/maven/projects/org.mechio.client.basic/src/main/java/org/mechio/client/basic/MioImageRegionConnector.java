@@ -26,7 +26,7 @@ import org.jflux.api.messaging.rk.MessageSender;
 import org.jflux.api.messaging.rk.services.ServiceCommand;
 import org.jflux.api.messaging.rk.services.ServiceError;
 import org.jflux.impl.messaging.rk.ServiceErrorRecord;
-import org.jflux.impl.messaging.services.PortableServiceCommand;
+import org.jflux.impl.messaging.rk.services.PortableServiceCommand;
 import org.mechio.api.vision.ImageEvent;
 import org.mechio.api.vision.config.CameraServiceConfig;
 import org.mechio.api.vision.config.FaceDetectServiceConfig;
