@@ -17,6 +17,8 @@ package org.mechio.api.speech.messaging;
 
 import org.jflux.api.core.Listener;
 import org.jflux.api.core.Notifier;
+import org.jflux.api.messaging.rk.MessageAsyncReceiver;
+import org.jflux.api.messaging.rk.MessageSender;
 import org.mechio.api.speech.SpeechEvent;
 import org.mechio.api.speech.SpeechEventList;
 import org.mechio.api.speech.SpeechRequest;
@@ -28,67 +30,68 @@ import org.mechio.api.speech.SpeechService;
  */
 public class RemoteSpeechServiceHost implements Listener<SpeechRequest> {
     private SpeechService mySpeechService;
-    private Notifier<SpeechRequest> mySpeechRequestNotifier;
-    private Listener<SpeechEventList<SpeechEvent>> mySpeechEventListener;
+    private Listener<SpeechEventList<SpeechEvent>> mySpeechEventSender;
+    private Notifier<SpeechRequest> mySpeechRequestReceiver;
     
     public final static String PROP_ID = "speechServiceHostId";
     
     public RemoteSpeechServiceHost() {
         mySpeechService = null;
-        mySpeechRequestNotifier = null;
-        mySpeechEventListener = null;
+        mySpeechEventSender = null;
+        mySpeechRequestReceiver = null;
     }
     
     public RemoteSpeechServiceHost(
-            SpeechService service, Notifier<SpeechRequest> notifier,
-            Listener<SpeechEventList<SpeechEvent>> listener) {
+            SpeechService service,
+            Listener<SpeechEventList<SpeechEvent>> sender,
+            Notifier<SpeechRequest> receiver) {
         mySpeechService = service;
-        mySpeechRequestNotifier = notifier;
-        mySpeechEventListener = listener;
+        mySpeechEventSender = sender;
+        mySpeechRequestReceiver = receiver;
         
-        if(mySpeechEventListener != null && mySpeechService != null) {
-            mySpeechService.addSpeechEventListener(mySpeechEventListener);
+        if(mySpeechRequestReceiver != null && mySpeechService != null) {
+            mySpeechRequestReceiver.addListener(this);
         }
         
-        if(mySpeechRequestNotifier != null) {
-            mySpeechRequestNotifier.addListener(this);
+        if(mySpeechEventSender != null) {
+            mySpeechService.addSpeechEventListener(sender);
         }
     }
     
     public void setSpeechService(SpeechService service) {
-        if(mySpeechEventListener != null && mySpeechService != null) {
-            mySpeechService.removeSpeechEventListener(mySpeechEventListener);
+        if(mySpeechEventSender != null && mySpeechService != null) {
+            mySpeechService.removeSpeechEventListener(mySpeechEventSender);
         }
         
         mySpeechService = service;
         
-        if(mySpeechEventListener != null && mySpeechService != null) {
-            mySpeechService.addSpeechEventListener(mySpeechEventListener);
+        if(mySpeechEventSender != null && mySpeechService != null) {
+            mySpeechService.addSpeechEventListener(mySpeechEventSender);
         }
     }
     
-    public void setSpeechRequestNotifier(Notifier<SpeechRequest> notifier) {
-        if(mySpeechRequestNotifier != null) {
-            mySpeechRequestNotifier.removeListener(this);
+    public void setSpeechRequestReceiver(Notifier<SpeechRequest> receiver) {
+        if(mySpeechRequestReceiver != null) {
+            mySpeechRequestReceiver.removeListener(this);
         }
         
-        mySpeechRequestNotifier = notifier;
+        mySpeechRequestReceiver = receiver;
         
-        if(mySpeechRequestNotifier != null) {
-            mySpeechRequestNotifier.addListener(this);
+        if(mySpeechRequestReceiver != null) {
+            mySpeechRequestReceiver.addListener(this);
         }
     }
     
-    public void setSpeechEventListener(
-            Listener<SpeechEventList<SpeechEvent>> listener) {
-        if(mySpeechEventListener != null && mySpeechService != null) {
-            mySpeechService.removeSpeechEventListener(mySpeechEventListener);
+    public void setSpeechEventSender(
+            Listener<SpeechEventList<SpeechEvent>> sender) {
+        if(mySpeechEventSender != null && mySpeechService != null) {
+            mySpeechService.removeSpeechEventListener(mySpeechEventSender);
         }
         
-        mySpeechEventListener = listener;
+        mySpeechEventSender = sender;
         
-        if(mySpeechEventListener != null && mySpeechService != null) {
-            mySpeechService.addSpeechEventListener(mySpeechEventListener);
+        if(mySpeechEventSender != null && mySpeechService != null) {
+            mySpeechService.addSpeechEventListener(mySpeechEventSender);
         }
     }
 

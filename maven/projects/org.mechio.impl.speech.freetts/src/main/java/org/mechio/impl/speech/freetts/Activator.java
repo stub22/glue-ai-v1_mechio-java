@@ -17,28 +17,53 @@
 package org.mechio.impl.speech.freetts;
 
 import org.jflux.api.core.Listener;
+import org.jflux.impl.messaging.rk.config.RKMessagingConfigUtils;
+import org.jflux.impl.services.rk.lifecycle.utils.ManagedServiceFactory;
+import org.jflux.impl.services.rk.lifecycle.utils.SimpleLifecycle;
+import org.jflux.impl.services.rk.osgi.lifecycle.OSGiComponent;
+import org.jflux.impl.services.rk.osgi.lifecycle.OSGiComponentFactory;
 import org.mechio.api.speech.SpeechEvent;
 import org.mechio.api.speech.SpeechEventList;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-//import org.mechio.api.speech.SpeechConfig;
-//import org.mechio.avrogen.speech.SpeechConfigRecord;
+import org.mechio.api.speech.SpeechConfig;
+import org.mechio.api.speech.SpeechService;
+import org.mechio.impl.speech.RemoteSpeechUtils;
+import org.mechio.impl.speech.SpeechConfigRecord;
 
 public class Activator implements BundleActivator {
-
+    public final static String CONNECTION_CONFIG_ID =
+            "speechServiceConnectionConfig";
+    
     @Override
     public void start(BundleContext context) throws Exception {       
-//        FreeTTSSpeechService service = new FreeTTSSpeechService();
-//        SpeechConfigRecord.Builder configBuilder =
-//                SpeechConfigRecord.newBuilder();
-//        
-//        configBuilder.setConfigSourceId("activator");
-//        configBuilder.setSampleRate(16000);
-//        configBuilder.setSpeechServiceId("FreeTTS");
-//        configBuilder.setVoiceName("kevin");
-//        
-//        SpeechConfig config = configBuilder.build();
-//        service.initialize(config);
+        FreeTTSSpeechService service = new FreeTTSSpeechService();
+        SpeechConfigRecord.Builder configBuilder =
+                SpeechConfigRecord.newBuilder();
+        
+        configBuilder.setConfigSourceId("activator");
+        configBuilder.setSampleRate(16000);
+        configBuilder.setSpeechServiceId("FreeTTS");
+        configBuilder.setVoiceName("kevin");
+        
+        SpeechConfig config = configBuilder.build();
+        service.initialize(config);
+        
+        ManagedServiceFactory fact = new OSGiComponentFactory(context);
+        
+        RKMessagingConfigUtils.registerConnectionConfig(
+                CONNECTION_CONFIG_ID, "127.0.0.1", null, fact);
+        
+        SimpleLifecycle<SpeechService> lc =
+                new SimpleLifecycle<SpeechService>(
+                        service, SpeechService.class,
+                        "speechServiceId", "speechService", null);
+        OSGiComponent component = new OSGiComponent(context, lc);
+        component.start();
+        
+        RemoteSpeechUtils.connectHost(
+                fact, "speechService", "speech", CONNECTION_CONFIG_ID);
+        
 //        Listener evListener = new EventListener();
 //        service.addSpeechEventListener(evListener);
 //        
