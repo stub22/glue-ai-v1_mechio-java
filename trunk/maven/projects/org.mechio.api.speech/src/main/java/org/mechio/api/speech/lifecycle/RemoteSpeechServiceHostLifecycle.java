@@ -20,6 +20,8 @@ import java.util.Properties;
 import org.jflux.api.core.Listener;
 import org.jflux.api.core.Notifier;
 import org.jflux.api.messaging.rk.Constants;
+import org.jflux.api.messaging.rk.MessageAsyncReceiver;
+import org.jflux.api.messaging.rk.MessageSender;
 import org.jflux.impl.services.rk.lifecycle.AbstractLifecycleProvider;
 import org.jflux.impl.services.rk.lifecycle.utils.DescriptorListBuilder;
 import org.mechio.api.speech.SpeechEvent;
@@ -35,25 +37,24 @@ import org.mechio.api.speech.messaging.RemoteSpeechServiceHost;
 public class RemoteSpeechServiceHostLifecycle extends 
         AbstractLifecycleProvider<RemoteSpeechServiceHost, RemoteSpeechServiceHost> {
     private final static String theSpeechService = "speechService";
-    private final static String theSpeechRequestNotifier =
-            "speechRequestNotifier";
-    private final static String theSpeechEventListener = "speechEventListener";
+    private final static String theSpeechRequestReceiver =
+            "speechRequestReceiver";
+    private final static String theSpeechEventSender = "speechEventSender";
     
     private String myLocalServiceId;
     private String myRemoteServiceId;
     
     public RemoteSpeechServiceHostLifecycle(
-            String speechServiceHostId, String remoteId,
-            String speechServiceId, String speechRequestNotifierId, 
-            String speechEventListenerId){
+            String speechServiceHostId, String remoteId, String speechServiceId,
+            String speechRequestReceiverId, String speechEventSenderId){
         super(new DescriptorListBuilder()
                 .dependency(theSpeechService, SpeechService.class)
                     .with(SpeechService.PROP_ID, speechServiceId)
-                .dependency(theSpeechRequestNotifier, Notifier.class)
-                    .with(Constants.PROP_MESSAGE_RECEIVER_ID, speechRequestNotifierId)
+                .dependency(theSpeechRequestReceiver, MessageAsyncReceiver.class)
+                    .with(Constants.PROP_MESSAGE_RECEIVER_ID, speechRequestReceiverId)
                     .with(Constants.PROP_MESSAGE_TYPE, SpeechRequest.class.getName())
-                .dependency(theSpeechEventListener, Listener.class)
-                    .with(Constants.PROP_MESSAGE_SENDER_ID, speechEventListenerId)
+                .dependency(theSpeechEventSender, MessageSender.class)
+                    .with(Constants.PROP_MESSAGE_SENDER_ID, speechEventSenderId)
                     .with(Constants.PROP_MESSAGE_TYPE, SpeechEventList.class.getName())
                 .getDescriptors());
         if(speechServiceHostId == null || remoteId == null){
@@ -68,21 +69,24 @@ public class RemoteSpeechServiceHostLifecycle extends
 
     @Override
     protected RemoteSpeechServiceHost create(Map<String, Object> dependencies) {
-        SpeechService service = (SpeechService)dependencies.get(theSpeechService);
-        Notifier<SpeechRequest> notifier = (Notifier)dependencies.get(theSpeechRequestNotifier);
-        Listener<SpeechEventList<SpeechEvent>> listener = (Listener)dependencies.get(theSpeechEventListener);
+        SpeechService service =
+                (SpeechService)dependencies.get(theSpeechService);
+        Notifier<SpeechRequest> receiver =
+                (Notifier)dependencies.get(theSpeechRequestReceiver);
+        Listener<SpeechEventList<SpeechEvent>> sender =
+                (Listener)dependencies.get(theSpeechEventSender);
         
-        return new RemoteSpeechServiceHost(service, notifier, listener);
+        return new RemoteSpeechServiceHost(service, sender, receiver);
     }
 
     @Override
     protected void handleChange(String name, Object dependency, Map<String, Object> availableDependencies) {
         if(theSpeechService.equals(name)) {
             myService.setSpeechService((SpeechService)dependency);
-        } else if(theSpeechRequestNotifier.equals(name)) {
-            myService.setSpeechRequestNotifier((Notifier)dependency);
-        } else if(theSpeechEventListener.equals(name)) {
-            myService.setSpeechEventListener((Listener)dependency);
+        } else if(theSpeechRequestReceiver.equals(name)) {
+            myService.setSpeechRequestReceiver((Notifier)dependency);
+        } else if(theSpeechEventSender.equals(name)) {
+            myService.setSpeechEventSender((Listener)dependency);
         }
     }
 

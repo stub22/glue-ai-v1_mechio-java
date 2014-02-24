@@ -30,6 +30,7 @@ import org.mechio.api.speech.SpeechConfig;
 import org.mechio.api.speech.SpeechEventList;
 import org.mechio.api.speech.SpeechRequest;
 import org.mechio.api.speech.lifecycle.RemoteSpeechServiceClientLifecycle;
+import org.mechio.api.speech.lifecycle.RemoteSpeechServiceHostLifecycle;
 import org.mechio.api.speech.viseme.lifecycle.VisemeEventNotifierLifecycle;
 
 import static org.jflux.impl.messaging.rk.config.MessagingLifecycleGroupConfigUtils.*;
@@ -62,6 +63,9 @@ public class RemoteSpeechUtils {
     private final static String ERROR_RECEIVER_ID = "Error";
     private final static String REQUEST_SENDER_ID = "Request";
     private final static String EVENT_RECEIVER_ID = "Event";
+    
+    private final static String REQUEST_RECEIVER_ID = "RequestReceiver";
+    private final static String EVENT_SENDER_ID = "EventSender";
         
     public final static String GROUP_PREFIX = "RKSpeechGroup";
     
@@ -85,6 +89,24 @@ public class RemoteSpeechUtils {
                 speechPrefix + EVENT_RECEIVER_ID);
     }
     
+    public static void connectHost(
+            ManagedServiceFactory fact, String speechGroupId,
+            String speechPrefix, String connectionConfigId) {
+        if(fact == null 
+                || speechGroupId ==  null || connectionConfigId == null){
+            throw new NullPointerException();
+        }
+        
+        registerHostDestConfigs(speechGroupId, speechPrefix, fact);
+        launchHostComponents(
+                speechGroupId, connectionConfigId, speechPrefix, null, fact);
+        
+        launchRemoteSpeechHost(
+                fact, speechGroupId, "", speechGroupId,
+                speechPrefix + REQUEST_RECEIVER_ID,
+                speechPrefix + EVENT_SENDER_ID);
+    }
+    
     private static void registerDestConfigs(String groupId, String speechPrefix, ManagedServiceFactory fact){
         String idBase =  groupId + "/" + GROUP_PREFIX;
         String destBase = ""; //groupId + GROUP_PREFIX;
@@ -97,6 +119,18 @@ public class RemoteSpeechUtils {
         RKMessagingConfigUtils.registerTopicConfig(
                 idBase + "/" + speechPrefix + ERROR_DEST_CONFIG_ID, 
                 destBase + speechPrefix + ERROR_DEST_NAME,  null, fact);
+        RKMessagingConfigUtils.registerQueueConfig(
+                idBase + "/" + speechPrefix + REQUEST_DEST_CONFIG_ID, 
+                destBase + speechPrefix + REQUEST_DEST_NAME,  null, fact);
+        RKMessagingConfigUtils.registerTopicConfig(
+                idBase + "/" + speechPrefix + EVENT_DEST_CONFIG_ID, 
+                destBase + speechPrefix + EVENT_DEST_NAME,  null, fact);
+    }
+    
+    private static void registerHostDestConfigs(
+            String groupId, String speechPrefix, ManagedServiceFactory fact){
+        String idBase =  groupId + "/" + GROUP_PREFIX;
+        String destBase = ""; //groupId + GROUP_PREFIX;
         RKMessagingConfigUtils.registerQueueConfig(
                 idBase + "/" + speechPrefix + REQUEST_DEST_CONFIG_ID, 
                 destBase + speechPrefix + REQUEST_DEST_NAME,  null, fact);
@@ -127,6 +161,20 @@ public class RemoteSpeechUtils {
                 REQUEST_SERIALIZE_CONFIG_ID, fact);
         launchComponent(
                 idBase + "/" + speechPrefix + EVENT_RECEIVER_ID, props, REMOTE_LISTENER, 
+                idBase + "/" + speechPrefix + EVENT_DEST_CONFIG_ID, connectionConfigId, 
+                EVENT_SERIALIZE_CONFIG_ID, fact);
+    }
+    
+    private static void launchHostComponents(
+            String groupId, String connectionConfigId, String speechPrefix,
+            Properties props, ManagedServiceFactory fact){
+        String idBase = groupId + "/" + GROUP_PREFIX;
+        launchComponent(
+                idBase + "/" + speechPrefix + REQUEST_RECEIVER_ID, props, REMOTE_LISTENER, 
+                idBase + "/" + speechPrefix + REQUEST_DEST_CONFIG_ID, connectionConfigId, 
+                REQUEST_SERIALIZE_CONFIG_ID, fact);
+        launchComponent(
+                idBase + "/" + speechPrefix + EVENT_SENDER_ID, props, REMOTE_NOTIFIER, 
                 idBase + "/" + speechPrefix + EVENT_DEST_CONFIG_ID, connectionConfigId, 
                 EVENT_SERIALIZE_CONFIG_ID, fact);
     }
@@ -172,6 +220,23 @@ public class RemoteSpeechUtils {
         ManagedService speechComp = fact.createService(lifecycle, null);
         speechComp.start();
     }
+    
+    private static void launchRemoteSpeechHost(
+            ManagedServiceFactory fact, String speechHostId, String remoteId,
+            String speechServiceId, String requestReceiverId, 
+            String speechEventSenderId){
+        String idBase = speechHostId + "/" + GROUP_PREFIX;
+        
+        RemoteSpeechServiceHostLifecycle lifecycle =
+                new RemoteSpeechServiceHostLifecycle(
+                        speechHostId, remoteId, speechServiceId,
+                        groupId(idBase, requestReceiverId, LISTENER_COMPONENT),
+                        groupId(idBase, speechEventSenderId,
+                                NOTIFIER_COMPONENT));
+        ManagedService speechComp = fact.createService(lifecycle, null);
+        speechComp.start();
+    }
+    
     private static String groupId(String groupId, String suffix, String component){
         return MessagingLifecycleGroupConfigUtils.childId(groupId + "/" + suffix, component);   
     }    
