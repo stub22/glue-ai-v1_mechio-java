@@ -22,6 +22,18 @@
 			<url>https://oss.sonatype.org/content/groups/public/</url>
 		</repository>		
 	</repositories>
+    
+    <pluginRepositories>
+		<!-- This declaration allows us to use the Sonatype "public" repo to find releases of JFlux and Appdapter 
+			immediately, without waiting for the final sync to maven-central.   We are continuing to review the full 
+			impact of this policy,	but there is currently no known significant practical downside.
+		-->
+		<pluginRepository>
+			<id>sonatype-public</id>
+			<name>sonatype public</name>
+			<url>https://oss.sonatype.org/content/groups/public/</url>
+		</pluginRepository>		
+	</pluginRepositories>
 		
 	<modules>
 		<module>../org.mechio.modules.motion</module>
