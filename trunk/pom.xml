@@ -41,9 +41,9 @@
 	</modules>
 	
 	<scm>
-		<connection>scm:svn:https://subversion.assembla.com/svn/mechio/prj/core/trunk/</connection>
-		<developerConnection>scm:svn:https://subversion.assembla.com/svn/mechio/prj/core/trunk/</developerConnection>
-		<url>https://www.assembla.com/code/mechio/subversion/nodes/prj/core/trunk/</url>
+		<connection>scm:svn:https://subversion.assembla.com/svn/mechio/trunk/</connection>
+		<developerConnection>scm:svn:https://subversion.assembla.com/svn/mechio/trunk/</developerConnection>
+		<url>https://www.assembla.com/code/mechio/subversion/nodes/trunk/</url>
 	</scm>
     
 	<build>
