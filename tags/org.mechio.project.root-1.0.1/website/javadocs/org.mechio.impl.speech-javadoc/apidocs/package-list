@@ -1,0 +1,3 @@
+org.mechio.impl.speech
+org.mechio.impl.speech.osgi
+org.mechio.impl.speech.viseme
