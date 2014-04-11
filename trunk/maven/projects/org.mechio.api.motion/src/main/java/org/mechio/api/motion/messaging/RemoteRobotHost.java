@@ -15,6 +15,7 @@
  */
 package org.mechio.api.motion.messaging;
 
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jflux.api.common.rk.utils.TimeUtils;
@@ -22,6 +23,8 @@ import org.mechio.api.motion.protocol.RobotRequest;
 import org.jflux.api.core.Listener;
 import org.jflux.api.messaging.rk.MessageAsyncReceiver;
 import org.jflux.api.messaging.rk.MessageSender;
+import org.jflux.spec.discovery.Beacon;
+import org.jflux.spec.discovery.SerialNumberSpec;
 import org.mechio.api.motion.Joint;
 import org.mechio.api.motion.Robot;
 import org.mechio.api.motion.Robot.JointId;
@@ -53,6 +56,36 @@ public class RemoteRobotHost {
     private Thread myDefinitionThread;
     private boolean myPusherActive;
     private MessageSender<RobotDefinitionResponse> myDefSender;
+    private SerialNumberSpec mySerialNumber;
+    private Beacon myBeacon;
+    
+    /**
+     * Creates a new RemoteRobotHost to host the given Robot.
+     * @param robot Robot to host
+     * @param sourceId arbitrary String identifying this host
+     * @param destinationId arbitrary String identifying a client
+     * @param sender MessageSender to send RobotResponses
+     * @param receiver MessageReceiver to receive RobotRequests from a client
+     * @param factory factory for creating new RobotResponse Messages
+     * @param motionFrameReceiver MessageReceiver to receive MotionFrameEvents
+     * @param moveHandler Listener to handle MotionFrameEvents from clients
+     * @param defSender MessageSender for pushing RobotDefinitionResponses
+     * @param serialNumber SerialNumberSpec for uniquely identifying the robot
+     */
+    public RemoteRobotHost(Robot robot, 
+            String sourceId, String destinationId, 
+            MessageSender<RobotResponse> sender, 
+            MessageAsyncReceiver<RobotRequest> receiver, 
+            RobotResponseFactory factory, 
+            MessageAsyncReceiver<MotionFrameEvent> motionFrameReceiver, 
+            Listener<MotionFrameEvent> moveHandler,
+            MessageSender<RobotDefinitionResponse> defSender,
+            SerialNumberSpec serialNumber){
+        this(sourceId, destinationId);
+        initialize(
+                robot, sender, receiver, factory, motionFrameReceiver,
+                moveHandler, defSender, serialNumber);
+    }
     
     /**
      * Creates a new RemoteRobotHost to host the given Robot.
@@ -76,7 +109,7 @@ public class RemoteRobotHost {
             MessageSender<RobotDefinitionResponse> defSender){
         this(sourceId, destinationId);
         initialize(robot, sender, receiver, 
-                factory, motionFrameReceiver, moveHandler, defSender);
+                factory, motionFrameReceiver, moveHandler, defSender, null);
     }
     /**
      * Creates an empty RemoteRobotHost.
@@ -102,7 +135,8 @@ public class RemoteRobotHost {
             RobotResponseFactory factory, 
             MessageAsyncReceiver<MotionFrameEvent> motionFrameReceiver, 
             Listener<MotionFrameEvent> moveHandler,
-            MessageSender<RobotDefinitionResponse> defSender){
+            MessageSender<RobotDefinitionResponse> defSender,
+            SerialNumberSpec serialNumber){
         if(myRequestReceiver != null && myRequestListener != null){
             myRequestReceiver.removeListener(myRequestListener);
         }if(myMotionFrameReceiver != null && myMoveHandler != null){
@@ -116,12 +150,25 @@ public class RemoteRobotHost {
         myMoveHandler = moveHandler;
         myPusherActive = false;
         myDefSender = defSender;
+        mySerialNumber = serialNumber;
         if(myRequestReceiver != null){
             myRequestReceiver.addListener(myRequestListener);
         }
         if(myMotionFrameReceiver != null){
             myMotionFrameReceiver.addListener(myMoveHandler);
         }
+        if(mySerialNumber == null) {
+            mySerialNumber = new SerialNumberSpec();
+            mySerialNumber.setSerialNumber(UUID.randomUUID().toString());
+            mySerialNumber.addProperty("generated", "random");
+        }
+        
+        mySerialNumber.addProperty(
+                "robotId", myRobot.getRobotId().getRobtIdString());
+        
+        myBeacon = new Beacon(mySerialNumber);
+        new Thread(myBeacon).start();
+        
         theLogger.log(Level.INFO, 
                 "Initializing Remote Robot.  sourceId={0}, destId={1}, robotId={2}", 
                 new Object[]{mySourceId, myDestinationId, myRobot.getRobotId()}); 

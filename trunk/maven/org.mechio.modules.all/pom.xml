@@ -58,7 +58,7 @@
 			-->
 		<appdapter.msg.version>1.0.5</appdapter.msg.version>
 		<appdapter.version>1.1.6</appdapter.version>
-        <jflux.version>0.2.0</jflux.version>
+        <jflux.version>0.2.1-SNAPSHOT</jflux.version>
 	</properties>	
 	<build>
 		<pluginManagement>

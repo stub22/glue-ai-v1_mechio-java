@@ -23,6 +23,11 @@
             <artifactId>org.jflux.api.messaging.rk</artifactId>
             <version>${jflux.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.jflux</groupId>
+            <artifactId>org.jflux.demo.discovery</artifactId>
+            <version>${jflux.version}</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
