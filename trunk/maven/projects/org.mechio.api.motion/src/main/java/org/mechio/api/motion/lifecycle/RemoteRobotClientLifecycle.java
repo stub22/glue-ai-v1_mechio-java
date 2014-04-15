@@ -116,12 +116,12 @@ public class RemoteRobotClientLifecycle extends
         if(myService == null){
             return;
         }
-        if(theResponseReceiver.equals(serviceId)){
+        if(theResponseReceiver.equals(serviceId) && service != null){
             myService.setResponseReceiver((MessageBlockingReceiver<RobotResponse>)service);            
-        }else if(theRequestSender.equals(serviceId)){
+        }else if(theRequestSender.equals(serviceId) && service != null){
             myService.setRequestSender(
                     (MessageSender<RobotRequest>)service);            
-        }else if(theFrameSender.equals(serviceId)){
+        }else if(theFrameSender.equals(serviceId) && service != null){
             myService.setMotionFrameSender(
                     (MessageSender<MotionFrameEvent>)service);            
         }else if(theFrameEventFactory.equals(serviceId)){
@@ -134,5 +134,12 @@ public class RemoteRobotClientLifecycle extends
     @Override
     public Class<RemoteRobotClient> getServiceClass() {
         return RemoteRobotClient.class;
+    }
+    
+    @Override
+    public synchronized void stop() {
+        if(myService != null) {
+            myService.shutDown();
+        }
     }
 }

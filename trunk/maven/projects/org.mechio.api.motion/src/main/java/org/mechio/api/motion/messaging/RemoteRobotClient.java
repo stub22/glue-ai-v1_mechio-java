@@ -55,6 +55,7 @@ public class RemoteRobotClient {
     private MessageSender<RobotRequest> myRequestSender;
     private MessageBlockingReceiver<RobotResponse> myResponseReceiver;
     private MessageSender<MotionFrameEvent>  myMotionFrameSender;
+    private boolean myActive;
     
     /**
      * Creates a new RemoteRobotClient.
@@ -75,12 +76,16 @@ public class RemoteRobotClient {
         myDestinationId = destId;
         myRequestFactory = reqFact;
         myMotionFrameAdapter = motionFrameEventFactory;
+        myActive = true;
     }
     /**
      * Sets the MessageSender to send RobotRequests.
      * @param reqSender MessageSender to use
      */
     public void setRequestSender(MessageSender<RobotRequest> reqSender){
+        if(!myActive){
+            return;
+        }
         if(reqSender == null){
             throw new NullPointerException();
         }
@@ -92,6 +97,9 @@ public class RemoteRobotClient {
      */
     public void setResponseReceiver(
             MessageBlockingReceiver< RobotResponse> respRec){
+        if(!myActive){
+            return;
+        }        
         if(respRec == null){
             throw new NullPointerException();
         }
@@ -103,6 +111,9 @@ public class RemoteRobotClient {
      */
     public void setMotionFrameSender(
             MessageSender<MotionFrameEvent> frameSender){
+        if(!myActive){
+            return;
+        }
         if(frameSender == null){
             throw new NullPointerException();
         }
@@ -134,6 +145,9 @@ public class RemoteRobotClient {
      * @return RobotDefinition defining the remote robot
      */
     public RobotDefinitionResponse requestRobotDefinition(){
+        if(!myActive){
+            return null;
+        }
         return makeDefinitionRequest(
                 RobotRequest.CMD_GET_ROBOT_DEFINITION, DEFAULT_TIMEOUT_LENGTH);
     }
@@ -142,6 +156,9 @@ public class RemoteRobotClient {
      * @return true if successful
      */
     public boolean sendConnect(){
+        if(!myActive){
+            return false;
+        }
         return makeStatusRequest(
                 RobotRequest.CMD_CONNECT_ROBOT, DEFAULT_TIMEOUT_LENGTH);
     }
@@ -150,6 +167,9 @@ public class RemoteRobotClient {
      * @return true if successful
      */
     public boolean sendDisconnect(){
+        if(!myActive){
+            return false;
+        }
         return makeStatusRequest(
                 RobotRequest.CMD_DISCONNECT_ROBOT, DEFAULT_TIMEOUT_LENGTH);
     }
@@ -158,6 +178,9 @@ public class RemoteRobotClient {
      * @return remote Robot's connection status
      */
     public boolean getConnected(){
+        if(!myActive){
+            return false;
+        }
         return makeStatusRequest(
                 RobotRequest.CMD_GET_CONNECTION_STATUS, DEFAULT_TIMEOUT_LENGTH);
     }
@@ -166,6 +189,9 @@ public class RemoteRobotClient {
      * @return true if successful
      */
     public boolean sendEnable(){
+        if(!myActive){
+            return false;
+        }
         return makeStatusRequest(
                 RobotRequest.CMD_ENABLE_ROBOT, DEFAULT_TIMEOUT_LENGTH);
     }
@@ -174,6 +200,9 @@ public class RemoteRobotClient {
      * @return true if successful
      */
     public boolean sendDisable(){
+        if(!myActive){
+            return false;
+        }
         return makeStatusRequest(
                 RobotRequest.CMD_DISABLE_ROBOT, DEFAULT_TIMEOUT_LENGTH);
     }
@@ -182,6 +211,9 @@ public class RemoteRobotClient {
      * @return remote Robot's enabled status
      */
     public boolean getEnabled(){
+        if(!myActive){
+            return false;
+        }
         return makeStatusRequest(
                 RobotRequest.CMD_GET_ENABLED_STATUS, DEFAULT_TIMEOUT_LENGTH);
     }
@@ -191,6 +223,9 @@ public class RemoteRobotClient {
      * @return true if successful
      */
     public boolean sendJointEnable(JointId jointId){
+        if(!myActive){
+            return false;
+        }
         return makeStatusRequestForJoint(
                 RobotRequest.CMD_ENABLE_JOINT, jointId, DEFAULT_TIMEOUT_LENGTH);
     }
@@ -200,6 +235,9 @@ public class RemoteRobotClient {
      * @return true if successful
      */
     public boolean sendJointDisable(JointId jointId){
+        if(!myActive){
+            return false;
+        }
         return makeStatusRequestForJoint(
                 RobotRequest.CMD_DISABLE_JOINT, 
                 jointId, DEFAULT_TIMEOUT_LENGTH);
@@ -219,6 +257,9 @@ public class RemoteRobotClient {
      * @return remote Robot's default joint positions
      */
     public RobotPositionMap requestDefaultPositions(){
+        if(!myActive){
+            return null;
+        }
         return makePositionRequest(
                 RobotRequest.CMD_GET_DEFAULT_POSITIONS, DEFAULT_TIMEOUT_LENGTH);
     }
@@ -227,6 +268,9 @@ public class RemoteRobotClient {
      * @return remote Robot's goal positions
      */
     public RobotPositionMap requestGoalPositions(){
+        if(!myActive){
+            return null;
+        }
         return makePositionRequest(
                 RobotRequest.CMD_GET_GOAL_POSITIONS, DEFAULT_TIMEOUT_LENGTH);
     }
@@ -235,6 +279,9 @@ public class RemoteRobotClient {
      * @return remote Robot's current positions
      */
     public RobotPositionMap requestCurrentPositions(){
+        if(!myActive){
+            return null;
+        }
         return makePositionRequest(
                 RobotRequest.CMD_GET_CURRENT_POSITIONS, DEFAULT_TIMEOUT_LENGTH);
     }
@@ -243,10 +290,17 @@ public class RemoteRobotClient {
      * @param frame MotionFrame to send
      */
     public void sendMovement(MotionFrame frame){
+        if(!myActive){
+            return;
+        }
         MotionFrameEvent mfe = myMotionFrameAdapter.createMotionFrameEvent(
                 mySourceId, myDestinationId, frame);
         myMotionFrameSender.notifyListeners(mfe);
-    }    
+    }
+    
+    public void shutDown() {
+        myActive = false;
+    }
     
     private Boolean makeStatusRequest(String requestType, long timeout){
         RobotStatusResponse resp = makeBlockingRequest(
