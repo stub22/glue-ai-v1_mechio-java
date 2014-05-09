@@ -17,7 +17,7 @@ package org.mechio.api.sensor;
 
 /**
  *
- * @author Jason G. Pallack <jgpallack@gmail.com>
+ * @author Amy Jessica Book <jgpallack@gmail.com>
  */
 public interface I2CQpidConfigEvent {
     public String getBrokerIPAddress();

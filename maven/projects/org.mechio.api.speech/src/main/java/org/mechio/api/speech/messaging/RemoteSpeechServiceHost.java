@@ -26,7 +26,7 @@ import org.mechio.api.speech.SpeechService;
 
 /**
  *
- * @author Jason G. Pallack <jgpallack@gmail.com>
+ * @author Amy Jessica Book <jgpallack@gmail.com>
  */
 public class RemoteSpeechServiceHost implements Listener<SpeechRequest> {
     private SpeechService mySpeechService;

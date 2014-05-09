@@ -29,7 +29,7 @@ import org.mechio.impl.speech.SpeechEventRecord;
 
 /**
  *
- * @author Jason G. Pallack <jgpallack@gmail.com>
+ * @author Amy Jessica Book <jgpallack@gmail.com>
  */
 public class FreeTTSSpeakableListener extends DefaultNotifier<SpeechEventList<SpeechEvent>> implements SpeakableListener {
     private String mySpeechServiceId;

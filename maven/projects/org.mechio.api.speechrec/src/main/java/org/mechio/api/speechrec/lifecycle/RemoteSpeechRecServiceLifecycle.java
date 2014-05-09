@@ -32,7 +32,7 @@ import org.mechio.api.speechrec.messaging.RemoteSpeechRecServiceClient;
 
 /**
  *
- * @author Jason G. Pallack <www.mechio.org>
+ * @author Amy Jessica Book <www.mechio.org>
  */
 public class RemoteSpeechRecServiceLifecycle<Conf> extends 
         AbstractLifecycleProvider<SpeechRecService, RemoteSpeechRecServiceClient> {
