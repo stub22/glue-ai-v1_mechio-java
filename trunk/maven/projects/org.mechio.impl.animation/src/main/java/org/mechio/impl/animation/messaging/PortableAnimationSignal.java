@@ -22,7 +22,7 @@ import org.mechio.api.animation.protocol.AnimationSignal;
 
 /**
  *
- * @author Jason G. Pallack <jgpallack@gmail.com>
+ * @author Amy Jessica Book <jgpallack@gmail.com>
  */
 public class PortableAnimationSignal implements AnimationSignal {
     private AnimationSignallingRecord myAnimationSignallingRecord;

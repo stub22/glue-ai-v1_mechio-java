@@ -35,7 +35,7 @@ import org.mechio.client.basic.ConnectionContext.MioServiceConnector;
 
 /**
  *
- * @author Jason G. Pallack <jgpallack@gmail.com>
+ * @author Amy Jessica Book <jgpallack@gmail.com>
  */
 final class MioCompassConnector extends MioServiceConnector{
     final static String COMPASS_VALUE_RECEIVER = "compassValueReceiver";

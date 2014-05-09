@@ -32,7 +32,7 @@ import org.mechio.api.speech.messaging.RemoteSpeechServiceHost;
 
 /**
  *
- * @author Jason G. Pallack <jgpallack@gmail.com>
+ * @author Amy Jessica Book <jgpallack@gmail.com>
  */
 public class RemoteSpeechServiceHostLifecycle extends 
         AbstractLifecycleProvider<RemoteSpeechServiceHost, RemoteSpeechServiceHost> {

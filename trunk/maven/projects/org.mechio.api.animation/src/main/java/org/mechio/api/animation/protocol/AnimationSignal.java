@@ -19,7 +19,7 @@ import java.util.List;
 
 /**
  * An interface for animation signalling events.
- * @author Jason G. Pallack <jgpallack@gmail.com>
+ * @author Amy Jessica Book <jgpallack@gmail.com>
  */
 public interface AnimationSignal {
     public final static String EVENT_START = "START";

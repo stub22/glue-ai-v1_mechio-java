@@ -19,7 +19,7 @@ import org.mechio.api.speechrec.SpeechRecConfig;
 
 /**
  *
- * @author Jason G. Pallack <www.mechio.org>
+ * @author Amy Jessica Book <www.mechio.org>
  */
 public interface SpeechRecConfigFactory {
     public SpeechRecConfig create(String speechRecServiceId, 

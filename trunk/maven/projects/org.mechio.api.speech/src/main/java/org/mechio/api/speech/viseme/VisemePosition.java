@@ -17,7 +17,7 @@ package org.mechio.api.speech.viseme;
 
 /**
  *
- * @author Jason G. Pallack <jgpallack@gmail.com>
+ * @author Amy Jessica Book <jgpallack@gmail.com>
  */
 public interface VisemePosition {
     public Integer getVisemeId();

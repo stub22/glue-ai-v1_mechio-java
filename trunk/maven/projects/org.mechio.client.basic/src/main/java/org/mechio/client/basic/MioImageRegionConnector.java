@@ -36,7 +36,7 @@ import org.mechio.impl.vision.ImageRegionListRecord;
 
 /**
  *
- * @author Jason G. Pallack <jgpallack@gmail.com>
+ * @author Amy Jessica Book <jgpallack@gmail.com>
  */
 final class MioImageRegionConnector extends MioServiceConnector{
     final static String CMD_SENDER = "irCommandSender";

@@ -19,7 +19,7 @@ import org.mechio.api.motion.JointProperty;
 
 /**
  *
- * @author Jason G. Pallack <jgpallack@gmail.com>
+ * @author Amy Jessica Book <jgpallack@gmail.com>
  */
 public abstract class ReadAbsoluteCurrentPosition
     extends JointProperty.ReadOnly<Double> {

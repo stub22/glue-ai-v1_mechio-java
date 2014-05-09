@@ -18,7 +18,7 @@ package org.mechio.api.speechrec;
 /**
  * Configuration for a SpeechRecService.
  * 
- * @author Jason G. Pallack <www.mechio.org>
+ * @author Amy Jessica Book <www.mechio.org>
  */
 public interface SpeechRecConfig {
     public String getSpeechRecServiceId();

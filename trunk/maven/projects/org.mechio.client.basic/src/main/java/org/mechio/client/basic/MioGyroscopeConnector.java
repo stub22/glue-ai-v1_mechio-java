@@ -35,7 +35,7 @@ import org.mechio.impl.sensor.HeaderRecord;
 
 /**
  *
- * @author Jason G. Pallack <jgpallack@gmail.com>
+ * @author Amy Jessica Book <jgpallack@gmail.com>
  */
 final class MioGyroscopeConnector extends MioServiceConnector{
     final static String GYRO_VALUE_RECEIVER = "gyroValueReceiver";

@@ -17,7 +17,7 @@ package org.mechio.api.animation;
 
 /**
  *
- * @author Jason G. Pallack <jgpallack@gmail.com>
+ * @author Amy Jessica Book <jgpallack@gmail.com>
  */
 public class ControlPoint<T> {
     private Double time;

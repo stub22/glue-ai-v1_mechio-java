@@ -23,7 +23,7 @@ import org.jflux.api.common.rk.position.NormalizedDouble;
 
 /**
  *
- * @author Jason G. Pallack <jgpallack@gmail.com>
+ * @author Amy Jessica Book <jgpallack@gmail.com>
  */
 public class ChannelsParameter {
     private int myChannelID;

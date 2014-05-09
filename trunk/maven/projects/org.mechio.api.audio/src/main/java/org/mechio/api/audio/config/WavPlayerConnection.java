@@ -17,7 +17,7 @@ package org.mechio.api.audio.config;
 
 /**
  *
- * @author Jason G. Pallack <jgpallack@gmail.com>
+ * @author Amy Jessica Book <jgpallack@gmail.com>
  */
 public interface WavPlayerConnection {
     public String getBrokerAddress();

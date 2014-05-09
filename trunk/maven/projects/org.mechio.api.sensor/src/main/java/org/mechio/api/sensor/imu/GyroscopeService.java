@@ -23,7 +23,7 @@ import org.mechio.api.sensor.SensorEventHeader;
 
 /**
  *
- * @author Jason G. Pallack <jgpallack@gmail.com>
+ * @author Amy Jessica Book <jgpallack@gmail.com>
  */
 public interface GyroscopeService<T extends SensorEventHeader>
     extends Notifier<FilteredVector3Event> {

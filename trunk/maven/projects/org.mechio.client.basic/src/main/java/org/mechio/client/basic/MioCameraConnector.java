@@ -35,7 +35,7 @@ import org.mechio.impl.vision.ImageRecord;
 
 /**
  *
- * @author Jason G. Pallack <jgpallack@gmail.com>
+ * @author Amy Jessica Book <jgpallack@gmail.com>
  */
 final class MioCameraConnector extends MioServiceConnector{
     final static String CMD_SENDER = "cmCommandSender";

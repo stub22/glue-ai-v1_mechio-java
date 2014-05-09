@@ -33,7 +33,7 @@ import org.mechio.api.speechrec.SpeechRecService;
 /**
  * Connects to a remote SpeechRecService through Messaging components.
  * 
- * @author Jason G. Pallack <www.mechio.org>
+ * @author Amy Jessica Book <www.mechio.org>
  */
 public class RemoteSpeechRecServiceClient<Conf> extends
         DefaultServiceClient<Conf> implements SpeechRecService{
