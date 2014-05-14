@@ -426,13 +426,13 @@ public class RemoteRobotHost {
     }
     
     private void sendDefinitionResponse(RobotRequest req){
-        theLogger.log(Level.INFO, 
+        theLogger.log(Level.FINE, 
                 "Sending Definition Response."
                 + "  Request Timestamp: {0}, Type: {1}, Source: {2}, Dest: {3}, Robot: {4}.", 
                 new Object[]{req.getTimestampMillisecUTC(), req.getRequestType(), 
                     req.getSourceId(), req.getDestinationId(), req.getRobotId()});
         if(myResponseSender == null){
-        theLogger.log(Level.INFO, 
+        theLogger.log(Level.FINE, 
                 "Unable to send Definition Response, missing ResponseSender."
                 + "  Request Timestamp: {0}, Type: {1}, Source: {2}, Dest: {3}, Robot: {4}.", 
                 new Object[]{req.getTimestampMillisecUTC(), req.getRequestType(), 
@@ -442,7 +442,7 @@ public class RemoteRobotHost {
         RobotResponseHeader header = getHeader(req);
         Robot robot = getRobot();
         
-        theLogger.log(Level.INFO, 
+        theLogger.log(Level.FINE, 
                 "Creating Definition Response."
                 + "  Request Timestamp: {0}, Type: {1}, Source: {2}, Dest: {3}, Robot: {4}."
                 + "  Using Header: {5}, Robot: {6}", 
@@ -452,7 +452,7 @@ public class RemoteRobotHost {
         RobotDefinitionResponse def = 
                 myResponseFactory.createDefinitionResponse(header, robot);
         myResponseSender.notifyListeners(def);
-        theLogger.log(Level.INFO, 
+        theLogger.log(Level.FINE, 
                 "Definition Response Sent."
                 + "  Request Timestamp: {0}, Type: {1}, Source: {2}, Dest: {3}, Robot: {4}.", 
                 new Object[]{req.getTimestampMillisecUTC(), req.getRequestType(), 
@@ -495,7 +495,7 @@ public class RemoteRobotHost {
         public void handleEvent(RobotRequest event) {
             String reqType = event.getRequestType();
             if(reqType == null){
-                theLogger.info("Received RobotRequest with null RequestType.");
+                theLogger.fine("Received RobotRequest with null RequestType.");
             }else{
                 theLogger.log(Level.INFO, 
                         "Received RobotRequest with RequestType: {0}.", reqType);
@@ -537,22 +537,22 @@ public class RemoteRobotHost {
         @Override
         public void run() {
             while(myPusherActive) {
-                theLogger.log(Level.INFO, "Sending Definition Response.");
+                theLogger.log(Level.FINE, "Sending Definition Response.");
                 if(myDefSender == null){
                     theLogger.log(
-                            Level.INFO,
+                            Level.FINE,
                             "Unable to send Definition Response, missing DefSender.");
                     return;
                 }
                 RobotResponseHeader header = getHeader();
                 Robot robot = getRobot();
 
-                theLogger.log(Level.INFO, "Creating Definition Response.");
+                theLogger.log(Level.FINE, "Creating Definition Response.");
                 RobotDefinitionResponse def = 
                         myResponseFactory.createDefinitionResponse(
                                 header, robot);
                 myDefSender.notifyListeners(def);
-                theLogger.log(Level.INFO, "Definition Response Sent.");
+                theLogger.log(Level.FINE, "Definition Response Sent.");
                 
                 TimeUtils.sleep(100);
             }
