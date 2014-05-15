@@ -25,6 +25,8 @@ import org.jflux.api.messaging.rk.MessageAsyncReceiver;
 import org.jflux.api.messaging.rk.MessageSender;
 import org.jflux.impl.services.rk.lifecycle.AbstractLifecycleProvider;
 import org.jflux.impl.services.rk.lifecycle.utils.DescriptorListBuilder;
+import org.jflux.spec.discovery.SerialNumberSpec;
+import org.jflux.spec.discovery.SerialNumberSpecBuilder;
 import org.mechio.api.motion.Robot;
 import org.mechio.api.motion.messaging.RemoteRobotHost;
 import org.mechio.api.motion.protocol.RobotRequest;
@@ -51,10 +53,13 @@ public class RemoteRobotHostLifecycle extends
     
     private String mySourceId;
     private String myDestId;
-
+    private String mySerial;
+    private int mySendDataIntervalMillisec = RemoteRobotHost.DEFAULT_SEND_DATA_INTERVAL;
+    
     public RemoteRobotHostLifecycle(String sourceId, String destId,
             Robot.Id robotId, String reqReceiverId, String respSenderId, 
-            String frameReceiverId, String moveHandlerId, String defSenderId){
+            String frameReceiverId, String moveHandlerId, String defSenderId,
+            String serial, int sendDataIntervalMillisec){
         super(new DescriptorListBuilder()
                 .dependency(theRobot, Robot.class)
                     .with(Robot.PROP_ID, robotId.getRobtIdString())
@@ -85,6 +90,8 @@ public class RemoteRobotHostLifecycle extends
         }
         mySourceId = sourceId;
         myDestId = destId;
+        mySerial = serial;
+        mySendDataIntervalMillisec = sendDataIntervalMillisec;
     }
 
     @Override
@@ -103,9 +110,11 @@ public class RemoteRobotHostLifecycle extends
         MessageSender<RobotDefinitionResponse> defSender = 
                 (MessageSender<RobotDefinitionResponse>)services.get(
                         theDefSender);
+        SerialNumberSpec spec = new SerialNumberSpec();
+        spec.setSerialNumber(mySerial);
         RemoteRobotHost host = new RemoteRobotHost(
                 robot, mySourceId, myDestId, respSender, reqReceiver, respFact,
-                frameReceiver, moveHandler, defSender);
+                frameReceiver, moveHandler, defSender, spec, mySendDataIntervalMillisec);
         try{
             reqReceiver.start();
             respSender.start();

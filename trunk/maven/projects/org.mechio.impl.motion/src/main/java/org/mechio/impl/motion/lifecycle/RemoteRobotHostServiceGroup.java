@@ -80,11 +80,18 @@ public class RemoteRobotHostServiceGroup extends ManagedServiceGroup{
         return base;
     }
     
+//    public RemoteRobotHostServiceGroup(BundleContext context,
+//            Robot.Id robotId, String hostId, String clientId, 
+//            String connectionConfigId, Properties registrationProperties){
+//        this(context, robotId, hostId, clientId, connectionConfigId, registrationProperties, null, 100);
+//    }
+    
     public RemoteRobotHostServiceGroup(BundleContext context,
             Robot.Id robotId, String hostId, String clientId, 
-            String connectionConfigId, Properties registrationProperties){
+            String connectionConfigId, Properties registrationProperties,
+            String serial, int sendDataInterval){
         super(new OSGiComponentFactory(context), 
-                getLifecycles(robotId, hostId, clientId), 
+                getLifecycles(robotId, hostId, clientId, serial, sendDataInterval), 
                 getIdBase(robotId, hostId), 
                 registrationProperties);
         String base = getIdBase(robotId, hostId);
@@ -101,7 +108,8 @@ public class RemoteRobotHostServiceGroup extends ManagedServiceGroup{
     }
     
     private static List<ServiceLifecycleProvider> getLifecycles(
-            Robot.Id robotId, String hostId, String clientId){
+            Robot.Id robotId, String hostId, String clientId, 
+            String serial, int sendDataInterval){
         String base = getIdBase(robotId, hostId);
         return getRemoteRobotHostServices(
                 id(base, hostId), 
@@ -116,7 +124,8 @@ public class RemoteRobotHostServiceGroup extends ManagedServiceGroup{
                 id(base, MOVE_RECEIVER_ID), 
                 id(base, MOVE_HANDLER_ID),
                 id(base, DEF_SENDER_ID),
-                id(base, DEF_DEST_ID));
+                id(base, DEF_DEST_ID),
+                serial, sendDataInterval);
     }
     
     private static List<ServiceLifecycleProvider> getRemoteRobotHostServices(
@@ -124,7 +133,8 @@ public class RemoteRobotHostServiceGroup extends ManagedServiceGroup{
             String connectionId, String requestDestId, String responseDestId,
             String moveDestId, String requestReceiverId,
             String responseSenderId, String moveReceiverId,
-            String moveHandlerId, String defSenderId, String defDestId){
+            String moveHandlerId, String defSenderId, String defDestId,
+            String serial, int sendDataInterval){
         List<ServiceLifecycleProvider> lifecycles = new ArrayList();
         lifecycles.add(new JMSAvroPolymorphicSenderLifecycle<RobotResponse>(
                         new PortableRobotResponse.MessageRecordAdapter(), 
@@ -150,7 +160,8 @@ public class RemoteRobotHostServiceGroup extends ManagedServiceGroup{
                                 defSenderId, connectionId, defDestId));
         lifecycles.add(new RemoteRobotHostLifecycle(robotHostId, robotClientId, 
                         robotId, requestReceiverId, responseSenderId, 
-                        moveReceiverId, moveHandlerId, defSenderId));
+                        moveReceiverId, moveHandlerId, defSenderId,
+                        serial, sendDataInterval));
         return lifecycles;
     }
     

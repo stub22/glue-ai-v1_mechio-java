@@ -44,6 +44,8 @@ import org.mechio.api.motion.protocol.RobotDefinitionResponse;
 public class RemoteRobotHost {
     private final static Logger theLogger = 
             Logger.getLogger(RemoteRobotHost.class.getName());
+    public final static int DEFAULT_SEND_DATA_INTERVAL = 100;
+    
     private Robot myRobot;
     private String mySourceId;
     private String myDestinationId;
@@ -58,6 +60,7 @@ public class RemoteRobotHost {
     private MessageSender<RobotDefinitionResponse> myDefSender;
     private SerialNumberSpec mySerialNumber;
     private Beacon myBeacon;
+    private int mySendDataIntervalMillisec = DEFAULT_SEND_DATA_INTERVAL;
     
     /**
      * Creates a new RemoteRobotHost to host the given Robot.
@@ -72,6 +75,36 @@ public class RemoteRobotHost {
      * @param defSender MessageSender for pushing RobotDefinitionResponses
      * @param serialNumber SerialNumberSpec for uniquely identifying the robot
      */
+    public RemoteRobotHost(Robot robot, 
+            String sourceId, String destinationId, 
+            MessageSender<RobotResponse> sender, 
+            MessageAsyncReceiver<RobotRequest> receiver, 
+            RobotResponseFactory factory, 
+            MessageAsyncReceiver<MotionFrameEvent> motionFrameReceiver, 
+            Listener<MotionFrameEvent> moveHandler,
+            MessageSender<RobotDefinitionResponse> defSender,
+            SerialNumberSpec serialNumber,
+            int sendDataIntervalMillisec){
+        this(sourceId, destinationId);
+        mySendDataIntervalMillisec = sendDataIntervalMillisec;
+        initialize(
+                robot, sender, receiver, factory, motionFrameReceiver,
+                moveHandler, defSender, serialNumber);
+    }
+    /**
+     * Creates a new RemoteRobotHost to host the given Robot.
+     * @param robot Robot to host
+     * @param sourceId arbitrary String identifying this host
+     * @param destinationId arbitrary String identifying a client
+     * @param sender MessageSender to send RobotResponses
+     * @param receiver MessageReceiver to receive RobotRequests from a client
+     * @param factory factory for creating new RobotResponse Messages
+     * @param motionFrameReceiver MessageReceiver to receive MotionFrameEvents
+     * @param moveHandler Listener to handle MotionFrameEvents from clients
+     * @param defSender MessageSender for pushing RobotDefinitionResponses
+     * @param serialNumber SerialNumberSpec for uniquely identifying the robot
+     */
+    
     public RemoteRobotHost(Robot robot, 
             String sourceId, String destinationId, 
             MessageSender<RobotResponse> sender, 
@@ -250,6 +283,11 @@ public class RemoteRobotHost {
             myMotionFrameReceiver.addListener(myMoveHandler);
         }
     }
+    
+    public void setSendDataInterval(int sendDataIntervalMillisec){
+        mySendDataIntervalMillisec = sendDataIntervalMillisec;
+    }
+    
     /**
      * Returns the hosted Robot's id.
      * @return hosted Robot's id
@@ -536,7 +574,9 @@ public class RemoteRobotHost {
     class DefinitionPusher implements Runnable {
         @Override
         public void run() {
+            long start;
             while(myPusherActive) {
+                start = TimeUtils.now();
                 theLogger.log(Level.FINE, "Sending Definition Response.");
                 if(myDefSender == null){
                     theLogger.log(
@@ -553,8 +593,12 @@ public class RemoteRobotHost {
                                 header, robot);
                 myDefSender.notifyListeners(def);
                 theLogger.log(Level.FINE, "Definition Response Sent.");
-                
-                TimeUtils.sleep(100);
+                long now = TimeUtils.now();
+                long elapsed = now - start;
+                long sleep = mySendDataIntervalMillisec - elapsed;
+                if(sleep > 0){
+                    TimeUtils.sleep(sleep);
+                }
             }
         }
     }
