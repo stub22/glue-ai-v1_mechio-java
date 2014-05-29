@@ -106,11 +106,22 @@ public class RemoteRobot extends AbstractRobot<RemoteJoint> {
             return false;
         }
         
-        joint.setEnabled(j.getEnabled());
-        joint.setGoalPosition(j.getGoalPosition());
+        boolean enabled = j.getEnabled();
+        if(enabled != joint.getEnabled()) {
+            joint.setEnabled(enabled);
+        }
+        
+        NormalizedDouble goalPosition = j.getGoalPosition();
+        if(!goalPosition.equals(joint.getGoalPosition())) {
+            joint.setGoalPosition(goalPosition);
+        }
+        
         for(JointPropDefinition prop: j.getJointProperties()) {
             JointProperty jointProp = joint.getProperty(prop.getPropertyName());
-            jointProp.setValue(prop.getInitialValue());
+            Double initialValue = prop.getInitialValue();
+            if(!initialValue.equals(jointProp.getValue())) {
+                jointProp.setValue(initialValue);
+            }
         }
         
         return true;
