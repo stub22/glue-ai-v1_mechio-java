@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 the MechIO Project.
+ * Copyright 2013 Hanson Robokind LLC.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mechio.api.sensor;
+package org.mechio.api.sensor.packet.num;
 
 import org.mechio.api.sensor.packet.stamp.SensorEventHeader;
 
 /**
  *
- * @author Matthew Stevenson <www.mechio.org>
+ * @author Amy Jessica Book <jgpallack@gmail.com>
  */
-public interface DeviceScheduleEvent {
+public interface StampedDoubleEvent {
     public SensorEventHeader getHeader();
-    public Integer getDeviceAddress();
-    public Boolean getEnabled();
-    public Long getReadInterval();
+    public Double getDoubleValue();
 }

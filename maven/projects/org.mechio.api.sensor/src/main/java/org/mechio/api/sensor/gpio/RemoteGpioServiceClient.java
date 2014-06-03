@@ -23,26 +23,26 @@ import org.jflux.api.core.Listener;
 import org.jflux.api.core.Notifier;
 import org.jflux.api.core.Source;
 import org.jflux.api.core.util.DefaultNotifier;
-import org.mechio.api.sensor.DeviceBoolEvent;
 import org.mechio.api.sensor.DeviceReadPeriodEvent;
 import org.mechio.api.sensor.GpioConfigEvent;
-import org.mechio.api.sensor.SensorEventHeader;
+import org.mechio.api.sensor.packet.channel.ChannelBoolEvent;
+import org.mechio.api.sensor.packet.stamp.SensorEventHeader;
 
 /**
  *
  * @author Matthew Stevenson <www.mechio.org>
  */
 public class RemoteGpioServiceClient<T extends SensorEventHeader> 
-        extends DefaultNotifier<DeviceBoolEvent<T>> implements GpioService<T>{
+        extends DefaultNotifier<ChannelBoolEvent<T>> implements GpioService<T>{
     private final static Logger theLogger = Logger.getLogger(RemoteGpioServiceClient.class.getName());
 
     private Source<T> myHeaderFactory;
     private Source<Long> myTimestampFactory; 
-    private Source<? extends DeviceBoolEvent<T>> myBoolEventFactory;
+    private Source<? extends ChannelBoolEvent<T>> myBoolEventFactory;
     private Source<? extends GpioConfigEvent<T>> myConfigEventFactory;
     private Notifier<GpioConfigEvent<T>> myDirectionSender;
-    private Notifier<DeviceBoolEvent<T>> myOutputValueSender;
-    private Notifier<DeviceBoolEvent<T>> myInputValueReceiver;
+    private Notifier<ChannelBoolEvent<T>> myOutputValueSender;
+    private Notifier<ChannelBoolEvent<T>> myInputValueReceiver;
     private Notifier<DeviceReadPeriodEvent<T>> myReadPeriodSender;
     
     private Map<Integer, GpioPin> myPins;
@@ -56,12 +56,12 @@ public class RemoteGpioServiceClient<T extends SensorEventHeader>
     
     public RemoteGpioServiceClient(
             Source<T> headerFactory, Source<Long> timestampFactory, 
-            Source<? extends DeviceBoolEvent<T>> eventFactory, 
+            Source<? extends ChannelBoolEvent<T>> eventFactory, 
             Source<? extends GpioConfigEvent<T>> configFactory,
             Notifier<GpioConfigEvent<T>> directionSender,
             Notifier<DeviceReadPeriodEvent<T>> readPeriodSender,
-            Notifier<DeviceBoolEvent<T>> outputValueSender,
-            Notifier<DeviceBoolEvent<T>> inputValueReceiver,
+            Notifier<ChannelBoolEvent<T>> outputValueSender,
+            Notifier<ChannelBoolEvent<T>> inputValueReceiver,
             int dirSeqId, int outValSeqId, int inValSeqId,
             int...availablePins){
         myHeaderFactory = headerFactory;
@@ -150,7 +150,7 @@ public class RemoteGpioServiceClient<T extends SensorEventHeader>
         header.setSequenceId(myOutputValueSequenceId);
         header.setTimestamp(myTimestampFactory.getValue());
         
-        DeviceBoolEvent<T> event = myBoolEventFactory.getValue();
+        ChannelBoolEvent<T> event = myBoolEventFactory.getValue();
         event.setHeader(header);
         event.setChannelId(channel);
         event.setBoolValue(val);
@@ -177,7 +177,7 @@ public class RemoteGpioServiceClient<T extends SensorEventHeader>
         myTimestampFactory = timestampFactory;
     }
     
-    public void setEventFactory(Source<DeviceBoolEvent<T>> eventFactory){
+    public void setEventFactory(Source<ChannelBoolEvent<T>> eventFactory){
         myBoolEventFactory = eventFactory;
     }
     
@@ -185,11 +185,11 @@ public class RemoteGpioServiceClient<T extends SensorEventHeader>
         myDirectionSender = sender;
     }
     
-    public void setOutputValueSender(Notifier<DeviceBoolEvent<T>> sender){
+    public void setOutputValueSender(Notifier<ChannelBoolEvent<T>> sender){
         myOutputValueSender = sender;
     }
     
-    public void setInputValueReceiver(Notifier<DeviceBoolEvent<T>> receiver){
+    public void setInputValueReceiver(Notifier<ChannelBoolEvent<T>> receiver){
         if(myInputValueReceiver != null){
             myInputValueReceiver.removeListener(myValueListener);
         }
@@ -211,7 +211,7 @@ public class RemoteGpioServiceClient<T extends SensorEventHeader>
         }
     }
     
-    private void handPinEvent(DeviceBoolEvent<T> t){
+    private void handPinEvent(ChannelBoolEvent<T> t){
         int chan = t.getChannelId();
         SensorEventHeader header = t.getHeader();
         int seqId = header.getSequenceId();
@@ -230,8 +230,8 @@ public class RemoteGpioServiceClient<T extends SensorEventHeader>
         this.notifyListeners(t);
     }
     
-    class GpioValueListener implements Listener<DeviceBoolEvent<T>>{
-        @Override public void handleEvent(DeviceBoolEvent<T> t) {
+    class GpioValueListener implements Listener<ChannelBoolEvent<T>>{
+        @Override public void handleEvent(ChannelBoolEvent<T> t) {
             handPinEvent(t);
         }
     }

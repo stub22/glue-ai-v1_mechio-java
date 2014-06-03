@@ -24,13 +24,13 @@ import org.jflux.api.core.util.DefaultTimestampSource;
 import org.jflux.api.core.util.EmptyAdapter;
 import org.jflux.api.messaging.rk.MessageAsyncReceiver;
 import org.jflux.api.messaging.rk.MessageSender;
-import org.mechio.api.sensor.DeviceBoolEvent;
 import org.mechio.api.sensor.DeviceReadPeriodEvent;
 import org.mechio.api.sensor.GpioConfigEvent;
 import org.mechio.api.sensor.gpio.GpioService;
 import org.mechio.api.sensor.gpio.RemoteGpioServiceClient;
+import org.mechio.api.sensor.packet.channel.ChannelBoolEvent;
 import org.mechio.client.basic.ConnectionContext.MioServiceConnector;
-import org.mechio.impl.sensor.DeviceBoolRecord;
+import org.mechio.impl.sensor.ChannelBoolRecord;
 import org.mechio.impl.sensor.DeviceReadPeriodRecord;
 import org.mechio.impl.sensor.GpioConfigRecord;
 import org.mechio.impl.sensor.HeaderRecord;
@@ -67,8 +67,8 @@ final class MioSensorConnector extends MioServiceConnector{
         }
         Destination gpioValReceiver = ConnectionContext.getTopic(theGpioInputDest);
         myConnectionContext.addAsyncReceiver(GPIO_VALUE_RECEIVER, session, gpioValReceiver,
-                DeviceBoolRecord.class, DeviceBoolRecord.SCHEMA$,
-                new EmptyAdapter<DeviceBoolRecord, DeviceBoolRecord>());
+                ChannelBoolRecord.class, ChannelBoolRecord.SCHEMA$,
+                new EmptyAdapter<ChannelBoolRecord, ChannelBoolRecord>());
         Destination gpioDirSender = ConnectionContext.getTopic(theGpioDirectionDest);
         myConnectionContext.addSender(GPIO_DIRECTION_SENDER, session, gpioDirSender, 
                 new EmptyAdapter<GpioConfigRecord, GpioConfigRecord>());
@@ -77,7 +77,7 @@ final class MioSensorConnector extends MioServiceConnector{
                 new EmptyAdapter<DeviceReadPeriodRecord, DeviceReadPeriodRecord>());
         Destination gpioValSender = ConnectionContext.getTopic(theGpioOutputDest);
         myConnectionContext.addSender(GPIO_VALUE_SENDER, session, gpioValSender, 
-                new EmptyAdapter<DeviceBoolRecord, DeviceBoolRecord>());
+                new EmptyAdapter<ChannelBoolRecord, ChannelBoolRecord>());
         myConnectionsFlag = true;
     }
     
@@ -85,13 +85,13 @@ final class MioSensorConnector extends MioServiceConnector{
         if(myConnectionContext == null || !myConnectionsFlag){
             return null;
         }
-        MessageAsyncReceiver<DeviceBoolEvent<HeaderRecord>> gpioValReceiver = 
+        MessageAsyncReceiver<ChannelBoolEvent<HeaderRecord>> gpioValReceiver = 
                 myConnectionContext.getAsyncReceiver(GPIO_VALUE_RECEIVER);
         MessageSender<GpioConfigEvent<HeaderRecord>> gpioDirSender = 
                 myConnectionContext.getSender(GPIO_DIRECTION_SENDER);
         MessageSender<DeviceReadPeriodEvent<HeaderRecord>> gpioPerSender = 
                 myConnectionContext.getSender(GPIO_READ_PERIOD_SENDER);
-        MessageSender<DeviceBoolEvent<HeaderRecord>> gpioValSender = 
+        MessageSender<ChannelBoolEvent<HeaderRecord>> gpioValSender = 
                 myConnectionContext.getSender(GPIO_VALUE_SENDER);
         
         HeaderRecord.Builder headerFact = HeaderRecord.newBuilder();
@@ -100,7 +100,7 @@ final class MioSensorConnector extends MioServiceConnector{
         headerFact.setTimestamp(0);
         HeaderRecord emptyHeader = headerFact.build();
         
-        DeviceBoolRecord.Builder eventFact = DeviceBoolRecord.newBuilder();
+        ChannelBoolRecord.Builder eventFact = ChannelBoolRecord.newBuilder();
         eventFact.setHeader(emptyHeader);
         eventFact.setChannelId(0);
         eventFact.setBoolValue(false);
