@@ -32,7 +32,7 @@ import org.jflux.impl.services.rk.lifecycle.ManagedService;
 import org.jflux.impl.services.rk.lifecycle.utils.SimpleLifecycle;
 import org.jflux.impl.services.rk.osgi.OSGiUtils;
 import org.jflux.impl.services.rk.osgi.lifecycle.OSGiComponent;
-import org.jflux.impl.transport.jms.ConnectionConfigUtils;
+import org.jflux.impl.messaging.rk.config.ConnectionConfigUtils;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
