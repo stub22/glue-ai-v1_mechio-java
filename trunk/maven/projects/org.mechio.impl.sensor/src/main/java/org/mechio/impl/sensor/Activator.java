@@ -24,11 +24,19 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.mechio.api.sensor.AccelerometerConfigEvent;
 import org.mechio.api.sensor.CompassConfigEvent;
-import org.mechio.api.sensor.DeviceBoolEvent;
 import org.mechio.api.sensor.DeviceReadPeriodEvent;
 import org.mechio.api.sensor.FilteredVector3Event;
 import org.mechio.api.sensor.GpioConfigEvent;
 import org.mechio.api.sensor.GyroConfigEvent;
+import org.mechio.api.sensor.packet.channel.ChannelBoolEvent;
+import org.mechio.api.sensor.packet.channel.ChannelDoubleEvent;
+import org.mechio.api.sensor.packet.channel.TimedRGBOutputEvent;
+import org.mechio.api.sensor.packet.num.Double2Event;
+import org.mechio.api.sensor.packet.num.Double4Event;
+import org.mechio.api.sensor.packet.num.StampedDouble2Event;
+import org.mechio.api.sensor.packet.num.StampedDouble3Event;
+import org.mechio.api.sensor.packet.num.StampedDouble4Event;
+import org.mechio.api.sensor.packet.num.StampedDoubleEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,9 +59,9 @@ public class Activator implements BundleActivator {
                 new OSGiComponentFactory(context));
         
         RKMessagingConfigUtils.registerAvroSerializationConfig(
-                DeviceBoolEvent.class, 
-                DeviceBoolRecord.class, 
-                DeviceBoolRecord.SCHEMA$, 
+                ChannelBoolEvent.class, 
+                ChannelBoolRecord.class, 
+                ChannelBoolRecord.SCHEMA$, 
                 new EmptyAdapter(), 
                 new EmptyAdapter(), 
                 JMSAvroServiceFacade.AVRO_MIME_TYPE, null, 
@@ -99,6 +107,78 @@ public class Activator implements BundleActivator {
                 CompassConfigEvent.class, 
                 CompassConfigRecord.class, 
                 CompassConfigRecord.SCHEMA$, 
+                new EmptyAdapter(), 
+                new EmptyAdapter(), 
+                JMSAvroServiceFacade.AVRO_MIME_TYPE, null, 
+                new OSGiComponentFactory(context));
+        
+        RKMessagingConfigUtils.registerAvroSerializationConfig(
+                ChannelDoubleEvent.class, 
+                ChannelDoubleRecord.class, 
+                ChannelDoubleRecord.SCHEMA$, 
+                new EmptyAdapter(), 
+                new EmptyAdapter(), 
+                JMSAvroServiceFacade.AVRO_MIME_TYPE, null, 
+                new OSGiComponentFactory(context));
+        
+        RKMessagingConfigUtils.registerAvroSerializationConfig(
+                Double2Event.class, 
+                Double2Record.class, 
+                Double2Record.SCHEMA$, 
+                new EmptyAdapter(), 
+                new EmptyAdapter(), 
+                JMSAvroServiceFacade.AVRO_MIME_TYPE, null, 
+                new OSGiComponentFactory(context));
+        
+        RKMessagingConfigUtils.registerAvroSerializationConfig(
+                Double4Event.class, 
+                Double4Record.class, 
+                Double4Record.SCHEMA$, 
+                new EmptyAdapter(), 
+                new EmptyAdapter(), 
+                JMSAvroServiceFacade.AVRO_MIME_TYPE, null, 
+                new OSGiComponentFactory(context));
+        
+        RKMessagingConfigUtils.registerAvroSerializationConfig(
+                StampedDoubleEvent.class, 
+                StampedDoubleRecord.class, 
+                StampedDoubleRecord.SCHEMA$, 
+                new EmptyAdapter(), 
+                new EmptyAdapter(), 
+                JMSAvroServiceFacade.AVRO_MIME_TYPE, null, 
+                new OSGiComponentFactory(context));
+        
+        RKMessagingConfigUtils.registerAvroSerializationConfig(
+                StampedDouble2Event.class, 
+                StampedDouble2Record.class, 
+                StampedDouble2Record.SCHEMA$, 
+                new EmptyAdapter(), 
+                new EmptyAdapter(), 
+                JMSAvroServiceFacade.AVRO_MIME_TYPE, null, 
+                new OSGiComponentFactory(context));
+        
+        RKMessagingConfigUtils.registerAvroSerializationConfig(
+                StampedDouble3Event.class, 
+                StampedDouble3Record.class, 
+                StampedDouble3Record.SCHEMA$, 
+                new EmptyAdapter(), 
+                new EmptyAdapter(), 
+                JMSAvroServiceFacade.AVRO_MIME_TYPE, null, 
+                new OSGiComponentFactory(context));
+        
+        RKMessagingConfigUtils.registerAvroSerializationConfig(
+                StampedDouble4Event.class, 
+                StampedDouble4Record.class, 
+                StampedDouble4Record.SCHEMA$, 
+                new EmptyAdapter(), 
+                new EmptyAdapter(), 
+                JMSAvroServiceFacade.AVRO_MIME_TYPE, null, 
+                new OSGiComponentFactory(context));
+        
+        RKMessagingConfigUtils.registerAvroSerializationConfig(
+                TimedRGBOutputEvent.class, 
+                TimedRGBOutputRecord.class, 
+                TimedRGBOutputRecord.SCHEMA$, 
                 new EmptyAdapter(), 
                 new EmptyAdapter(), 
                 JMSAvroServiceFacade.AVRO_MIME_TYPE, null, 

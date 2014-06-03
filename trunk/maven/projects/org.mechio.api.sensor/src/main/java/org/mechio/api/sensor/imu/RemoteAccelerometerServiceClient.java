@@ -23,7 +23,7 @@ import org.jflux.api.core.util.DefaultNotifier;
 import org.mechio.api.sensor.AccelerometerConfigEvent;
 import org.mechio.api.sensor.DeviceReadPeriodEvent;
 import org.mechio.api.sensor.FilteredVector3Event;
-import org.mechio.api.sensor.SensorEventHeader;
+import org.mechio.api.sensor.packet.stamp.SensorEventHeader;
 
 /**
  *

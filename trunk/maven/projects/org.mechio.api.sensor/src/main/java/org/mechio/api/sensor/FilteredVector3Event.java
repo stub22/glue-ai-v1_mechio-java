@@ -15,12 +15,15 @@
  */
 package org.mechio.api.sensor;
 
+import org.mechio.api.sensor.packet.stamp.SensorEventHeader;
+import org.mechio.api.sensor.packet.num.Double3Event;
+
 /**
  *
  * @author Matthew Stevenson <www.mechio.org>
  */
 public interface FilteredVector3Event {
     public SensorEventHeader getHeader();
-    public Vector3Event getRawVector();
-    public Vector3Event getFilteredVector();
+    public Double3Event getRawVector();
+    public Double3Event getFilteredVector();
 }

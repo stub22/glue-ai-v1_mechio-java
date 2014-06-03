@@ -16,16 +16,16 @@
 package org.mechio.api.sensor.gpio;
 
 import org.jflux.api.core.Notifier;
-import org.mechio.api.sensor.DeviceBoolEvent;
+import org.mechio.api.sensor.packet.channel.ChannelBoolEvent;
 import org.mechio.api.sensor.DeviceReadPeriodEvent;
-import org.mechio.api.sensor.SensorEventHeader;
+import org.mechio.api.sensor.packet.stamp.SensorEventHeader;
 
 /**
  *
  * @author Matthew Stevenson <www.mechio.org>
  */
 public interface GpioService<T extends SensorEventHeader> 
-        extends Notifier<DeviceBoolEvent<T>> {
+        extends Notifier<ChannelBoolEvent<T>> {
     public static boolean IN = true;
     public static boolean OUT = false;
     

@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mechio.api.sensor;
+package org.mechio.api.sensor.packet.channel;
+
+import org.mechio.api.sensor.packet.stamp.SensorEventHeader;
 
 /**
  *
  * @author Matthew Stevenson <www.mechio.org>
  */
-public interface DeviceBoolEvent<T extends SensorEventHeader> {
+public interface ChannelBoolEvent<T extends SensorEventHeader> {
     public SensorEventHeader getHeader();
     public void setHeader(T header);
     

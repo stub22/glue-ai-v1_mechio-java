@@ -15,6 +15,8 @@
  */
 package org.mechio.api.sensor;
 
+import org.mechio.api.sensor.packet.stamp.SensorEventHeader;
+
 /**
  *
  * @author Matthew Stevenson <www.mechio.org>

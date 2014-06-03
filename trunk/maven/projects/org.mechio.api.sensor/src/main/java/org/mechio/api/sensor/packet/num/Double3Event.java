@@ -13,17 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mechio.api.sensor;
-
-import org.mechio.api.sensor.packet.stamp.SensorEventHeader;
+package org.mechio.api.sensor.packet.num;
 
 /**
  *
  * @author Matthew Stevenson <www.mechio.org>
  */
-public interface DeviceScheduleEvent {
-    public SensorEventHeader getHeader();
-    public Integer getDeviceAddress();
-    public Boolean getEnabled();
-    public Long getReadInterval();
+public interface Double3Event {
+    public Double getX();
+    public Double getY();
+    public Double getZ();
 }

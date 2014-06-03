@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mechio.api.sensor;
+package org.mechio.api.sensor.packet.stamp;
 
 /**
  *
