@@ -5,7 +5,7 @@
 	<parent>
         <artifactId>org.mechio.modules.vision</artifactId>
         <groupId>org.mechio</groupId>
-        <version>1.0.2</version>
+        <version>1.0.3-SNAPSHOT</version>
 		<relativePath>../../org.mechio.modules.vision/pom.xml</relativePath>
     </parent>
     <artifactId>org.mechio.impl.vision</artifactId>
