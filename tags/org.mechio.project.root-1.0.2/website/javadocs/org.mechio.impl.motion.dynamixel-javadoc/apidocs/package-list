@@ -1,0 +1,11 @@
+org.mechio.impl.motion.dynamixel
+org.mechio.impl.motion.dynamixel.enums
+org.mechio.impl.motion.dynamixel.feedback
+org.mechio.impl.motion.dynamixel.feedback.utils
+org.mechio.impl.motion.dynamixel.osgi
+org.mechio.impl.motion.dynamixel.properties
+org.mechio.impl.motion.dynamixel.utils
+org.mechio.impl.motion.openservo
+org.mechio.impl.motion.openservo.feedback
+org.mechio.impl.motion.openservo.properties
+org.mechio.impl.motion.openservo.utils
