@@ -5,7 +5,7 @@
 	<parent>
         <groupId>org.mechio</groupId>
         <artifactId>org.mechio.modules.integration</artifactId>
-        <version>1.0.2-SNAPSHOT</version>
+        <version>1.0.2</version>
 		<relativePath>../../org.mechio.modules.integration/pom.xml</relativePath>
     </parent>
     <artifactId>org.mechio.integration.animation_motion</artifactId>
