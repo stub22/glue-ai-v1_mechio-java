@@ -65,10 +65,12 @@ public class AnimationXMLReader implements AnimationFileReader{
             anim = readAnimation(config);
         return anim;
         }catch (ConfigurationException t){
-            theLogger.log(Level.WARNING, "Cannont open XML file at: " + path, t);
+			// Since we are rethrowing the exception, we should not log its stack trace.
+            theLogger.log(Level.WARNING, "Cannont open XML animation file at: " + path);
             throw t;
         }catch(Exception t){
-            theLogger.log(Level.SEVERE, "There was an error reading your animation.", t);
+			// Since we are rethrowing the exception, we should not log its stack trace.
+            theLogger.log(Level.SEVERE, "Error reading animation at " + path + ", exception=" + t.toString());
             throw t;
         }
     }
