@@ -194,6 +194,9 @@ public class RemoteRobotHost {
             mySerialNumber = new SerialNumberSpec();
             mySerialNumber.setSerialNumber(UUID.randomUUID().toString());
             mySerialNumber.addProperty("generated", "random");
+        }else if(mySerialNumber.getSerialNumber() == null){
+            mySerialNumber.setSerialNumber(UUID.randomUUID().toString());
+            mySerialNumber.addProperty("generated", "random");
         }
         
         mySerialNumber.addProperty(

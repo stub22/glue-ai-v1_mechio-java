@@ -154,7 +154,11 @@ public abstract class AbstractRobot<J extends Joint>
             if(curPos != null){
                 NormalizableRange range = curPos.getNormalizableRange();
                 Object obj = curPos.getValue();
-                val = range.normalizeValue(obj);
+                if(obj == null){
+                    val = joint.getGoalPosition();
+                }else{
+                    val = range.normalizeValue(obj);
+                }
             }else{
                 val = joint.getGoalPosition();
             }
