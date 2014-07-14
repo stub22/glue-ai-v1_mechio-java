@@ -145,7 +145,13 @@ public abstract class AbstractServo<
         @Override
         public NormalizedDouble normalizeValue(Double val) {
             if(!isValid(val)){
-                return null;
+                //If the value is out of range set it to the min or the max.
+                if(Math.abs(val-getMin()) < Math.abs(val-getMax())){
+                    val = getMin();
+                }else{
+                    val = getMax();
+                }
+                //return null;
             }
             int min = getMinPosition();
             double norm = (val - min)/(getMaxPosition() - min);

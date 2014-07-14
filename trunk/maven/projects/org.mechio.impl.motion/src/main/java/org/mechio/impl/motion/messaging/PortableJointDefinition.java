@@ -25,12 +25,15 @@ import org.mechio.api.motion.Joint;
 import org.mechio.api.motion.JointProperty;
 import org.mechio.api.motion.protocol.RobotDefinitionResponse.JointDefinition;
 import org.mechio.api.motion.protocol.RobotDefinitionResponse.JointPropDefinition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Matthew Stevenson <www.mechio.org>
  */
 public class PortableJointDefinition implements JointDefinition{
+    private static Logger theLogger = LoggerFactory.getLogger(PortableJointDefinition.class);
     private JointDefinitionRecord myRecord;
     private Joint.Id myCachedId;
     private NormalizedDouble myCachedDefaultPosition;
@@ -69,7 +72,11 @@ public class PortableJointDefinition implements JointDefinition{
             List<JointProperty> properties){
         myPropDefs = new ArrayList<JointPropDefinition>(properties.size());
         for(JointProperty prop : properties){
-            myPropDefs.add(defineJointProperty(prop));
+            try{
+                myPropDefs.add(defineJointProperty(prop));
+            }catch(Exception ex){
+                theLogger.warn("Unable to add joint property - joint: " + name + ", prop: " + prop.getPropertyName(), ex);
+            }
         }
         setRecord(jId, name, defPos, goalPos, enabled, myPropDefs);
     }
@@ -77,7 +84,11 @@ public class PortableJointDefinition implements JointDefinition{
     public PortableJointDefinition(Joint joint){
         myPropDefs = new ArrayList<JointPropDefinition>(joint.getProperties().size());
         for(JointProperty prop : joint.getProperties()){
-            myPropDefs.add(defineJointProperty(prop));
+            try{
+                myPropDefs.add(defineJointProperty(prop));
+            }catch(Exception ex){
+                theLogger.warn("Unable to add joint property - joint: " + joint.getName() + ", prop: " + prop.getPropertyName(), ex);
+            }
         }
         setRecord(joint.getId(), joint.getName(), 
                 joint.getDefaultPosition(), 
