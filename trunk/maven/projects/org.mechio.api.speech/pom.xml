@@ -4,7 +4,7 @@
 	<parent>
         <artifactId>org.mechio.modules.speech</artifactId>
         <groupId>org.mechio</groupId>
-        <version>1.0.3</version>
+        <version>1.0.4-SNAPSHOT</version>
 		<relativePath>../../org.mechio.modules.speech/pom.xml</relativePath>
     </parent>
     <artifactId>org.mechio.api.speech</artifactId>
