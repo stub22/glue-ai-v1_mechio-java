@@ -45,7 +45,44 @@
 		<developerConnection>scm:svn:https://subversion.assembla.com/svn/mechio/trunk/</developerConnection>
 		<url>https://www.assembla.com/code/mechio/subversion/nodes/trunk/</url>
 	</scm>
-    
+      <repositories>
+		<!-- 	Explicit reference to Maven central ... ensures it is always checked first (we think),
+				which prevents downloads of broken files from sonatype-public, in particular: 
+				scala-library-2.10.2.jar.
+		-->
+		<repository>
+			<id>maven-central</id>
+			<url>http://repo.maven.apache.org/maven2/</url>
+		</repository>
+		
+		<!-- Sonatype-public allows us to find recent binary releases and snapshosts of Appdapter and JFlux.
+		-->
+		
+		<repository>
+			<id>sonatype-public</id>
+			<name>sonatype public</name>
+			<url>https://oss.sonatype.org/content/groups/public/</url>
+		</repository>		
+	</repositories>
+
+
+    <pluginRepositories>
+		<!-- 	Explicit reference to Maven central ... ensures it is always checked first (we think).	-->
+		<pluginRepository>
+			<id>maven-central</id>
+			<url>http://repo.maven.apache.org/maven2/</url>
+		</pluginRepository>	
+		
+		<pluginRepository>
+			<!-- Snapshots are needed at build time, so we can find snapshot versions of Jflux Avrogen 
+			stuff for use by avro-maven-plugin. 
+			-->
+			<id>sonatype-public</id>
+			<name>sonatype public</name>
+			<url>https://oss.sonatype.org/content/groups/public/</url>
+		</pluginRepository>		
+	</pluginRepositories>
+	
 	<build>
 		<pluginManagement>
 			<plugins>
