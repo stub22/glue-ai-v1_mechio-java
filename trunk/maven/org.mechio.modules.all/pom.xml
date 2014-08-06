@@ -7,12 +7,9 @@
 		<version>1.0.4-SNAPSHOT</version>
 		<relativePath>../../pom.xml</relativePath>
 	</parent>	
-	
 	<artifactId>org.mechio.modules.all</artifactId>
 	<name>${project.artifactId} - All Modules</name>
 	<packaging>pom</packaging>
-
-	
 	<modules>
 		<module>../org.mechio.modules.motion</module>
 		<module>../org.mechio.modules.animation</module>
@@ -23,51 +20,4 @@
 		<module>../org.mechio.modules.sensor</module>
 		<module>../org.mechio.modules.integration</module>
 	</modules>
-	<properties>
-		<maven.compiler.source>1.6</maven.compiler.source>
-		<maven.compiler.target>1.6</maven.compiler.target>
-		<encoding>UTF-8</encoding>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<netbeans.hint.license>mechio-apache20</netbeans.hint.license>
-		
-			<!-- We use this version for the Avro + QPid messaging bundles provided by Appdapter.org 
-				project.
-				Cogchar relies on this same version of those messaging bundles.
-			-->
-		<appdapter.msg.version>1.0.5</appdapter.msg.version>
-		<appdapter.version>1.2.1-SNAPSHOT</appdapter.version>
-        <jflux.version>0.2.3-SNAPSHOT</jflux.version>
-	</properties>	
-	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<version>2.3.2</version>
-					<configuration>
-						<source>1.6</source>
-						<target>1.6</target>
-						<encoding>${project.build.sourceEncoding}</encoding>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-resources-plugin</artifactId>
-					<version>2.4.3</version>
-					<configuration>
-						<encoding>${project.build.sourceEncoding}</encoding>
-					</configuration>
-				</plugin>				
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.9</version>
-					<configuration>
-						<skipTests>true</skipTests>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
 </project>
