@@ -74,7 +74,6 @@
         <version.maven.compiler.plugin>2.3.2</version.maven.compiler.plugin>
         <version.maven.surefire.plugin>2.9</version.maven.surefire.plugin>
         <version.maven.resources.plugin>2.4.3</version.maven.resources.plugin>
-        <version.maven.surefire.plugin>2.9</version.maven.surefire.plugin>
         <version.maven.bundle.plugin>2.3.7</version.maven.bundle.plugin>
         <!-- Refactoring of versions ends-->
     </properties>
