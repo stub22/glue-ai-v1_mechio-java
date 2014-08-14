@@ -46,11 +46,7 @@
         <url>https://www.assembla.com/code/mechio/subversion/nodes/trunk/</url>
     </scm>
     <properties>
-        <maven.compiler.source>1.6</maven.compiler.source>
-        <maven.compiler.target>1.6</maven.compiler.target>
-        <encoding>UTF-8</encoding>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <netbeans.hint.license>mechio-apache20</netbeans.hint.license>
+        <!-- Glue Dependencies -->
         <!-- We use this version for the Avro + QPid messaging bundles provided by Appdapter.org 
                 project.
                 Cogchar relies on this same version of those messaging bundles.
@@ -58,24 +54,28 @@
         <appdapter.msg.version>1.0.5</appdapter.msg.version>
         <appdapter.version>1.2.1-SNAPSHOT</appdapter.version>
         <jflux.version>0.2.3-SNAPSHOT</jflux.version>
-        <!-- Refactoring of versions starts-->
+        <!-- Non Glue Dependencies -->
         <commons.math.version>2.2</commons.math.version>
+        <encoding>UTF-8</encoding>
         <felix.framework.version>2.0.2</felix.framework.version>
         <felix.gogo.command.version>0.2.2</felix.gogo.command.version>
         <felix.org.osgi.core.version>1.4.0</felix.org.osgi.core.version>
         <junit.version>4.8.2</junit.version>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
+        <netbeans.hint.license>mechio-apache20</netbeans.hint.license>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <rxtx.version>2.1.7</rxtx.version>
         <servicemix.bundles.xpp3.version>1.1.4c_4</servicemix.bundles.xpp3.version>
         <version.org.apache.felix.main>4.2.1</version.org.apache.felix.main>
         <!-- Plugin versions -->
+        <version.avro.maven.plugin>1.7.4</version.avro.maven.plugin>
         <version.maven.antrun.plugin>1.6</version.maven.antrun.plugin>
         <version.maven.assembly.plugin>2.2</version.maven.assembly.plugin>
-        <version.avro.maven.plugin>1.7.4</version.avro.maven.plugin>
-        <version.maven.compiler.plugin>2.3.2</version.maven.compiler.plugin>
-        <version.maven.surefire.plugin>2.9</version.maven.surefire.plugin>
-        <version.maven.resources.plugin>2.4.3</version.maven.resources.plugin>
         <version.maven.bundle.plugin>2.3.7</version.maven.bundle.plugin>
-        <!-- Refactoring of versions ends-->
+        <version.maven.compiler.plugin>2.3.2</version.maven.compiler.plugin>
+        <version.maven.resources.plugin>2.4.3</version.maven.resources.plugin>
+        <version.maven.surefire.plugin>2.9</version.maven.surefire.plugin>
     </properties>
     <dependencyManagement>
         <dependencies>
