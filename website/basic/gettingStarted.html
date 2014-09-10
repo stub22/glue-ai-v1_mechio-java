@@ -12,7 +12,7 @@
   <li><a href="#New">Creating a New Project</a></li>
   <li><a href="#POM">Your pom.xml and App.java</a>
     <ul>
-      <li><a href="#Dependencies">Important Dependencies</a></li>
+      <li><a href="#Dependencies">Important Dependency</a></li>
     </ul>
   </li>
   <li><a href="#Connecting">Connecting to an Avatar or Robot</a><br />
@@ -52,51 +52,18 @@ More information on the POM can be found in the Apache Maven &quot;<a href="http
 <a name="Dependencies" id="Dependencies">
 <h3>Important Dependencies </h3>
 </a>
-<p>The following two dependencies are necessary for any mechio project so the following code snippets should be in the pom.xml for every MechIO Basic project.</p>
+<p>The following two dependencies are necessary for any mechio project so the following code snippet should be in the pom.xml for every MechIO Basic project.</p>
 <pre class="prettyprint">&lt;dependency&gt;
 &nbsp;&nbsp;&nbsp;&nbsp;&lt;groupId&gt;org.mechio&lt;/groupId&gt;
 &nbsp;&nbsp;&nbsp;&nbsp;&lt;artifactId&gt;org.mechio.client.basic&lt;/artifactId&gt;
 &nbsp;&nbsp;&nbsp;&nbsp;&lt;version&gt;${mechio.version}&lt;/version&gt;
 &lt;/dependency&gt;
 &lt;dependency&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;groupId&gt;org.mechio&lt;/groupId&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;artifactId&gt;org.jflux.impl.messaging.rk&lt;/artifactId&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;version&gt;${mechio.version}&lt;/version&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;groupId&gt;org.appdapter&lt;/groupId&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;artifactId&gt;ext.bundle.osgi.common&lt;/artifactId&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;version&gt;${appdapter.version}&lt;/version&gt;
 &lt;/dependency&gt;</pre>
-<p>The 'basic' dependency is needed to use the API and 'messaging' is used to communicate with the robot or avatar.<br />
-  Documentation on all the the dependencies can be find in the <a href="../javadocs/index.html">java docs</a>.</p>
-<p>Include the following dependencies in the pom.xml as needed.</p>
-<p><a name="motion" id="motion"> <strong>Motion</strong><br />
-<strong>Getting positions</strong> from and <strong>sending new goal positions</strong> to servos:</a></p>
-<pre class="prettyprint">&lt;dependency&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;groupId&gt;org.mechio&lt;/groupId&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;artifactId&gt;org.mechio.impl.motion&lt;/artifactId&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;version&gt;${mechio.version}&lt;/version&gt;
-&lt;/dependency&gt;</pre>
-  <br />
-<p><a name="animationsD" id="animationsD"><strong>Animation</strong><br />
-<strong>Loading and playing animations</strong>:</a></p>
-<pre class="prettyprint">&lt;dependency&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;groupId&gt;org.mechio&lt;/groupId&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;artifactId&gt;org.mechio.impl.animation&lt;/artifactId&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;version&gt;${mechio.version}&lt;/version&gt;
-&lt;/dependency&gt;</pre>
- <br />
-   <p><a name="speech" id="speech"><strong>Speech</strong><br />
-   <strong>Sending speech</strong> commands to the robot:<br /></a></p>
-<pre class="prettyprint">&lt;dependency&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;groupId&gt;org.mechio&lt;/groupId&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;artifactId&gt;org.mechio.impl.speech&lt;/artifactId&gt;
-&nbsp;&nbsp;&nbsp;&nbsp;&lt;version&gt;${mechio.version}&lt;/version&gt;
-&lt;/dependency&gt;</pre>
-<br />
-<p><a name="sensors" id="sensors"><strong>Sensor</strong><br />
-<strong>Reading sensor data:</strong><br /></a></p>
-<pre class="prettyprint">&lt;dependency&gt;
-  &nbsp;&nbsp;&nbsp;&nbsp;&lt;groupId&gt;org.mechio&lt;/groupId&gt;
-  &nbsp;&nbsp;&nbsp;&nbsp;&lt;artifactId&gt;org.mechio.impl.sensor&lt;/artifactId&gt;
-  &nbsp;&nbsp;&nbsp;&nbsp;&lt;version&gt;${mechio.version}&lt;/version&gt;
-&lt;/dependency&gt;</pre>
+<p>As of this writing (2014 September 10), the current MechIO version is 1.0.3, and the current Appdapter version is 1.2.0.</p>
 <a name="Connecting" id="Connecting"></a>
 <h2>Connecting to your robot or avatar</h2>
 Use the <a href="apidocs/org/mechio/client/basic/MechIO.html#connectRobot()">connect method</a> in the <a href="apidocs/org/mechio/client/basic/MechIO.html">MechIO</a> class to connect to your robot.<br />
@@ -111,7 +78,6 @@ The <a href="apidocs/org/mechio/client/basic/UserSettings.html#setRobotAddress(j
 <p>There are four main commands you might send to the robot. You can load and play animations, have the robot/avatar move joints individually, and have it speak. Each has its own dependency that should be included in the POM in order to use it. See the following examples or the example project for implementation.</p>
 <a name="Animations" id="Animations"></a>
 <h3>Loading and Playing Animations</h3>
- Needs dependency: <a href="#animationsD">animations</a>
 <pre class="prettyprint">
 //Create animPlayer and load animation
 RemoteAnimationPlayerClient animPlayer = MechIO.connectAnimationPlayer();
@@ -123,7 +89,6 @@ MechIO.sleep(500 + introJob.getAnimationLength());</pre>
 
 <a name="Moving" id="Moving"></a>
 <h3>Moving Joints</h3>
- Needs dependency: <a href="#motion">motion</a>
 <pre class="prettyprint">
 RemoteRobot robot = MechIO.connectRobot();
 JointId waist = new JointId(robot.getRobotId(), new Joint.Id(R50RobotJoints.WAIST));
@@ -139,7 +104,6 @@ robot.move(goalPositions, 1000);</pre>
 <a name="Speech" id="Speech"></a>
 <h3>Speech</h3>
 
-Needs dependency: <a href="#speech">speech</a>
 <pre class="prettyprint">
 RemoteSpeechServiceClient speechService = MechIO.connectSpeechService();
 SpeechJob speechJob = speechService.speak(&quot;Hello, I am your friend.&quot;);</pre>
