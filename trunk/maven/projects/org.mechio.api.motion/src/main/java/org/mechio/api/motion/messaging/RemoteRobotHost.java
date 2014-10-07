@@ -45,6 +45,8 @@ public class RemoteRobotHost {
     private final static Logger theLogger = 
             Logger.getLogger(RemoteRobotHost.class.getName());
     public final static int DEFAULT_SEND_DATA_INTERVAL = 100;
+    private final static String theSerialKey =
+            "org.mechio.api.motion.serialnumber";
     
     private Robot myRobot;
     private String mySourceId;
@@ -191,12 +193,24 @@ public class RemoteRobotHost {
             myMotionFrameReceiver.addListener(myMoveHandler);
         }
         if(mySerialNumber == null) {
+            String robotSerial =
+                    System.getProperty(
+                            theSerialKey, System.getenv(theSerialKey));
             mySerialNumber = new SerialNumberSpec();
-            mySerialNumber.setSerialNumber(UUID.randomUUID().toString());
-            mySerialNumber.addProperty("generated", "random");
+            mySerialNumber.setSerialNumber(
+                    robotSerial == null ?
+                            UUID.randomUUID().toString() : robotSerial);
+            mySerialNumber.addProperty(
+                    "generated", robotSerial == null ? "random" : "property");
         }else if(mySerialNumber.getSerialNumber() == null){
-            mySerialNumber.setSerialNumber(UUID.randomUUID().toString());
-            mySerialNumber.addProperty("generated", "random");
+            String robotSerial =
+                    System.getProperty(
+                            theSerialKey, System.getenv(theSerialKey));
+            mySerialNumber.setSerialNumber(
+                    robotSerial == null ?
+                            UUID.randomUUID().toString() : robotSerial);
+            mySerialNumber.addProperty(
+                    "generated", robotSerial == null ? "random" : "property");
         }
         
         mySerialNumber.addProperty(
