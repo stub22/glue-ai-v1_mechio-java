@@ -38,6 +38,7 @@ import org.jflux.impl.messaging.rk.JMSAvroMessageAsyncReceiver;
 import org.jflux.impl.messaging.rk.JMSAvroMessageSender;
 import org.jflux.impl.messaging.rk.JMSBytesRecordBlockingReceiver;
 import org.jflux.impl.messaging.rk.utils.ConnectionManager;
+import org.jflux.impl.messaging.rk.utils.ConnectionUtils;
 
 /**
  *
@@ -302,7 +303,9 @@ final class ConnectionContext {
 
         static ConnectionConfig makeDefault(String ip){
             return new ConnectionConfig(
-                    "admin", "admin", "client1", "test", ip, "5672");
+                    ConnectionUtils.getUsername(),
+                    ConnectionUtils.getPassword(), "client1", "test", ip,
+                    "5672");
         }
         
         private ConnectionConfig(

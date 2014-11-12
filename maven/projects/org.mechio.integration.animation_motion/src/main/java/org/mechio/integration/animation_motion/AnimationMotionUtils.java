@@ -156,8 +156,8 @@ public class AnimationMotionUtils {
                 OSGiUtils.getService(Configuration.class, context, conConfRef);
         String ip = conConf.getPropertyValue(String.class, ConnectionConfigUtils.CONF_BROKER_IP);
         Connection con = ConnectionManager.createConnection(
-                "admin", "admin", "client1", "test", 
-                "tcp://" + ip + ":5672");
+                ConnectionUtils.getUsername(), ConnectionUtils.getPassword(),
+                "client1", "test", "tcp://" + ip + ":5672");
         try{
             con.start();
         }catch(JMSException ex){
