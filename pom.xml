@@ -23,7 +23,7 @@
   
     <groupId>org.mechio</groupId>
     <artifactId>org.mechio.project.root</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.5-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>${project.artifactId} - Root pom</name>
     <url>http://www.mechio.org</url>
@@ -41,9 +41,9 @@
     </modules>
 	
     <scm>
-        <connection>scm:svn:https://subversion.assembla.com/svn/mechio/tags/org.mechio.project.root-1.0.4</connection>
-        <developerConnection>scm:svn:https://subversion.assembla.com/svn/mechio/tags/org.mechio.project.root-1.0.4</developerConnection>
-        <url>https://www.assembla.com/code/mechio/subversion/nodes/tags/org.mechio.project.root-1.0.4</url>
+        <connection>scm:svn:https://subversion.assembla.com/svn/mechio/trunk/</connection>
+        <developerConnection>scm:svn:https://subversion.assembla.com/svn/mechio/trunk/</developerConnection>
+        <url>https://www.assembla.com/code/mechio/subversion/nodes/trunk/</url>
     </scm>
     <properties>
         <!-- Glue Dependencies -->
