@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	
+	<!--
+	
+	This project is used only for releasing to Maven central.
+	It's purpose is to include all our source directories in the folder which gets 
+	tagged by release:prepare and checked-out+built+delivered by release:perform.
+	
+	Using Sonatype parent as described here:
+		https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide#SonatypeOSSMavenRepositoryUsageGuide-7a.1.POMandsettingsconfig
+		
+	Their pom.xml file is viewable here:
+	
+    http://repo1.maven.org/maven2/org/sonatype/oss/oss-parent/7/oss-parent-7.pom
+    -->
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>	
+  
+    <groupId>org.mechio</groupId>
+    <artifactId>org.mechio.project.root</artifactId>
+    <version>1.0.4</version>
+    <packaging>pom</packaging>
+    <name>${project.artifactId} - Root pom</name>
+    <url>http://www.mechio.org</url>
+    <inceptionYear>2011</inceptionYear>
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.mechio.org/license.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>	
+	
+    <modules>
+        <module>maven/org.mechio.modules.all</module>	
+    </modules>
+	
+    <scm>
+        <connection>scm:svn:https://subversion.assembla.com/svn/mechio/tags/org.mechio.project.root-1.0.4</connection>
+        <developerConnection>scm:svn:https://subversion.assembla.com/svn/mechio/tags/org.mechio.project.root-1.0.4</developerConnection>
+        <url>https://www.assembla.com/code/mechio/subversion/nodes/tags/org.mechio.project.root-1.0.4</url>
+    </scm>
+    <properties>
+        <!-- Glue Dependencies -->
+        <!-- We use this version for the Avro + QPid messaging bundles provided by Appdapter.org 
+                project.
+                Cogchar relies on this same version of those messaging bundles.
+        -->
+        <appdapter.msg.version>1.0.5</appdapter.msg.version>
+        <appdapter.version>1.2.2</appdapter.version>
+        <jflux.version>0.2.3</jflux.version>
+        <!-- Non Glue Dependencies -->
+        <commons.math.version>2.2</commons.math.version>
+        <encoding>UTF-8</encoding>
+        <felix.framework.version>2.0.2</felix.framework.version>
+        <felix.gogo.command.version>0.2.2</felix.gogo.command.version>
+        <felix.org.osgi.core.version>1.4.0</felix.org.osgi.core.version>
+        <junit.version>4.8.2</junit.version>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
+        <netbeans.hint.license>mechio-apache20</netbeans.hint.license>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <rxtx.version>2.1.7</rxtx.version>
+        <servicemix.bundles.xpp3.version>1.1.4c_4</servicemix.bundles.xpp3.version>
+        <version.org.apache.felix.main>4.2.1</version.org.apache.felix.main>
+        <wagon.webdav.version>1.0-beta-7</wagon.webdav.version>
+        <!-- Plugin versions -->
+        <version.avro.maven.plugin>1.7.4</version.avro.maven.plugin>
+        <version.license.maven.plugin>1.7</version.license.maven.plugin>
+        <version.maven.antrun.plugin>1.6</version.maven.antrun.plugin>
+        <version.maven.assembly.plugin>2.2</version.maven.assembly.plugin>
+        <version.maven.bundle.plugin>2.3.7</version.maven.bundle.plugin>
+        <version.maven.compiler.plugin>2.3.2</version.maven.compiler.plugin>
+        <version.maven.resources.plugin>2.4.3</version.maven.resources.plugin>
+        <version.maven.site.plugin>3.4</version.maven.site.plugin>
+        <version.maven.surefire.plugin>2.9</version.maven.surefire.plugin>
+    </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-math</artifactId>
+                <version>${commons.math.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.framework</artifactId>
+                <version>${felix.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.main</artifactId>
+                <version>${version.org.apache.felix.main}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.osgi.core</artifactId>
+                <version>${felix.org.osgi.core.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.felix.gogo</groupId>
+                <artifactId>org.apache.felix.gogo.commands</artifactId>
+                <version>${felix.gogo.command.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.xpp3</artifactId>
+                <version>${servicemix.bundles.xpp3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jflux</groupId>
+                <artifactId>org.jflux.api.common.rk</artifactId>
+                <version>${jflux.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jflux</groupId>
+                <artifactId>org.jflux.api.core</artifactId>
+                <version>${jflux.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jflux</groupId>
+                <artifactId>org.jflux.api.messaging.rk</artifactId>
+                <version>${jflux.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jflux</groupId>
+                <artifactId>org.jflux.extern.utils.apache_commons_configuration.rk</artifactId>
+                <version>${jflux.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jflux</groupId>
+                <artifactId>org.jflux.extern.utils.xpp3.rk</artifactId>
+                <version>${jflux.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jflux</groupId>
+                <artifactId>org.jflux.impl.encode.avro</artifactId>
+                <version>${jflux.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jflux</groupId>
+                <artifactId>org.jflux.impl.messaging.rk</artifactId>
+                <version>${jflux.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jflux</groupId>
+                <artifactId>org.jflux.resource.avrogen.templates</artifactId>
+                <version>${jflux.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jflux</groupId>
+                <artifactId>org.jflux.spec.discovery</artifactId>
+                <version>${jflux.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.rxtx</groupId>
+                <artifactId>rxtx</artifactId>
+                <version>${rxtx.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    <repositories>
+        <!-- 	Explicit reference to Maven central ... ensures it is always checked first (we think),
+                        which prevents downloads of broken files from sonatype-public, in particular: 
+                        scala-library-2.10.2.jar.
+        -->
+        <repository>
+            <id>maven-central</id>
+            <url>http://repo.maven.apache.org/maven2/</url>
+        </repository>
+		
+        <!-- Sonatype-public allows us to find recent binary releases and snapshosts of Appdapter and JFlux.
+        -->
+        <repository>
+            <id>sonatype-public</id>
+            <name>sonatype public</name>
+            <url>https://oss.sonatype.org/content/groups/public/</url>
+        </repository>		
+    </repositories>
+
+    <pluginRepositories>
+        <!-- 	Explicit reference to Maven central ... ensures it is always checked first (we think).	-->
+        <pluginRepository>
+            <id>maven-central</id>
+            <url>http://repo.maven.apache.org/maven2/</url>
+        </pluginRepository>	
+		
+        <pluginRepository>
+            <!-- Snapshots are needed at build time, so we can find snapshot versions of Jflux Avrogen 
+            stuff for use by avro-maven-plugin. 
+            -->
+            <id>sonatype-public</id>
+            <name>sonatype public</name>
+            <url>https://oss.sonatype.org/content/groups/public/</url>
+        </pluginRepository>		
+    </pluginRepositories>
+    
+    <distributionManagement>
+        <site>
+            <id>nexus-site</id>
+            <url>dav:http://localhost:8081/nexus/content/sites/site/org/mechio</url>
+        </site>
+    </distributionManagement>
+    
+    <build>
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-webdav-jackrabbit</artifactId>
+                <version>${wagon.webdav.version}</version>
+            </extension>
+        </extensions>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.avro</groupId>
+                    <artifactId>avro-maven-plugin</artifactId>
+                    <version>${version.avro.maven.plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>${version.maven.bundle.plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>${version.maven.antrun.plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>${version.maven.assembly.plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <configuration>
+                        <autoVersionSubmodules>true</autoVersionSubmodules>
+                        <!-- New in plugin version 2.2, but does not work correctly yet.
+                       See:   https://jira.codehaus.org/browse/MRELEASE-695
+                       <tagNameFormat>v@{project.version}</tagNameFormat>
+                        -->
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${version.maven.compiler.plugin}</version>
+                    <configuration>
+                        <source>${maven.compiler.source}</source>
+                        <target>${maven.compiler.target}</target>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>${version.maven.resources.plugin}</version>
+                    <configuration>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                    </configuration>
+                </plugin>				
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${version.maven.surefire.plugin}</version>
+                    <configuration>
+                        <skipTests>true</skipTests>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>${version.maven.site.plugin}</version>
+            </plugin>
+        </plugins>
+    </build>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>${version.license.maven.plugin}</version>
+                <configuration>
+                    <goal>third-party-report</goal>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
+</project>

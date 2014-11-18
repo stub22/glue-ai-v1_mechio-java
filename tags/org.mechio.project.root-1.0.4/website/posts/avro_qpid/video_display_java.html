@@ -1,0 +1,192 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>Avro-Qpid Video Display - Java</title>
+	<link rel="stylesheet" type="text/css" href="../styles/common.css">
+	<link rel="stylesheet" type="text/css" href="../styles/cpp.css">
+	<link rel="stylesheet" type="text/css" href="../styles/json.css">
+	<link rel="stylesheet" type="text/css" href="../styles/java.css">
+
+	<style type="text/css">
+	</style>
+		<script type="text/javascript">
+		  var _gaq = _gaq || [];
+		  _gaq.push(['_setAccount', 'UA-29480528-1']);
+		  _gaq.push(['_trackPageview']);
+
+		  (function() {
+			var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+			var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		  })();
+
+		</script>
+</head>
+<body><div class="title">
+Passing Messages from the shoulders of Apache:
+</div>
+<div class="subtitle">
+A demonstration of distributed image processing
+</div><br/><br/>
+<div class="header">
+Part 5: Video Display Process in Java with Avro and Qpid
+</div>
+<div class="article_author">By Matthew Stevenson - <span class="call">m<span class="gffsdakji">iamg&#x40;dnik</span>att.<span style="display:none">h.reut</span>robok<span class="emlgrt1">noshan</span>ind&#x40;<span class="bvnkdfh">obor.tta</span>gmai<span class="kfdsexas">ycrehp</span>&#x6c;&#x2e;&#99;&#111;&#x6d;</span>&nbsp;&nbsp;<span class="article_date">(July 25, 2011)</span></div>
+<div class="foot_nav">
+	<ol>
+		<li><a href="avro_qpid.html">Overview - Distributed messaging with Avro and Qpid</a></li>
+		<li><a href="camera_capture.html">Camera Capture Process</a></li>
+		<li><a href="face_detect.html">Face Detection Process</a></li>
+		<li><a href="video_display_cpp.html">Video Display (C++)</a></li>
+		<li>Video Display (Java)</li>
+		<li><a href="run_proc.html">Running the Processes</a></li>
+		<li><a href="code.html">Complete Code</a></li>
+	</ol>
+</div>
+<div class="text">We are now ready to create a veiwer in Java.<br/>
+Similar to the C++ display, this process will:<br/>
+<ul>
+	<li>Retreive an image</li>
+	<li>Retreive face locations</li>
+	<li>Display the image with locations</li>
+</ul>
+Start by connecting to the broker.<br/>
+</div>
+<div class="java5">ConnectionFactory cf = <span class="kw2">new</span> AMQConnectionFactory<span class="br0">(</span><span class="st0">"amqp://admin:admin@clientid/test?brokerlist='tcp://localhost:5672'"</span><span class="br0">)</span><span class="sy0">;</span><br>
+Connection myConnection = cf.<span class="me1">createConnection</span><span class="br0">(</span><span class="br0">)</span><span class="sy0">;</span><br>
+Session mySession = myConnection.<span class="me1">createSession</span><span class="br0">(</span><span class="kw4">false</span>, Session.<span class="me1">AUTO_ACKNOWLEDGE</span><span class="br0">)</span><span class="sy0">;</span><br>
+Destination myImageQueue = <span class="kw2">new</span> AMQQueue<span class="br0">(</span>videoQueue<span class="br0">)</span><span class="sy0">;</span><br>
+Destination myRegionsQueue = <span class="kw2">new</span> AMQQueue<span class="br0">(</span>regionsQueue<span class="br0">)</span><span class="sy0">;</span><br>
+MessageConsumer myImageConsumer = mySession.<span class="me1">createConsumer</span><span class="br0">(</span>myImageQueue<span class="br0">)</span><span class="sy0">;</span><br>
+MessageConsumer myRegionsConsumer = mySession.<span class="me1">createConsumer</span><span class="br0">(</span>myRegionsQueue<span class="br0">)</span><span class="sy0">;</span><br>
+myConnection.<span class="me1">start</span><span class="br0">(</span><span class="br0">)</span><span class="sy0">;</span><br>
+</div><br><div class="text">
+
+We will need to follow the same steps for fetching an image.<br/>
+First we need to get get our PortableImage from the Qpid message.<br/>
+This generic method will deserialize the message contents to a class generated from an Avro schema<br/>
+</div>
+<div class="java5">
+<span class="kw2">public</span> <span class="kw2">static</span> <span class="sy0">&lt;</span>T <span class="kw2">extends</span> SpecificRecordBase<span class="sy0">&gt;</span> <br>
+&nbsp; &nbsp; &nbsp; &nbsp; T unpackMessage<span class="br0">(</span><a href="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/Class.html"><span class="kw21">Class</span></a><span class="sy0">&lt;</span>T<span class="sy0">&gt;</span> c, BytesMessage message<span class="br0">)</span> <span class="kw2">throws</span> <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/Exception.html"><span class="kw21">Exception</span></a>, <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/io/IOException.html"><span class="kw20">IOException</span></a><span class="br0">{</span><br>
+&nbsp; &nbsp; <span class="kw3">long</span> len = message.<span class="me1">getBodyLength</span><span class="br0">(</span><span class="br0">)</span><span class="sy0">;</span><br>
+&nbsp; &nbsp; <span class="kw3">byte</span><span class="br0">[</span><span class="br0">]</span> data = <span class="kw2">new</span> <span class="kw3">byte</span><span class="br0">[</span><span class="br0">(</span><span class="kw3">int</span><span class="br0">)</span>len<span class="br0">]</span><span class="sy0">;</span> &nbsp; <span class="co1">//loss of data when len larger than max int</span><br>
+&nbsp; &nbsp; <span class="kw3">int</span> read = message.<span class="me1">readBytes</span><span class="br0">(</span>data<span class="br0">)</span><span class="sy0">;</span><br>
+&nbsp; &nbsp; <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/io/ByteArrayInputStream.html"><span class="kw20">ByteArrayInputStream</span></a> in = <span class="kw2">new</span> <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/io/ByteArrayInputStream.html"><span class="kw20">ByteArrayInputStream</span></a><span class="br0">(</span>data<span class="br0">)</span><span class="sy0">;</span><br>
+&nbsp; &nbsp; DatumReader<span class="sy0">&lt;</span>T<span class="sy0">&gt;</span> reader = <span class="kw2">new</span> SpecificDatumReader<span class="sy0">&lt;</span>T<span class="sy0">&gt;</span><span class="br0">(</span>c<span class="br0">)</span><span class="sy0">;</span><br>
+&nbsp; &nbsp; Decoder d = DecoderFactory.<span class="me1">get</span><span class="br0">(</span><span class="br0">)</span>.<span class="me1">binaryDecoder</span><span class="br0">(</span>in, <span class="kw4">null</span><span class="br0">)</span><span class="sy0">;</span><br>
+&nbsp; &nbsp; T t = reader.<span class="me1">read</span><span class="br0">(</span><span class="kw4">null</span>, d<span class="br0">)</span><span class="sy0">;</span><br>
+&nbsp; &nbsp; <span class="kw2">return</span> t<span class="sy0">;</span><br>
+<span class="br0">}</span><br>
+</div><br><div class="text">
+
+Although unused in this example, this will serialize an Avro type into a Qpid message:<br/>
+</div>
+<div class="java5">
+<span class="kw2">public</span> <span class="kw2">static</span> <span class="sy0">&lt;</span>T <span class="kw2">extends</span> SpecificRecordBase<span class="sy0">&gt;</span> <br>
+&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw3">void</span> packMessage<span class="br0">(</span><a href="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/Class.html"><span class="kw21">Class</span></a><span class="sy0">&lt;</span>T<span class="sy0">&gt;</span> c, T t, BytesMessage message<span class="br0">)</span> <span class="kw2">throws</span> JMSException, <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/io/IOException.html"><span class="kw20">IOException</span></a><span class="br0">{</span><br>
+&nbsp; &nbsp; <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/io/ByteArrayOutputStream.html"><span class="kw20">ByteArrayOutputStream</span></a> out = <span class="kw2">new</span> <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/io/ByteArrayOutputStream.html"><span class="kw20">ByteArrayOutputStream</span></a><span class="br0">(</span><span class="br0">)</span><span class="sy0">;</span> &nbsp; &nbsp;<br>
+&nbsp; &nbsp; DatumWriter<span class="sy0">&lt;</span>T<span class="sy0">&gt;</span> w = <span class="kw2">new</span> SpecificDatumWriter<span class="sy0">&lt;</span>T<span class="sy0">&gt;</span><span class="br0">(</span>c<span class="br0">)</span><span class="sy0">;</span><br>
+&nbsp; &nbsp; <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/beans/Encoder.html"><span class="kw18">Encoder</span></a> e = EncoderFactory.<span class="me1">get</span><span class="br0">(</span><span class="br0">)</span>.<span class="me1">binaryEncoder</span><span class="br0">(</span>out, <span class="kw4">null</span><span class="br0">)</span><span class="sy0">;</span><br>
+&nbsp; &nbsp; w.<span class="me1">write</span><span class="br0">(</span>t, e<span class="br0">)</span><span class="sy0">;</span><br>
+&nbsp; &nbsp; e.<span class="me1">flush</span><span class="br0">(</span><span class="br0">)</span><span class="sy0">;</span><br>
+&nbsp; &nbsp; message.<span class="me1">writeBytes</span><span class="br0">(</span>out.<span class="me1">toByteArray</span><span class="br0">(</span><span class="br0">)</span>, <span class="nu0">0</span>, out.<span class="me1">size</span><span class="br0">(</span><span class="br0">)</span><span class="br0">)</span><span class="sy0">;</span><br>
+<span class="br0">}</span><br>
+</div><br><div class="text">
+
+This will create a BufferedImage from our PortableImage class:<br/>
+(It will work with single-channel 8-bit grayscale or 3-channel 24-bit rgb images)<br/>
+</div>
+<div class="java5">
+<span class="kw2">public</span> <span class="kw2">static</span> <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/awt/image/BufferedImage.html"><span class="kw15">BufferedImage</span></a> unpackImage<span class="br0">(</span>PortableImage pimg<span class="br0">)</span> <span class="br0">{</span><br>
+&nbsp; &nbsp; <span class="kw3">int</span> w = pimg.<span class="me1">width</span><span class="sy0">;</span><br>
+&nbsp; &nbsp; <span class="kw3">int</span> h = pimg.<span class="me1">height</span><span class="sy0">;</span><br>
+&nbsp; &nbsp; <span class="kw3">int</span> wStep = pimg.<span class="me1">widthStep</span><span class="sy0">;</span><br>
+&nbsp; &nbsp; <span class="kw3">int</span> c = pimg.<span class="me1">nChannels</span><span class="sy0">;</span><br>
+&nbsp; &nbsp; <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/nio/ByteBuffer.html"><span class="kw29">ByteBuffer</span></a> data = pimg.<span class="me1">data</span><span class="sy0">;</span><br>
+&nbsp; &nbsp; <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/awt/image/BufferedImage.html"><span class="kw15">BufferedImage</span></a> bimg = <span class="kw2">new</span> <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/awt/image/BufferedImage.html"><span class="kw15">BufferedImage</span></a><span class="br0">(</span>pimg.<span class="me1">width</span>, pimg.<span class="me1">height</span>, <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/awt/image/BufferedImage.html"><span class="kw15">BufferedImage</span></a>.<span class="me1">TYPE_INT_ARGB</span><span class="br0">)</span><span class="sy0">;</span><br>
+&nbsp; &nbsp; <span class="kw1">for</span> <span class="br0">(</span><span class="kw3">int</span> y = <span class="nu0">0</span><span class="sy0">;</span> y <span class="sy0">&lt;</span> h<span class="sy0">;</span> y++<span class="br0">)</span> <span class="br0">{</span><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">for</span> <span class="br0">(</span><span class="kw3">int</span> x = <span class="nu0">0</span><span class="sy0">;</span> x <span class="sy0">&lt;</span> w<span class="sy0">;</span> x++<span class="br0">)</span> <span class="br0">{</span><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="kw3">int</span> argb = getARGB<span class="br0">(</span>data, y<span class="sy0">*</span>wStep + x<span class="sy0">*</span>c, c<span class="br0">)</span><span class="sy0">;</span><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; bimg.<span class="me1">setRGB</span><span class="br0">(</span>x, y, argb<span class="br0">)</span><span class="sy0">;</span><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <span class="br0">}</span><br>
+&nbsp; &nbsp; <span class="br0">}</span><br>
+&nbsp; &nbsp; <span class="kw2">return</span> bimg<span class="sy0">;</span><br>
+<span class="br0">}</span><br>
+<br>
+<span class="kw2">private</span> <span class="kw2">static</span> <span class="kw3">int</span> getRGB<span class="br0">(</span><a href="http://java.sun.com/j2se/1.5.0/docs/api/java/nio/ByteBuffer.html"><span class="kw29">ByteBuffer</span></a> data, <span class="kw3">int</span> offset, <span class="kw3">int</span> channels<span class="br0">)</span><span class="br0">{</span><br>
+&nbsp; &nbsp; <span class="kw3">int</span> rgb = <span class="nu0">255</span> <span class="sy0">&lt;&lt;</span> <span class="nu0">24</span><span class="sy0">;</span> <span class="co1">//set alpha</span><br>
+&nbsp; &nbsp; <span class="kw3">int</span> val = <span class="nu0">0</span><span class="sy0">;</span><br>
+&nbsp; &nbsp; <span class="kw1">for</span><span class="br0">(</span><span class="kw3">int</span> i=<span class="nu0">0</span><span class="sy0">;</span> i<span class="sy0">&lt;</span><span class="nu0">3</span><span class="sy0">;</span> i++<span class="br0">)</span><span class="br0">{</span><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw1">if</span><span class="br0">(</span>i<span class="sy0">&lt;</span>channels<span class="br0">)</span><span class="br0">{</span><br>
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; val = Utils.<span class="me1">unsign</span><span class="br0">(</span>data.<span class="me1">get</span><span class="br0">(</span>offset+i<span class="br0">)</span><span class="br0">)</span><span class="sy0">;</span><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <span class="br0">}</span><br>
+&nbsp; &nbsp; &nbsp; &nbsp; <span class="kw3">int</span> shift = <span class="br0">(</span><span class="nu0">2</span>-i<span class="br0">)</span><span class="sy0">*</span><span class="nu0">8</span><span class="sy0">;</span><br>
+&nbsp; &nbsp; &nbsp; &nbsp; rgb = rgb | <span class="br0">(</span>val <span class="sy0">&lt;&lt;</span> shift<span class="br0">)</span><span class="sy0">;</span><br>
+&nbsp; &nbsp; <span class="br0">}</span><br>
+&nbsp; &nbsp; <span class="kw2">return</span> rgb<span class="sy0">;</span><br>
+<span class="br0">}</span><br>
+</div><br><div class="text">
+
+Using these methods we can get a usable image from our message:<br/>
+</div>
+<div class="java5">
+Message imgMsg = myImageConsumer.<span class="me1">receive</span><span class="br0">(</span><span class="br0">)</span><span class="sy0">;</span><br>
+PortableImage pimg = unpackMessage<span class="br0">(</span>PortableImage.<span class="kw2">class</span>, <span class="br0">(</span>BytesMessage<span class="br0">)</span>imgMsg<span class="br0">)</span><span class="sy0">;</span><br>
+<a href="http://java.sun.com/j2se/1.5.0/docs/api/java/awt/Image.html"><span class="kw6">Image</span></a> img = unpackImage<span class="br0">(</span>pimg<span class="br0">)</span><span class="sy0">;</span><br>
+</div><br><div class="text">
+
+Next we can fetch the results from our face detection and draw them on our image:<br/>
+</div>
+<div class="java5">
+Message rgnsMsg = myRegionsConsumer.<span class="me1">receive</span><span class="br0">(</span><span class="br0">)</span><span class="sy0">;</span><br>
+ImageRegions regions = unpackMessage<span class="br0">(</span>ImageRegions.<span class="kw2">class</span>, <span class="br0">(</span>BytesMessage<span class="br0">)</span>rgnsMsg<span class="br0">)</span><span class="sy0">;</span><br>
+<a href="http://java.sun.com/j2se/1.5.0/docs/api/java/awt/Graphics.html"><span class="kw6">Graphics</span></a> g = img.<span class="me1">getGraphics</span><span class="br0">(</span><span class="br0">)</span><span class="sy0">;</span><br>
+g.<span class="me1">setColor</span><span class="br0">(</span><a href="http://java.sun.com/j2se/1.5.0/docs/api/java/awt/Color.html"><span class="kw6">Color</span></a>.<span class="me1">RED</span><span class="br0">)</span><span class="sy0">;</span><br>
+<span class="kw1">for</span><span class="br0">(</span>ImageRegion rgn : regions.<span class="me1">regions</span><span class="br0">)</span><span class="br0">{</span><br>
+&nbsp; &nbsp; g.<span class="me1">drawRect</span><span class="br0">(</span>rgn.<span class="me1">x</span>, rgn.<span class="me1">y</span>, rgn.<span class="me1">width</span>, rgn.<span class="me1">height</span><span class="br0">)</span><span class="sy0">;</span><br>
+<span class="br0">}</span><br>
+</div><br><div class="text">
+
+Lastly, we need a panel to display our image:<br/>
+</div>
+<div class="java5">
+<span class="kw2">public</span> <span class="kw2">class</span> VideoPanel <span class="kw2">extends</span> javax.<span class="me1">swing</span>.<a href="http://java.sun.com/j2se/1.5.0/docs/api/javax/swing/JPanel.html"><span class="kw105">JPanel</span></a><span class="br0">{</span><br>
+&nbsp; &nbsp; <span class="kw2">private</span> <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/awt/Image.html"><span class="kw6">Image</span></a> myImage<span class="sy0">;</span><br>
+&nbsp; &nbsp; <br>
+&nbsp; &nbsp; <span class="kw2">public</span> VideoPanel<span class="br0">(</span><span class="br0">)</span> <span class="br0">{</span>...<span class="br0">}</span><br>
+&nbsp; &nbsp; <br>
+&nbsp; &nbsp; <span class="kw2">public</span> <span class="kw3">void</span> drawImage<span class="br0">(</span><a href="http://java.sun.com/j2se/1.5.0/docs/api/java/awt/Image.html"><span class="kw6">Image</span></a> image<span class="br0">)</span><span class="br0">{</span><br>
+&nbsp; &nbsp; &nbsp; &nbsp; myImage = image<span class="sy0">;</span><br>
+&nbsp; &nbsp; &nbsp; &nbsp; repaint<span class="br0">(</span><span class="br0">)</span><span class="sy0">;</span><br>
+&nbsp; &nbsp; <span class="br0">}</span><br>
+&nbsp; &nbsp; <br>
+&nbsp; &nbsp; @<a href="http://java.sun.com/j2se/1.5.0/docs/api/java/lang/Override.html"><span class="kw21">Override</span></a> <span class="kw2">public</span> <span class="kw3">void</span> paint<span class="br0">(</span><a href="http://java.sun.com/j2se/1.5.0/docs/api/java/awt/Graphics.html"><span class="kw6">Graphics</span></a> g<span class="br0">)</span><span class="br0">{</span><br>
+&nbsp; &nbsp; &nbsp; &nbsp; g.<span class="me1">drawImage</span><span class="br0">(</span>myImage, <span class="nu0">0</span>, <span class="nu0">0</span>, getWidth<span class="br0">(</span><span class="br0">)</span>, getHeight<span class="br0">(</span><span class="br0">)</span>, <span class="kw4">null</span><span class="br0">)</span><span class="sy0">;</span><br>
+&nbsp; &nbsp; <span class="br0">}</span><br>
+&nbsp; &nbsp; <br>
+&nbsp; &nbsp; ...<br>
+<span class="br0">}</span><br>
+</div><br><div class="text">
+
+Finally, with an instance of this panel we can now draw our image:<br/>
+</div>
+<div class="java5">
+vidPanel.<span class="me1">drawImage</span><span class="br0">(</span>img<span class="br0">)</span><span class="sy0">;</span></div>
+</body><br/>
+
+
+<div class="foot_nav">
+	<ol>
+		<li><a href="avro_qpid.html">Overview - Distributed messaging with Avro and Qpid</a></li>
+		<li><a href="camera_capture.html">Camera Capture Process</a></li>
+		<li><a href="face_detect.html">Face Detection Process</a></li>
+		<li><a href="video_display_cpp.html">Video Display (C++)</a></li>
+		<li>Video Display (Java)</li>
+		<li><a href="run_proc.html">Running the Processes</a></li>
+		<li><a href="code.html">Complete Code</a></li>
+	</ol>
+</div>
+<br/>
+<div class="copyright">
+<a rel="license" href="http://creativecommons.org/licenses/by/3.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by/3.0/88x31.png" /></a><br /><span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/Text" property="dct:title" rel="dct:type">"Passing Messages from the shoulders of Apache"</span> by <a xmlns:cc="http://creativecommons.org/ns#" href="http://www.mechio.org/posts/avro_qpid/avro_qpid.html" property="cc:attributionName" rel="cc:attributionURL">Matthew Stevenson</a> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/3.0/">Creative Commons Attribution 3.0 Unported License</a>.
+</div></html>

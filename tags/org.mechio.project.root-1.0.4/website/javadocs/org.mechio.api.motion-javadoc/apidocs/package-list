@@ -1,0 +1,13 @@
+org.mechio.api.motion
+org.mechio.api.motion.blending
+org.mechio.api.motion.joint_properties
+org.mechio.api.motion.jointgroup
+org.mechio.api.motion.lifecycle
+org.mechio.api.motion.messaging
+org.mechio.api.motion.osgi
+org.mechio.api.motion.protocol
+org.mechio.api.motion.servos
+org.mechio.api.motion.servos.config
+org.mechio.api.motion.servos.utils
+org.mechio.api.motion.sync
+org.mechio.api.motion.utils
