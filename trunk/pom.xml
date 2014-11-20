@@ -210,7 +210,7 @@
     <distributionManagement>
         <site>
             <id>nexus-site</id>
-            <url>dav:http://localhost:8081/nexus/content/sites/site/org/mechio</url>
+            <url>dav://maple.robokind.us:8081/nexus/content/sites/site/org/mechio</url>
         </site>
     </distributionManagement>
     
@@ -283,23 +283,54 @@
                 </plugin>
             </plugins>
         </pluginManagement>
-        <plugins>
-            <plugin>
-                <artifactId>maven-site-plugin</artifactId>
-                <version>${version.maven.site.plugin}</version>
-            </plugin>
-        </plugins>
     </build>
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>license-maven-plugin</artifactId>
-                <version>${version.license.maven.plugin}</version>
-                <configuration>
-                    <goal>third-party-report</goal>
-                </configuration>
-            </plugin>
-        </plugins>
-    </reporting>
+	<profiles>
+		<profile>
+			<id>site-profile</id>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-site-plugin</artifactId>
+							<version>${version.maven.site.plugin}</version>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-site-plugin</artifactId>
+					</plugin>
+				</plugins>
+			</build>
+			<reporting>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>license-maven-plugin</artifactId>
+						<version>${version.license.maven.plugin}</version>
+						<configuration>
+							<goal>third-party-report</goal>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>${version.maven.javadoc.plugin}</version>
+						<reportSets>
+							<reportSet>
+								<id>aggregate</id>
+								<configuration>
+								</configuration>
+								<reports>
+									<report>aggregate</report>
+								</reports>
+							</reportSet>
+						</reportSets>
+					</plugin>
+				</plugins>
+			</reporting>
+		</profile>
+	</profiles>
 </project>
