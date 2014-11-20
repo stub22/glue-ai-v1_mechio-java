@@ -282,4 +282,10 @@ public class RemoteAnimationPlayerClient
         
         notifyListeners(t);
     }
+    
+    public void stopAllAnimations() {
+        for(AnimationJob job: getCurrentAnimations()) {
+            stopAnimation(job.getAnimation());
+        }
+    }
 }
