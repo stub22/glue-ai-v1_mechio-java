@@ -26,6 +26,7 @@ import org.jflux.api.core.playable.Playable.PlayState;
 public interface SpeechJob extends Notifier<PlayState>{
     public long getSpeechJobId();
     public String getSpeechText();
+	public SpeechRequest getSpeechRequest();
     public long getStartTime();
     public int getStatus();
     void setStatus(int status);

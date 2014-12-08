@@ -27,10 +27,10 @@ public class PortableSpeechRequest {
     public static class Factory implements SpeechRequestFactory{
         @Override
         public SpeechRequest create(
-                String clientId, String hostId, String phrase) {
+                String clientId, String requestId, String phrase) {
             SpeechRequestRecord record = new SpeechRequestRecord();
-            record.setSpeechServiceId(hostId);
-            record.setRequestSourceId(clientId);
+            record.setSpeechServiceId(clientId);
+            record.setRequestSourceId(requestId);
             record.setTimestampMillisecUTC(TimeUtils.now());
             record.setPhrase(phrase);
             
