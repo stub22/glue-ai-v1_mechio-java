@@ -34,6 +34,7 @@ import org.mechio.api.speech.SpeechRequestFactory;
 import org.mechio.api.speech.SpeechService;
 import org.mechio.api.speech.utils.SpeechEventNotifier;
 import org.mechio.api.speech.utils.SpeechJobManager;
+import org.mechio.api.speech.utils.SpeechJobManagerImpl;
 
 /**
  *
@@ -85,7 +86,8 @@ public class RemoteSpeechServiceClient<Conf> extends
         if(myEventReceiver != null){
             myEventReceiver.addListener(mySpeechEventNotifier);
         }
-        myJobManager = new SpeechJobManager(this);
+//        myJobManager = new NaiveSpeechJobManagerImpl(this);
+        myJobManager = new SpeechJobManagerImpl(this);
     }
     
     @Override
@@ -109,9 +111,9 @@ public class RemoteSpeechServiceClient<Conf> extends
         }
         theLogger.log(Level.INFO, "Speaking: {0}", text);
         SpeechRequest req = 
-                myRequestFactory.create(getClientId(), getHostId(), text);
+                myRequestFactory.create(getClientId(), myJobManager.getRequestIdString(), text);
         myRequestSender.notifyListeners(req);
-        return myJobManager.createSpeechJob(text);
+        return myJobManager.createSpeechJob(req);
     }
     
     @Override

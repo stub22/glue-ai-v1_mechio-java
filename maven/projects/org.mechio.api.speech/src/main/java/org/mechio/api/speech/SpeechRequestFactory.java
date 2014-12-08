@@ -20,5 +20,5 @@ package org.mechio.api.speech;
  * @author Matthew Stevenson <www.mechio.org>
  */
 public interface SpeechRequestFactory {
-    public SpeechRequest create(String clientId, String hostId, String phrase);
+    public SpeechRequest create(String clientId, String requestId, String phrase);
 }

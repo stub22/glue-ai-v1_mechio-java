@@ -19,6 +19,7 @@ import org.jflux.api.common.rk.utils.TimeUtils;
 import org.jflux.api.core.playable.Playable.PlayState;
 import org.jflux.api.core.util.DefaultNotifier;
 import org.mechio.api.speech.SpeechJob;
+import org.mechio.api.speech.SpeechRequest;
 
 /**
  *
@@ -43,19 +44,19 @@ public class DefaultSpeechJob extends DefaultNotifier<PlayState> implements Spee
     public final static int CANCELED = 3;
     
     private final long myJobId;
-    private final String myText;
+	private final SpeechRequest mySpeechRequest;
     private final long myStartTime;
     private int myStatus;
     
     private SpeechJobManager myManager;
     
-    DefaultSpeechJob(SpeechJobManager manager, String text){
-        if(text == null){
+    DefaultSpeechJob(SpeechJobManager manager, SpeechRequest speechRequest){
+        if(speechRequest == null){
             throw new NullPointerException();
         }
         myJobId = nextId();
         myStartTime = TimeUtils.now();
-        myText = text;
+		mySpeechRequest = speechRequest;
         myStatus = PENDING;
         myManager = manager;
     }
@@ -64,6 +65,7 @@ public class DefaultSpeechJob extends DefaultNotifier<PlayState> implements Spee
      * @return unique id for this SpeechJob
      */
     
+	@Override
     public long getSpeechJobId(){
         return myJobId;
     }
@@ -73,8 +75,16 @@ public class DefaultSpeechJob extends DefaultNotifier<PlayState> implements Spee
      */
     @Override
     public String getSpeechText(){
-        return myText;
+        return mySpeechRequest.getPhrase();
     }
+    /**
+     * Returns the speech request for this job.
+     * @return speech request for this job
+     */
+	@Override
+	public SpeechRequest getSpeechRequest(){
+		return mySpeechRequest;
+	}
     /**
      * Returns the time the speech was queued.
      * @return time the speech was queued
@@ -109,9 +119,6 @@ public class DefaultSpeechJob extends DefaultNotifier<PlayState> implements Spee
     @Override
     public void cancel(){
         setStatus(CANCELED);
-        if(myManager != null){
-            myManager.cancelSpeechJob(this);
-        }
     }
     
     private static long theNextId = 0;

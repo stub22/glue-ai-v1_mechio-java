@@ -15,127 +15,23 @@
  */
 package org.mechio.api.speech.utils;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Queue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.jflux.api.core.Listener;
-import org.mechio.api.speech.SpeechEvent;
-import org.mechio.api.speech.SpeechEventList;
 import org.mechio.api.speech.SpeechJob;
-import org.mechio.api.speech.SpeechService;
+import org.mechio.api.speech.SpeechRequest;
 
 /**
  *
  * @author matt
  */
-public class SpeechJobManager {
-    private final static Logger theLogger = Logger.getLogger(SpeechJobManager.class.getName());
-    
-    private SpeechService mySpeechProxy;
-    private Map<Long,SpeechJob> mySpeechJobs;
-    private Queue<Long> mySpeechJobIds;
-    private Long myCurrentSpeechJobId;
-    private SpeechEventListener myEventListener;
-
-    public SpeechJobManager(SpeechService speechProxy){
-        if(speechProxy == null){
-            throw new NullPointerException();
-        }
-        mySpeechProxy = speechProxy;
-        mySpeechJobs = new HashMap<Long, SpeechJob>();
-        mySpeechJobIds = new LinkedList<Long>();
-        myCurrentSpeechJobId = null;
-        myEventListener = new SpeechEventListener();
-        mySpeechProxy.addSpeechEventListener(myEventListener);
-    }
+public interface SpeechJobManager {
     
     /**
-     * Adds text to the speech queue.
-     * @param text text to speak
+     * Creates a SpeechJob from a SpeechRequest
+     * @param req the SpeechRequest
      * @return SpeechJob which represents the speech
      */
-    public synchronized SpeechJob createSpeechJob(String text){
-        SpeechJob job = new DefaultSpeechJob(this, text);
-        mySpeechJobs.put(job.getSpeechJobId(), job);
-        mySpeechJobIds.add(job.getSpeechJobId());
-        return job;
-    }
+    public SpeechJob createSpeechJob(SpeechRequest req);
     
-    void cancelSpeechJob(SpeechJob job){
-        if(myCurrentSpeechJobId == null 
-                || myCurrentSpeechJobId == job.getSpeechJobId()){
-            mySpeechProxy.cancelSpeech();
-        }
-    }
-    
-    private final class SpeechEventListener implements Listener<SpeechEventList<SpeechEvent>>{
-
-        @Override
-        public synchronized void handleEvent(SpeechEventList<SpeechEvent> t) {
-            if(t == null){
-                return;
-            }
-            for(SpeechEvent event : t.getSpeechEvents()){
-                handleSingleEvent(event);
-            }
-        }
-        
-        private void handleSingleEvent(SpeechEvent t){
-            if(t == null){
-                return;
-            }
-            String eventType = t.getEventType();
-            if(SpeechEvent.SPEECH_START.equals(eventType)){
-                Long id = mySpeechJobIds.poll();
-                if(id == null){
-                    return;
-                }
-                SpeechJob job = mySpeechJobs.get(id);
-                if(job == null){
-                    theLogger.log(Level.WARNING, 
-                            "Unable to find SpeechJob with id={0}.  "
-                            + "Ignoring SPEECH_START event.", id);
-                    return;
-                }
-                if(DefaultSpeechJob.CANCELED == job.getStatus()){
-                    mySpeechProxy.cancelSpeech();
-                    return;
-                }
-                job.setStatus(DefaultSpeechJob.RUNNING);
-                if(myCurrentSpeechJobId != null){
-                    completeJob(myCurrentSpeechJobId);
-                }
-                myCurrentSpeechJobId = id;
-            }else if(SpeechEvent.SPEECH_END.equals(eventType)){
-                if(myCurrentSpeechJobId == null){
-                    return;
-                }
-                SpeechJob job = mySpeechJobs.get(myCurrentSpeechJobId);
-                if(job == null){
-                    theLogger.log(Level.WARNING, 
-                            "Unable to find SpeechJob with id={0}.  "
-                            + "Ignoring SPEECH_END event.", myCurrentSpeechJobId);
-                    return;
-                }
-                completeJob(myCurrentSpeechJobId);
-            }
-        }
-        
-        private void completeJob(long id){
-            SpeechJob job = mySpeechJobs.get(id);
-            if(job == null){
-                return;
-            }
-            int status = job.getStatus();
-            if(status == DefaultSpeechJob.COMPLETE){
-                return;
-            }else if(status == DefaultSpeechJob.PENDING 
-                    || status == DefaultSpeechJob.RUNNING){
-                job.setStatus(DefaultSpeechJob.COMPLETE);
-            }
-        }
-    }
+    public void cancelSpeechJob(SpeechJob job);
+	
+	public String getRequestIdString();
 }
