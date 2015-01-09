@@ -25,6 +25,7 @@ import org.jflux.api.messaging.rk.MessageAsyncReceiver;
 import org.jflux.api.messaging.rk.MessageSender;
 import org.jflux.api.messaging.rk.services.ServiceCommand;
 import org.jflux.api.messaging.rk.services.ServiceError;
+import org.jflux.impl.messaging.rk.JMSAvroMessageSender;
 import org.jflux.impl.messaging.rk.ServiceErrorRecord;
 import org.jflux.impl.messaging.rk.services.PortableServiceCommand;
 import org.mechio.api.speech.SpeechConfig;
@@ -95,6 +96,7 @@ final class MioSpeechConnector extends MioServiceConnector{
         }
         MessageSender<ServiceCommand> cmdSender = 
                 myConnectionContext.getSender(CMD_SENDER);
+		((JMSAvroMessageSender)cmdSender).setDefaultContentType("application/service-command");
         MessageSender<SpeechConfig> confSender = 
                 myConnectionContext.getSender(CONFIG_SENDER);
         MessageAsyncReceiver<ServiceError> errReceiver = 
