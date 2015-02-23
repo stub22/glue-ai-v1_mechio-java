@@ -1,7 +1,0 @@
-org.mechio.impl.motion.config
-org.mechio.impl.motion.jointgroup
-org.mechio.impl.motion.lifecycle
-org.mechio.impl.motion.messaging
-org.mechio.impl.motion.osgi
-org.mechio.impl.motion.serial
-org.mechio.impl.motion.sync
