@@ -3,7 +3,7 @@
 	<parent>
         <groupId>org.mechio</groupId>
         <artifactId>org.mechio.modules.speechrec</artifactId>
-        <version>1.0.5-SNAPSHOT</version>
+        <version>1.0.5</version>
 		<relativePath>../../org.mechio.modules.speechrec/pom.xml</relativePath>
     </parent>
     <artifactId>org.mechio.impl.speechrec</artifactId>
