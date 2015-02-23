@@ -23,7 +23,7 @@
   
     <groupId>org.mechio</groupId>
     <artifactId>org.mechio.project.root</artifactId>
-    <version>1.0.6-SNAPSHOT</version>
+    <version>1.0.5-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>${project.artifactId} - Root pom</name>
     <url>http://www.mechio.org</url>
