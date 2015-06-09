@@ -32,7 +32,7 @@ import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
-import org.mechio.api.interpolation.cspline.CSplineInterpolatorFactory;
+import org.mechio.api.interpolation.linear.LinearInterpolatorFactory;
 
 /**
  * A class for tracking various InterpolatorFactories.  Capable of tracking 
@@ -66,7 +66,7 @@ public class InterpolatorDirectory {
      */
     public static InterpolatorDirectory instance(){
         if(theInstance == null){
-            theInstance = new InterpolatorDirectory(new CSplineInterpolatorFactory());
+            theInstance = new InterpolatorDirectory(new LinearInterpolatorFactory());
         }
         return theInstance;
     }
