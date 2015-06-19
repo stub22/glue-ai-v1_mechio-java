@@ -39,12 +39,12 @@ import static org.jflux.api.common.rk.localization.Localizer.$;
  */
 public class AnimationEditor extends AbstractEditor<Channel,ChannelEditor>{
     /**
-     * Property String for the Animaiton's file path.
+     * Property String for the Animation's file path.
      */
     public final static String PROP_PATH = "Path";
     
     private Animation myAnimation;
-    
+
     //TODO: Change this from a file path to a URI
     private String myPath;
 
@@ -62,7 +62,7 @@ public class AnimationEditor extends AbstractEditor<Channel,ChannelEditor>{
         setChildren(myAnimation.getChannels());
         setSyncGroups();
     }
-    
+
     private void setSyncGroups(){
         List<SyncGroupConfig> configs = myAnimation.getSyncGroupConfigs();
         if(configs == null || configs.isEmpty()){
@@ -72,7 +72,7 @@ public class AnimationEditor extends AbstractEditor<Channel,ChannelEditor>{
             setSyncGroup(config);
         }
     }
-    
+
     private SynchronizedPointGroup setSyncGroup(SyncGroupConfig config){
             if(config.points == null){
                 return null;
@@ -85,9 +85,9 @@ public class AnimationEditor extends AbstractEditor<Channel,ChannelEditor>{
                 }
             }
             return new SynchronizedPointGroup(points, mySharedHistory, null);
-            
+
     }
-    
+
     private ControlPointEditor getSyncPoint(SyncPointConfig config){
         ChannelEditor chan = getChildByChannelId(config.channelId);
         if(chan == null){
@@ -99,7 +99,7 @@ public class AnimationEditor extends AbstractEditor<Channel,ChannelEditor>{
         }
         return path.getChild(config.controlPointId);
     }
-    
+
     private ChannelEditor getChildByChannelId(int id){
         for(ChannelEditor c : getChildren()){
             if(c.getId() == id){
@@ -108,7 +108,7 @@ public class AnimationEditor extends AbstractEditor<Channel,ChannelEditor>{
         }
         return null;
     }
-    
+
     /**
      *
      * @return
@@ -164,7 +164,7 @@ public class AnimationEditor extends AbstractEditor<Channel,ChannelEditor>{
         }
         return $("new.animation");
     }
-    
+
     /**
      *
      * @param name
@@ -210,7 +210,7 @@ public class AnimationEditor extends AbstractEditor<Channel,ChannelEditor>{
         myAnimation.setVersion(name, ver);
         firePropertyChange(PROP_NAME, oldVersion.display(), myAnimation.getVersion().display());
     }
-    
+
 
     @Override
     protected Channel removeChild(Object invoker, int i){
@@ -290,7 +290,7 @@ public class AnimationEditor extends AbstractEditor<Channel,ChannelEditor>{
         myAnimation.insertChannel(i, channel);
         return myAnimation.getChannels().indexOf(channel);
     }
-    
+
     public Set<SynchronizedPointGroup> collectSynchronizedPointGroups(){
         Set<SynchronizedPointGroup> groups = new HashSet<SynchronizedPointGroup>();
         for(ChannelEditor chan : getChildren()){

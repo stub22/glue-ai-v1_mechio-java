@@ -17,6 +17,7 @@
 package org.mechio.api.animation;
 
 import java.awt.geom.Point2D;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -100,6 +101,8 @@ public class PathInterpolator implements Interpolator {
         int i = Collections.binarySearch(myXVals, x);
         i = i<0 ? -(i+1) :  i;
         myXVals.add(i, x);
+		DecimalFormat dForm = new DecimalFormat("#.##");
+		y = Double.valueOf(dForm.format(y));
         Point2D p = myInterpolator.insertPoint(i, x, y);
         return p;
     }
@@ -112,7 +115,9 @@ public class PathInterpolator implements Interpolator {
     @Override
     public void addPoints(List<Point2D> points) {
         for(Point2D p : points){
-            addPoint(p.getX(), p.getY());
+			DecimalFormat dForm = new DecimalFormat("#.##");
+			double y = Double.valueOf(dForm.format(p.getY()));
+            addPoint(p.getX(), y);
         }
     }
 
@@ -291,7 +296,7 @@ public class PathInterpolator implements Interpolator {
     public VersionProperty getInterpolatorVersion(){
         return myInterpolator.getInterpolatorVersion();
     }
-    
+
     @Override
     public boolean touchesControlPoints(){
         return myInterpolator.touchesControlPoints();
@@ -322,6 +327,6 @@ public class PathInterpolator implements Interpolator {
         hash = 79 * hash + (this.myXVals != null ? this.myXVals.hashCode() : 0);
         return hash;
     }
-    
-    
+
+
 }

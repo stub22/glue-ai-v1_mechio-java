@@ -61,6 +61,7 @@ public class MotionPathEditor extends AbstractEditor<Point2D,ControlPointEditor>
         myIsDragging = false;
         myIsMoving = false;
         myIsScaling = false;
+		Point2D p = myMotionPath.addPoint(0, .5);
         setChildren(myMotionPath.getControlPoints());
     }
 
@@ -245,7 +246,7 @@ public class MotionPathEditor extends AbstractEditor<Point2D,ControlPointEditor>
         }
         //fireStructureChangedEvent(invoker);
     }
-    
+
     private void stopEverything(boolean quiet, HistoryStack hist){
         stopScaling(hist);
         stopDragging(quiet, hist);
@@ -275,7 +276,7 @@ public class MotionPathEditor extends AbstractEditor<Point2D,ControlPointEditor>
         }
         //fireStructureChangedEvent(invoker);
     }
-    
+
     /**
      *
      * @param invoker
@@ -338,20 +339,20 @@ public class MotionPathEditor extends AbstractEditor<Point2D,ControlPointEditor>
             point.stopDragging();
         }
     }
-    
+
     public HistoryAction getLastDragHistoryAction(){
         return myDragHistCache;
     }
-    
+
     private void stopScaling(HistoryStack hist){
         if(!myIsScaling){
             return;
         }
         myIsScaling = false;
         if(hist != null){
-            HistoryAction event = 
-                    HistoryHelper.scaleMotionPath(this, 
-                            myTempPath.getControlPoints(), 
+            HistoryAction event =
+                    HistoryHelper.scaleMotionPath(this,
+                            myTempPath.getControlPoints(),
                             myMotionPath.getControlPoints());
             hist.addEvent(event);
         }
@@ -360,16 +361,16 @@ public class MotionPathEditor extends AbstractEditor<Point2D,ControlPointEditor>
         }
         fireStructureChangedEvent(this);
     }
-    
+
     private void stopMoving(HistoryStack hist){
         if(!myIsMoving){
             return;
         }
         myIsMoving = false;
         if(hist != null){
-            HistoryAction event = 
-                    HistoryHelper.moveMotionPath(this, 
-                            myTempPath.getControlPoints(), 
+            HistoryAction event =
+                    HistoryHelper.moveMotionPath(this,
+                            myTempPath.getControlPoints(),
                             myMotionPath.getControlPoints());
             hist.addEvent(event);
         }
@@ -456,7 +457,7 @@ public class MotionPathEditor extends AbstractEditor<Point2D,ControlPointEditor>
         }
         return myChildren.get(myChildren.size()-1).getSelected().getX();
     }
-    
+
     public double getStart(){
         if(myChildren.isEmpty()){
             return 0;
@@ -496,7 +497,7 @@ public class MotionPathEditor extends AbstractEditor<Point2D,ControlPointEditor>
     protected MotionPath getMotionPath(){
         return myMotionPath;
     }
-    
+
     public boolean touchesControlPoints(){
         return myMotionPath.touchesControlPoints();
     }
