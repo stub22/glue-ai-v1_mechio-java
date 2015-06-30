@@ -61,7 +61,10 @@ public class MotionPathEditor extends AbstractEditor<Point2D,ControlPointEditor>
         myIsDragging = false;
         myIsMoving = false;
         myIsScaling = false;
-		Point2D p = myMotionPath.addPoint(0, .5);
+		if(myMotionPath.getControlPoints().isEmpty()){
+			Point2D p = new Point2D.Double(0, .5);
+			this.addChild(this, p, hist);
+		}
         setChildren(myMotionPath.getControlPoints());
     }
 
@@ -247,7 +250,7 @@ public class MotionPathEditor extends AbstractEditor<Point2D,ControlPointEditor>
         //fireStructureChangedEvent(invoker);
     }
 
-    private void stopEverything(boolean quiet, HistoryStack hist){
+	private void stopEverything(boolean quiet, HistoryStack hist){
         stopScaling(hist);
         stopDragging(quiet, hist);
         stopMoving(hist);
