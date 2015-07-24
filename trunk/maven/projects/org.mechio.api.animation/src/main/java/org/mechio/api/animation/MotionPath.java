@@ -24,7 +24,7 @@ import org.mechio.api.interpolation.InterpolatorFactory;
 /**
  * An extended PathInterpolator which can generate a CompiledPath from the
  * interpolated positions.
- * 
+ *
  * @author Matthew Stevenson <www.mechio.org>
  */
 public class MotionPath extends PathInterpolator{
@@ -155,7 +155,7 @@ public class MotionPath extends PathInterpolator{
     }
     /**
      * Returns a deep copy of the Channel.
-     * 
+     *
      * @return a deep copy of the Channel
      */
     @Override
@@ -207,6 +207,9 @@ public class MotionPath extends PathInterpolator{
         }
         if (this.myXVals != other.myXVals && (this.myXVals == null || !this.myXVals.equals(other.myXVals))) {
             return false;
+        }
+		if (this.getControlPoints() != other.getControlPoints() && (this.getControlPoints() == null || !this.getControlPoints().equals(other.getControlPoints()))) {
+           return false;
         }
         return true;
     }

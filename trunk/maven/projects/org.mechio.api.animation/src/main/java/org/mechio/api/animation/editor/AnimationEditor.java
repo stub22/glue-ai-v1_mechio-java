@@ -42,7 +42,7 @@ public class AnimationEditor extends AbstractEditor<Channel,ChannelEditor>{
      * Property String for the Animation's file path.
      */
     public final static String PROP_PATH = "Path";
-    
+
     private Animation myAnimation;
 
     //TODO: Change this from a file path to a URI
@@ -231,6 +231,7 @@ public class AnimationEditor extends AbstractEditor<Channel,ChannelEditor>{
      */
     public Animation getEnabledAnimation(){
         Animation anim = new Animation();
+		anim.setVersion(getName(), getVersion().getNumber());
         for(ChannelEditor cc : myChildren){
             if(cc.hasFlag(EditState.DISABLED)){
                 continue;

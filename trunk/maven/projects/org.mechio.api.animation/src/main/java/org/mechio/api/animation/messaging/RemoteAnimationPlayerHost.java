@@ -36,29 +36,29 @@ import org.mechio.api.animation.protocol.AnimationSignal;
  * @author Matthew Stevenson <www.mechio.org>
  */
 public class RemoteAnimationPlayerHost implements Listener<AnimationSignal> {
-    private final static Logger theLogger = 
+    private final static Logger theLogger =
             Logger.getLogger(RemoteAnimationPlayerHost.class.getName());
     private AnimationPlayer myAnimationPlayer;
     private MessageAsyncReceiver<AnimationEvent> myAnimationReceiver;
     private Listener<AnimationEvent> myEventPlayer;
     private MessageSender<AnimationSignal> mySignalSender;
-    
+
     public RemoteAnimationPlayerHost(){
         myEventPlayer = new HackedEventPlayer();
     }
-    
+
     public void setAnimationPlayer(AnimationPlayer player){
         if(myAnimationPlayer != null) {
             myAnimationPlayer.removeAnimationSignalListener(this);
         }
-        
+
         myAnimationPlayer = player;
-        
+
         if(myAnimationPlayer != null) {
             myAnimationPlayer.addAnimationSignalListener(this);
         }
     }
-    
+
     public void setAnimationReceiver(
             MessageAsyncReceiver<AnimationEvent> receiver){
         if(myAnimationReceiver != null){
@@ -69,7 +69,7 @@ public class RemoteAnimationPlayerHost implements Listener<AnimationSignal> {
             myAnimationReceiver.addListener(myEventPlayer);
         }
     }
-    
+
     public void setSignalSender(MessageSender<AnimationSignal> sender){
         mySignalSender = sender;
     }
@@ -80,7 +80,7 @@ public class RemoteAnimationPlayerHost implements Listener<AnimationSignal> {
             mySignalSender.notifyListeners(t);
         }
     }
-    
+
     public class AnimationEventPlayer implements Listener<AnimationEvent>{
 
         @Override
@@ -92,30 +92,30 @@ public class RemoteAnimationPlayerHost implements Listener<AnimationSignal> {
             Animation anim = event.getAnimation();
             if(anim == null){
                 theLogger.warning(
-                        "Ignoring null Animaion from AnimationEvent.");
+                        "Ignoring null Animation from AnimationEvent.");
                 return;
             }else if(myAnimationPlayer == null){
                 theLogger.warning("Animation Player is null.  "
-                        + "Ignoring AnimaionEvent.");
+                        + "Ignoring AnimationEvent.");
                 return;
             }
-            theLogger.log(Level.INFO, 
-                    "Sending Animation: {0}, to AnimationPlayer: {1}.", 
+            theLogger.log(Level.INFO,
+                    "Sending Animation: {0}, to AnimationPlayer: {1}.",
                     new Object[]{
                         anim.getVersion().display(),
                         myAnimationPlayer.getAnimationPlayerId()});
-            
+
             myAnimationPlayer.playAnimation(event.getAnimation());
         }
     }
-    
+
     public class HackedEventPlayer implements Listener<AnimationEvent>{
         private Map<Animation,AnimationJob> myAnimationMap;
-        
+
         public HackedEventPlayer(){
             myAnimationMap = new HashMap<Animation, AnimationJob>();
         }
-        
+
         @Override
         public void handleEvent(AnimationEvent event) {
             if(event == null){
@@ -133,8 +133,8 @@ public class RemoteAnimationPlayerHost implements Listener<AnimationSignal> {
                 return;
             }
             if("CLEAR".equals(event.getDestinationId())){
-                theLogger.log(Level.INFO, 
-                        "Clearing all animations from AnimationPlayer: {0}.", 
+                theLogger.log(Level.INFO,
+                        "Clearing all animations from AnimationPlayer: {0}.",
                         myAnimationPlayer.getAnimationPlayerId());
                 List<AnimationJob> jobs = myAnimationPlayer.getCurrentAnimations();
                 if(jobs == null){
@@ -151,29 +151,29 @@ public class RemoteAnimationPlayerHost implements Listener<AnimationSignal> {
             AnimationJob job = myAnimationMap.get(anim);
             if("STOP".equals(event.getDestinationId())){
                 if(job != null){
-                    theLogger.log(Level.INFO, 
-                            "Stopping Animation: {0}, from AnimationPlayer: {1}.", 
+                    theLogger.log(Level.INFO,
+                            "Stopping Animation: {0}, from AnimationPlayer: {1}.",
                             new Object[]{anim.getVersion().display(),
                                 myAnimationPlayer.getAnimationPlayerId()});
                     job.stop(TimeUtils.now());
                 }else{
-                    theLogger.log(Level.INFO, 
-                            "Could not find Animation to stop: {0}, from AnimationPlayer: {1}.", 
+                    theLogger.log(Level.INFO,
+                            "Could not find Animation to stop: {0}, from AnimationPlayer: {1}.",
                             new Object[]{anim.getVersion().display(),
                                 myAnimationPlayer.getAnimationPlayerId()});
                 }
                 return;
-            }                
+            }
             if(job == null){
                 job = myAnimationPlayer.playAnimation(event.getAnimation());
             }else if(PlayState.RUNNING != job.getPlayState()){
-                job.start(TimeUtils.now());
+               job.start(TimeUtils.now());
             }
             boolean loop = "LOOP".equals(event.getDestinationId());
             job.setLoop(loop);
             String msg = loop ? "Looping" : "Playing";
-            theLogger.log(Level.INFO, 
-                    "{0} Animation: {1}, from AnimationPlayer: {2}.", 
+            theLogger.log(Level.INFO,
+                    "{0} Animation: {1}, from AnimationPlayer: {2}.",
                     new Object[]{msg, anim.getVersion().display(),
                         myAnimationPlayer.getAnimationPlayerId()});
 
