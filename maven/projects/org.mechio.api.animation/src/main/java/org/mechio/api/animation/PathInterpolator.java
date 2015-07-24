@@ -115,9 +115,7 @@ public class PathInterpolator implements Interpolator {
     @Override
     public void addPoints(List<Point2D> points) {
         for(Point2D p : points){
-			DecimalFormat dForm = new DecimalFormat("#.##");
-			double y = Double.valueOf(dForm.format(p.getY()));
-            addPoint(p.getX(), y);
+            addPoint(p.getX(), p.getY());
         }
     }
 
