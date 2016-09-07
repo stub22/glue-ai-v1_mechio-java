@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<!--
-	
+
 	This project is used only for releasing to Maven central.
-	It's purpose is to include all our source directories in the folder which gets 
+	It's purpose is to include all our source directories in the folder which gets
 	tagged by release:prepare and checked-out+built+delivered by release:perform.
-	
+
 	Using Sonatype parent as described here:
 		https://docs.sonatype.org/display/Repository/Sonatype+OSS+Maven+Repository+Usage+Guide#SonatypeOSSMavenRepositoryUsageGuide-7a.1.POMandsettingsconfig
-		
+
 	Their pom.xml file is viewable here:
-	
+
     http://repo1.maven.org/maven2/org/sonatype/oss/oss-parent/7/oss-parent-7.pom
     -->
     <parent>
         <groupId>org.sonatype.oss</groupId>
         <artifactId>oss-parent</artifactId>
         <version>7</version>
-    </parent>	
-  
+    </parent>
+
     <groupId>org.mechio</groupId>
     <artifactId>org.mechio.project.root</artifactId>
     <version>1.0.6-SNAPSHOT</version>
@@ -34,12 +34,12 @@
             <url>http://www.mechio.org/license.txt</url>
             <distribution>repo</distribution>
         </license>
-    </licenses>	
-	
+    </licenses>
+
     <modules>
-        <module>maven/org.mechio.modules.all</module>	
+        <module>maven/org.mechio.modules.all</module>
     </modules>
-	
+
     <scm>
         <connection>scm:svn:https://subversion.assembla.com/svn/mechio/trunk/</connection>
         <developerConnection>scm:svn:https://subversion.assembla.com/svn/mechio/trunk/</developerConnection>
@@ -47,7 +47,7 @@
     </scm>
     <properties>
         <!-- Glue Dependencies -->
-        <!-- We use this version for the Avro + QPid messaging bundles provided by Appdapter.org 
+        <!-- We use this version for the Avro + QPid messaging bundles provided by Appdapter.org
                 project.
                 Cogchar relies on this same version of those messaging bundles.
         -->
@@ -63,6 +63,10 @@
         <junit.version>4.8.2</junit.version>
         <maven.compiler.source>1.6</maven.compiler.source>
         <maven.compiler.target>1.6</maven.compiler.target>
+        <!--    Netbeans and OSGi can fail to run projects if "compile on save"
+                is enabled so we're disabling it.
+        Discussed here: https://netbeans.org/bugzilla/show_bug.cgi?id=238494-->
+        <netbeans.compile.on.save>none</netbeans.compile.on.save>
         <netbeans.hint.license>mechio-apache20</netbeans.hint.license>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <rxtx.version>2.1.7</rxtx.version>
@@ -173,21 +177,21 @@
     </dependencyManagement>
     <repositories>
         <!-- 	Explicit reference to Maven central ... ensures it is always checked first (we think),
-                        which prevents downloads of broken files from sonatype-public, in particular: 
+                        which prevents downloads of broken files from sonatype-public, in particular:
                         scala-library-2.10.2.jar.
         -->
         <repository>
             <id>maven-central</id>
             <url>http://repo.maven.apache.org/maven2/</url>
         </repository>
-		
+
         <!-- Sonatype-public allows us to find recent binary releases and snapshosts of Appdapter and JFlux.
         -->
         <repository>
             <id>sonatype-public</id>
             <name>sonatype public</name>
             <url>https://oss.sonatype.org/content/groups/public/</url>
-        </repository>		
+        </repository>
     </repositories>
 
     <pluginRepositories>
@@ -195,25 +199,25 @@
         <pluginRepository>
             <id>maven-central</id>
             <url>http://repo.maven.apache.org/maven2/</url>
-        </pluginRepository>	
-		
+        </pluginRepository>
+
         <pluginRepository>
-            <!-- Snapshots are needed at build time, so we can find snapshot versions of Jflux Avrogen 
-            stuff for use by avro-maven-plugin. 
+            <!-- Snapshots are needed at build time, so we can find snapshot versions of Jflux Avrogen
+            stuff for use by avro-maven-plugin.
             -->
             <id>sonatype-public</id>
             <name>sonatype public</name>
             <url>https://oss.sonatype.org/content/groups/public/</url>
-        </pluginRepository>		
+        </pluginRepository>
     </pluginRepositories>
-    
+
     <distributionManagement>
         <site>
             <id>nexus-site</id>
             <url>dav://maple.robokind.us:8081/nexus/content/sites/site/org/mechio</url>
         </site>
     </distributionManagement>
-    
+
     <build>
         <extensions>
             <extension>
@@ -272,7 +276,7 @@
                     <configuration>
                         <encoding>${project.build.sourceEncoding}</encoding>
                     </configuration>
-                </plugin>				
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
@@ -284,53 +288,54 @@
             </plugins>
         </pluginManagement>
     </build>
-	<profiles>
-		<profile>
-			<id>site-profile</id>
-			<build>
-				<pluginManagement>
-					<plugins>
-						<plugin>
-							<groupId>org.apache.maven.plugins</groupId>
-							<artifactId>maven-site-plugin</artifactId>
-							<version>${version.maven.site.plugin}</version>
-						</plugin>
-					</plugins>
-				</pluginManagement>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-site-plugin</artifactId>
-					</plugin>
-				</plugins>
-			</build>
-			<reporting>
-				<plugins>
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>license-maven-plugin</artifactId>
-						<version>${version.license.maven.plugin}</version>
-						<configuration>
-							<goal>third-party-report</goal>
-						</configuration>
-					</plugin>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-javadoc-plugin</artifactId>
-						<version>${version.maven.javadoc.plugin}</version>
-						<reportSets>
-							<reportSet>
-								<id>aggregate</id>
-								<configuration>
-								</configuration>
-								<reports>
-									<report>aggregate</report>
-								</reports>
-							</reportSet>
-						</reportSets>
-					</plugin>
-				</plugins>
-			</reporting>
-		</profile>
-	</profiles>
+    <profiles>
+        <profile>
+            <id>site-profile</id>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-site-plugin</artifactId>
+                            <version>${version.maven.site.plugin}</version>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-site-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+            <reporting>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>license-maven-plugin</artifactId>
+                        <version>${version.license.maven.plugin}</version>
+                        <configuration>
+                            <goal>third-party-report</goal>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>${version.maven.javadoc.plugin}</version>
+                        <reportSets>
+                            <reportSet>
+                                <id>aggregate</id>
+                                <configuration>
+                                </configuration>
+                                <reports>
+                                    <report>aggregate</report>
+                                </reports>
+                            </reportSet>
+                        </reportSets>
+                    </plugin>
+                </plugins>
+            </reporting>
+        </profile>
+    </profiles>
+
 </project>
