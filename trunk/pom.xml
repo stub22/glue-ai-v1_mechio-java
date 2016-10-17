@@ -51,9 +51,9 @@
                 project.
                 Cogchar relies on this same version of those messaging bundles.
         -->
-        <appdapter.msg.version>1.2.4-SNAPSHOT</appdapter.msg.version>
-        <appdapter.version>1.2.4-SNAPSHOT</appdapter.version>
-        <jflux.version>0.2.5-SNAPSHOT</jflux.version>
+        <appdapter.msg.version>1.2.4</appdapter.msg.version>
+        <appdapter.version>1.2.4</appdapter.version>
+        <jflux.version>0.2.5</jflux.version>
         <!-- Non Glue Dependencies -->
         <commons.math.version>2.2</commons.math.version>
         <encoding>UTF-8</encoding>
