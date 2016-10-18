@@ -5,7 +5,7 @@
 	<parent>
         <artifactId>org.mechio.modules.sensor</artifactId>
         <groupId>org.mechio</groupId>
-        <version>1.0.6-SNAPSHOT</version>
+        <version>1.0.6</version>
 		<relativePath>../../org.mechio.modules.sensor/pom.xml</relativePath>
     </parent>
     <artifactId>org.mechio.impl.sensor</artifactId>
