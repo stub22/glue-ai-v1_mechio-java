@@ -1,0 +1,34 @@
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.mechio</groupId>
+    <version>1.0.3</version>
+
+    <artifactId>org.mechio.client.basic.demo.r25</artifactId>
+    <packaging>jar</packaging>
+
+    <name>${project.artifactId}</name>
+    
+    <repositories>
+        <repository>
+            <id>sonatype-public</id>
+            <!-- Needed for snapshots -->
+            <name>sonatype public</name>
+            <url>https://oss.sonatype.org/content/groups/public/</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>org.mechio.client.basic</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.appdapter</groupId>
+            <artifactId>ext.bundle.osgi.common</artifactId>
+            <version>1.2.0</version>
+        </dependency>
+    </dependencies>
+</project>
