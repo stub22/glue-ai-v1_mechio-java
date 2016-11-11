@@ -16,56 +16,64 @@
 
 package org.mechio.client.basic;
 
-import java.net.URISyntaxException;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Session;
 import org.jflux.api.messaging.rk.MessageSender;
 import org.mechio.api.animation.messaging.RemoteAnimationPlayerClient;
 import org.mechio.api.animation.protocol.AnimationEvent;
-import org.mechio.impl.animation.messaging.PortableAnimationEvent;
 import org.mechio.client.basic.ConnectionContext.MioServiceConnector;
+import org.mechio.impl.animation.messaging.PortableAnimationEvent;
+
+import java.net.URISyntaxException;
+import java.util.Map;
+import java.util.TreeMap;
+
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.Session;
 
 /**
- *
  * @author Matthew Stevenson <www.mechio.org>
  */
-final class MioAnimationConnector extends MioServiceConnector{
-    final static String ANIMATION_SENDER = "animationSender";
-    private String myAnimDest = "animationRequest";
-    
-    static MioAnimationConnector theMioAnimationConnector;
-    
-    static synchronized MioAnimationConnector getConnector(){
-        if(theMioAnimationConnector == null){
-            theMioAnimationConnector = new MioAnimationConnector();
-        }
-        return theMioAnimationConnector;
-    }
-    
-    @Override
-    protected synchronized void addConnection(Session session) 
-            throws JMSException, URISyntaxException{
-        if(myConnectionContext == null || myConnectionsFlag){
-            return;
-        }
-        Destination anim = ConnectionContext.getTopic(myAnimDest);
-        myConnectionContext.addSender(ANIMATION_SENDER, session, anim, 
-                new PortableAnimationEvent.MessageRecordAdapter());
-        myConnectionsFlag = true;
-    }
-    
-    synchronized RemoteAnimationPlayerClient buildRemoteClient() {
-        if(myConnectionContext == null || !myConnectionsFlag){
-            return null;
-        }
-        
-        MessageSender<AnimationEvent> animSender = myConnectionContext.getSender(ANIMATION_SENDER);
-        
-        RemoteAnimationPlayerClient client = new RemoteAnimationPlayerClient(
-                null, "animationPlayer", "remoteAnimationPlayerId");
-        client.setAnimationEventFactory(new PortableAnimationEvent.Factory());
-        client.setAnimationEventSender(animSender);
-        return client;
-    }
+final class MioAnimationConnector extends MioServiceConnector {
+	final static String ANIMATION_SENDER = "animationSender";
+	private String myAnimDest = "animationRequest";
+
+	static Map<String, MioAnimationConnector> theMioAnimationConnectorMap = new TreeMap<>();
+
+	static synchronized MioAnimationConnector getConnector() {
+		return getConnector(MechIO.getAnimationContextId());
+	}
+
+	static synchronized MioAnimationConnector getConnector(final String context) {
+		if (!theMioAnimationConnectorMap.containsKey(context)) {
+			theMioAnimationConnectorMap.put(context, new MioAnimationConnector());
+		}
+
+		return theMioAnimationConnectorMap.get(context);
+	}
+
+	@Override
+	protected synchronized void addConnection(Session session)
+			throws JMSException, URISyntaxException {
+		if (myConnectionContext == null || myConnectionsFlag) {
+			return;
+		}
+		Destination anim = ConnectionContext.getTopic(myAnimDest);
+		myConnectionContext.addSender(ANIMATION_SENDER, session, anim,
+				new PortableAnimationEvent.MessageRecordAdapter());
+		myConnectionsFlag = true;
+	}
+
+	synchronized RemoteAnimationPlayerClient buildRemoteClient() {
+		if (myConnectionContext == null || !myConnectionsFlag) {
+			return null;
+		}
+
+		MessageSender<AnimationEvent> animSender = myConnectionContext.getSender(ANIMATION_SENDER);
+
+		RemoteAnimationPlayerClient client = new RemoteAnimationPlayerClient(
+				null, "animationPlayer", "remoteAnimationPlayerId");
+		client.setAnimationEventFactory(new PortableAnimationEvent.Factory());
+		client.setAnimationEventSender(animSender);
+		return client;
+	}
 }
