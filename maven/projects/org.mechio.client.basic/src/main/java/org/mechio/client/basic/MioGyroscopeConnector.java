@@ -16,10 +16,6 @@
 
 package org.mechio.client.basic;
 
-import java.net.URISyntaxException;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Session;
 import org.jflux.api.core.util.EmptyAdapter;
 import org.jflux.api.messaging.rk.MessageAsyncReceiver;
 import org.jflux.api.messaging.rk.MessageSender;
@@ -33,61 +29,74 @@ import org.mechio.impl.sensor.FilteredVector3Record;
 import org.mechio.impl.sensor.GyroConfigRecord;
 import org.mechio.impl.sensor.HeaderRecord;
 
+import java.net.URISyntaxException;
+import java.util.Map;
+import java.util.TreeMap;
+
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.Session;
+
 /**
- *
  * @author Amy Jessica Book <jgpallack@gmail.com>
  */
-final class MioGyroscopeConnector extends MioServiceConnector{
-    final static String GYRO_VALUE_RECEIVER = "gyroValueReceiver";
-    final static String GYRO_CONFIG_SENDER = "gyroConfigSender";
-    final static String GYRO_READ_PERIOD_SENDER = "gyroReadPeriodSender";
-    
-    private static MioGyroscopeConnector theMioGyroscopeConnector;
-    
-    private String theGyroInputDest = "gyroEvent";
-    private String theGyroConfigDest = "gyroConfig";
-    private String theGyroReadDest = "gyroRead";
-    
-    static synchronized MioGyroscopeConnector getConnector(){
-        if(theMioGyroscopeConnector == null){
-            theMioGyroscopeConnector = new MioGyroscopeConnector();
-        }
-        return theMioGyroscopeConnector;
-    }
-    
-    @Override
-    protected synchronized void addConnection(Session session) 
-            throws JMSException, URISyntaxException{
-        if(myConnectionContext == null || myConnectionsFlag){
-            return;
-        }
-        Destination gyroValReceiver = ConnectionContext.getTopic(theGyroInputDest);
-        myConnectionContext.addAsyncReceiver(GYRO_VALUE_RECEIVER, session, gyroValReceiver,
-                FilteredVector3Record.class, FilteredVector3Record.SCHEMA$,
-                new EmptyAdapter<FilteredVector3Record, FilteredVector3Record>());
-        Destination gyroCfgSender = ConnectionContext.getTopic(theGyroConfigDest);
-        myConnectionContext.addSender(GYRO_CONFIG_SENDER, session, gyroCfgSender, 
-                new EmptyAdapter<GyroConfigRecord, GyroConfigRecord>());
-        Destination gyroPerSender = ConnectionContext.getTopic(theGyroReadDest);
-        myConnectionContext.addSender(GYRO_READ_PERIOD_SENDER, session, gyroPerSender, 
-                new EmptyAdapter<DeviceReadPeriodRecord, DeviceReadPeriodRecord>());
-        myConnectionsFlag = true;
-    }
-    
-    synchronized RemoteGyroscopeServiceClient buildRemoteClient() {
-        if(myConnectionContext == null || !myConnectionsFlag){
-            return null;
-        }
-        MessageAsyncReceiver<FilteredVector3Event> gyroValReceiver = 
-                myConnectionContext.getAsyncReceiver(GYRO_VALUE_RECEIVER);
-        MessageSender<GyroConfigEvent<HeaderRecord>> gyroCfgSender = 
-                myConnectionContext.getSender(GYRO_CONFIG_SENDER);
-        MessageSender<DeviceReadPeriodEvent<HeaderRecord>> gyroPerSender = 
-                myConnectionContext.getSender(GYRO_READ_PERIOD_SENDER);
-        
-        RemoteGyroscopeServiceClient<HeaderRecord> client =
-                new RemoteGyroscopeServiceClient<HeaderRecord>(
-                gyroCfgSender, gyroPerSender, gyroValReceiver);
-        return client;
-    }
+final class MioGyroscopeConnector extends MioServiceConnector {
+	final static String GYRO_VALUE_RECEIVER = "gyroValueReceiver";
+	final static String GYRO_CONFIG_SENDER = "gyroConfigSender";
+	final static String GYRO_READ_PERIOD_SENDER = "gyroReadPeriodSender";
+
+	private String theGyroInputDest = "gyroEvent";
+	private String theGyroConfigDest = "gyroConfig";
+	private String theGyroReadDest = "gyroRead";
+
+	static Map<String, MioGyroscopeConnector> theMioGyroscopeConnectorMap = new TreeMap<>();
+
+	static synchronized MioGyroscopeConnector getConnector() {
+		return getConnector(MechIO.getSensorContextId());
+	}
+
+	static synchronized MioGyroscopeConnector getConnector(final String context) {
+		if (!theMioGyroscopeConnectorMap.containsKey(context)) {
+			final MioGyroscopeConnector mioGyroscopeConnector = new MioGyroscopeConnector();
+			theMioGyroscopeConnectorMap.put(context, mioGyroscopeConnector);
+		}
+
+		return theMioGyroscopeConnectorMap.get(context);
+	}
+
+	@Override
+	protected synchronized void addConnection(Session session)
+			throws JMSException, URISyntaxException {
+		if (myConnectionContext == null || myConnectionsFlag) {
+			return;
+		}
+		Destination gyroValReceiver = ConnectionContext.getTopic(theGyroInputDest);
+		myConnectionContext.addAsyncReceiver(GYRO_VALUE_RECEIVER, session, gyroValReceiver,
+				FilteredVector3Record.class, FilteredVector3Record.SCHEMA$,
+				new EmptyAdapter<FilteredVector3Record, FilteredVector3Record>());
+		Destination gyroCfgSender = ConnectionContext.getTopic(theGyroConfigDest);
+		myConnectionContext.addSender(GYRO_CONFIG_SENDER, session, gyroCfgSender,
+				new EmptyAdapter<GyroConfigRecord, GyroConfigRecord>());
+		Destination gyroPerSender = ConnectionContext.getTopic(theGyroReadDest);
+		myConnectionContext.addSender(GYRO_READ_PERIOD_SENDER, session, gyroPerSender,
+				new EmptyAdapter<DeviceReadPeriodRecord, DeviceReadPeriodRecord>());
+		myConnectionsFlag = true;
+	}
+
+	synchronized RemoteGyroscopeServiceClient buildRemoteClient() {
+		if (myConnectionContext == null || !myConnectionsFlag) {
+			return null;
+		}
+		MessageAsyncReceiver<FilteredVector3Event> gyroValReceiver =
+				myConnectionContext.getAsyncReceiver(GYRO_VALUE_RECEIVER);
+		MessageSender<GyroConfigEvent<HeaderRecord>> gyroCfgSender =
+				myConnectionContext.getSender(GYRO_CONFIG_SENDER);
+		MessageSender<DeviceReadPeriodEvent<HeaderRecord>> gyroPerSender =
+				myConnectionContext.getSender(GYRO_READ_PERIOD_SENDER);
+
+		RemoteGyroscopeServiceClient<HeaderRecord> client =
+				new RemoteGyroscopeServiceClient<>(
+						gyroCfgSender, gyroPerSender, gyroValReceiver);
+		return client;
+	}
 }

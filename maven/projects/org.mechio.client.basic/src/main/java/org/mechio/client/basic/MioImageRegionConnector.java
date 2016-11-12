@@ -16,10 +16,6 @@
 
 package org.mechio.client.basic;
 
-import java.net.URISyntaxException;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Session;
 import org.jflux.api.core.util.EmptyAdapter;
 import org.jflux.api.messaging.rk.MessageAsyncReceiver;
 import org.jflux.api.messaging.rk.MessageSender;
@@ -34,93 +30,106 @@ import org.mechio.api.vision.messaging.RemoteImageRegionServiceClient;
 import org.mechio.client.basic.ConnectionContext.MioServiceConnector;
 import org.mechio.impl.vision.ImageRegionListRecord;
 
+import java.net.URISyntaxException;
+import java.util.Map;
+import java.util.TreeMap;
+
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.Session;
+
 /**
- *
  * @author Amy Jessica Book <jgpallack@gmail.com>
  */
-final class MioImageRegionConnector extends MioServiceConnector{
-    final static String CMD_SENDER = "irCommandSender";
-    final static String CONFIG_SENDER = "irConfigSender";
-    final static String ERROR_RECEIVER = "irErrorReceiver";
-    final static String EVENT_RECEIVER = "irEventReceiver";
-    
-    static MioImageRegionConnector theMioImageRegionConnector;
-    
-    private String myCommandDest = "visionproc0Command";
-    private String myConfigDest = "visionproc0Command"; //Same as command
-    private String myErrorDest = "visionproc0Error";
-    private String myEventDest = "visionproc0Event";
-    
-    static synchronized MioImageRegionConnector getConnector(){
-        if(theMioImageRegionConnector == null){
-            theMioImageRegionConnector = new MioImageRegionConnector();
-        }
-        return theMioImageRegionConnector;
-    }
-    
-    @Override
-    protected synchronized void addConnection(Session session) 
-            throws JMSException, URISyntaxException{
-        if(myConnectionContext == null || myConnectionsFlag){
-            return;
-        }
-        
-        readCameraId();
-        
-        Destination cmdDest = ConnectionContext.getQueue(myCommandDest);
-        Destination confDest = ConnectionContext.getQueue(myConfigDest);
-        Destination errDest = ConnectionContext.getTopic(myErrorDest);
-        Destination evtDest = ConnectionContext.getTopic(myEventDest);
-        
-        myConnectionContext.addSender(CMD_SENDER, session, cmdDest, 
-                new EmptyAdapter());
-        myConnectionContext.addSender(CONFIG_SENDER, session, confDest, 
-                new EmptyAdapter());
-        myConnectionContext.addAsyncReceiver(ERROR_RECEIVER, session, errDest,
-                ServiceErrorRecord.class, ServiceErrorRecord.SCHEMA$,
-                new EmptyAdapter());
-        myConnectionContext.addAsyncReceiver(EVENT_RECEIVER, session, evtDest,
-                ImageRegionListRecord.class, ImageRegionListRecord.SCHEMA$,
-                new EmptyAdapter());
-        
-        myConnectionsFlag = true;
-    }
-    
-    synchronized RemoteImageRegionServiceClient<FaceDetectServiceConfig> buildRemoteClient(){
-        if(myConnectionContext == null || !myConnectionsFlag){
-            return null;
-        }
-        MessageSender<ServiceCommand> cmdSender = 
-                myConnectionContext.getSender(CMD_SENDER);
-        MessageSender<CameraServiceConfig> confSender = 
-                myConnectionContext.getSender(CONFIG_SENDER);
-        MessageAsyncReceiver<ServiceError> errReceiver = 
-                myConnectionContext.getAsyncReceiver(ERROR_RECEIVER);
-        MessageAsyncReceiver<ImageEvent> evtReceiver = 
-                myConnectionContext.getAsyncReceiver(EVENT_RECEIVER);
-        
-        RemoteImageRegionServiceClient<FaceDetectServiceConfig> client = 
-                new RemoteImageRegionServiceClient(
-                FaceDetectServiceConfig.class, "imageRegionServiceId",
-                "remoteImageRegionServiceId", cmdSender, confSender,
-                errReceiver, new PortableServiceCommand.Factory(), evtReceiver);
-        
-        return client;
-    }
+final class MioImageRegionConnector extends MioServiceConnector {
+	final static String CMD_SENDER = "irCommandSender";
+	final static String CONFIG_SENDER = "irConfigSender";
+	final static String ERROR_RECEIVER = "irErrorReceiver";
+	final static String EVENT_RECEIVER = "irEventReceiver";
 
-    private synchronized void readCameraId() {
-        String cameraId = UserSettings.getImageRegionId();
-        
-        if(cameraId.equals("0")) {
-            myCommandDest = myCommandDest.replace("1", cameraId);
-            myConfigDest = myConfigDest.replace("1", cameraId);
-            myErrorDest = myErrorDest.replace("1", cameraId);
-            myEventDest = myEventDest.replace("1", cameraId);
-        } else if(cameraId.equals("1")) {
-            myCommandDest = myCommandDest.replace("0", cameraId);
-            myConfigDest = myConfigDest.replace("0", cameraId);
-            myErrorDest = myErrorDest.replace("0", cameraId);
-            myEventDest = myEventDest.replace("0", cameraId);
-        }
-    }
+	private String myCommandDest = "visionproc0Command";
+	private String myConfigDest = "visionproc0Command"; //Same as command
+	private String myErrorDest = "visionproc0Error";
+	private String myEventDest = "visionproc0Event";
+
+	static Map<String, MioImageRegionConnector> theMioImageRegionConnectorMap = new TreeMap<>();
+
+	static synchronized MioImageRegionConnector getConnector() {
+		return getConnector(MechIO.getImageRegionContextId());
+	}
+
+	static synchronized MioImageRegionConnector getConnector(final String context) {
+		if (!theMioImageRegionConnectorMap.containsKey(context)) {
+			final MioImageRegionConnector mioImageRegionConnector = new MioImageRegionConnector();
+			theMioImageRegionConnectorMap.put(context, mioImageRegionConnector);
+		}
+
+		return theMioImageRegionConnectorMap.get(context);
+	}
+
+	@Override
+	protected synchronized void addConnection(Session session)
+			throws JMSException, URISyntaxException {
+		if (myConnectionContext == null || myConnectionsFlag) {
+			return;
+		}
+
+		readCameraId();
+
+		Destination cmdDest = ConnectionContext.getQueue(myCommandDest);
+		Destination confDest = ConnectionContext.getQueue(myConfigDest);
+		Destination errDest = ConnectionContext.getTopic(myErrorDest);
+		Destination evtDest = ConnectionContext.getTopic(myEventDest);
+
+		myConnectionContext.addSender(CMD_SENDER, session, cmdDest,
+				new EmptyAdapter());
+		myConnectionContext.addSender(CONFIG_SENDER, session, confDest,
+				new EmptyAdapter());
+		myConnectionContext.addAsyncReceiver(ERROR_RECEIVER, session, errDest,
+				ServiceErrorRecord.class, ServiceErrorRecord.SCHEMA$,
+				new EmptyAdapter());
+		myConnectionContext.addAsyncReceiver(EVENT_RECEIVER, session, evtDest,
+				ImageRegionListRecord.class, ImageRegionListRecord.SCHEMA$,
+				new EmptyAdapter());
+
+		myConnectionsFlag = true;
+	}
+
+	synchronized RemoteImageRegionServiceClient<FaceDetectServiceConfig> buildRemoteClient() {
+		if (myConnectionContext == null || !myConnectionsFlag) {
+			return null;
+		}
+		MessageSender<ServiceCommand> cmdSender =
+				myConnectionContext.getSender(CMD_SENDER);
+		MessageSender<CameraServiceConfig> confSender =
+				myConnectionContext.getSender(CONFIG_SENDER);
+		MessageAsyncReceiver<ServiceError> errReceiver =
+				myConnectionContext.getAsyncReceiver(ERROR_RECEIVER);
+		MessageAsyncReceiver<ImageEvent> evtReceiver =
+				myConnectionContext.getAsyncReceiver(EVENT_RECEIVER);
+
+		RemoteImageRegionServiceClient<FaceDetectServiceConfig> client =
+				new RemoteImageRegionServiceClient(
+						FaceDetectServiceConfig.class, "imageRegionServiceId",
+						"remoteImageRegionServiceId", cmdSender, confSender,
+						errReceiver, new PortableServiceCommand.Factory(), evtReceiver);
+
+		return client;
+	}
+
+	private synchronized void readCameraId() {
+		String cameraId = UserSettings.getImageRegionId();
+
+		if (cameraId.equals("0")) {
+			myCommandDest = myCommandDest.replace("1", cameraId);
+			myConfigDest = myConfigDest.replace("1", cameraId);
+			myErrorDest = myErrorDest.replace("1", cameraId);
+			myEventDest = myEventDest.replace("1", cameraId);
+		} else if (cameraId.equals("1")) {
+			myCommandDest = myCommandDest.replace("0", cameraId);
+			myConfigDest = myConfigDest.replace("0", cameraId);
+			myErrorDest = myErrorDest.replace("0", cameraId);
+			myEventDest = myEventDest.replace("0", cameraId);
+		}
+	}
 }
