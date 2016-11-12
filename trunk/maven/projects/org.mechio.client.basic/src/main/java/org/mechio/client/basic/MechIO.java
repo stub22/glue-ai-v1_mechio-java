@@ -163,12 +163,24 @@ public final class MechIO {
 	 * @return the sensor client
 	 */
 	public static RemoteGpioServiceClient<HeaderRecord> connectSensors() {
+		return connectSensors(UserSettings.getSensorAddress());
+	}
+
+
+	/**
+	 * Connects to the sensor controller.
+	 *
+	 * @param address The address of the robot/avatar
+	 * @return the sensor client
+	 */
+	public static RemoteGpioServiceClient<HeaderRecord> connectSensors(final String address) {
 		try {
-			ConnectionContext context = getContext(theSensorContextPrefix);
-			context.addConnection(
-					MioSensorConnector.getConnector(), UserSettings.getSensorAddress());
-			RemoteGpioServiceClient<HeaderRecord> gpioClient =
-					MioSensorConnector.getConnector().buildRemoteClient();
+			final String sensorContextId = getSensorContextId(address);
+			final MioSensorConnector connector = MioSensorConnector.getConnector(sensorContextId);
+
+			ConnectionContext context = getContext(sensorContextId);
+			context.addConnection(connector, address);
+			RemoteGpioServiceClient<HeaderRecord> gpioClient = connector.buildRemoteClient();
 			context.start();
 			MioSensorConnector.initializeGpioClient(gpioClient);
 			return gpioClient;
@@ -185,13 +197,23 @@ public final class MechIO {
 	 * @return the accelerometer client
 	 */
 	public static RemoteAccelerometerServiceClient<HeaderRecord> connectAccelerometer() {
+		return connectAccelerometer(UserSettings.getAccelerometerAddress());
+	}
+
+	/**
+	 * Connects to the accelerometer controller.
+	 *
+	 * @param address The address of the robot/avatar
+	 * @return the accelerometer client
+	 */
+	public static RemoteAccelerometerServiceClient<HeaderRecord> connectAccelerometer(final String address) {
 		try {
-			ConnectionContext context = getContext(theSensorContextPrefix);
-			context.addConnection(
-					MioAccelerometerConnector.getConnector(),
-					UserSettings.getAccelerometerAddress());
-			RemoteAccelerometerServiceClient<HeaderRecord> accelClient =
-					MioAccelerometerConnector.getConnector().buildRemoteClient();
+			final String sensorContextId = getSensorContextId(address);
+			final MioAccelerometerConnector connector = MioAccelerometerConnector.getConnector(sensorContextId);
+
+			ConnectionContext context = getContext(sensorContextId);
+			context.addConnection(connector, address);
+			RemoteAccelerometerServiceClient<HeaderRecord> accelClient = connector.buildRemoteClient();
 			context.start();
 			return accelClient;
 		} catch (Exception ex) {
@@ -207,13 +229,23 @@ public final class MechIO {
 	 * @return the gyroscope client
 	 */
 	public static RemoteGyroscopeServiceClient<HeaderRecord> connectGyroscope() {
+		return connectGyroscope(UserSettings.getGyroscopeAddress());
+	}
+
+	/**
+	 * Connects to the gyroscope controller.
+	 *
+	 * @param address The address of the robot/avatar
+	 * @return the gyroscope client
+	 */
+	public static RemoteGyroscopeServiceClient<HeaderRecord> connectGyroscope(final String address) {
 		try {
-			ConnectionContext context = getContext(theSensorContextPrefix);
-			context.addConnection(
-					MioGyroscopeConnector.getConnector(),
-					UserSettings.getGyroscopeAddress());
-			RemoteGyroscopeServiceClient<HeaderRecord> gyroClient =
-					MioGyroscopeConnector.getConnector().buildRemoteClient();
+			final String sensorContextId = getSensorContextId(address);
+			final MioGyroscopeConnector connector = MioGyroscopeConnector.getConnector(sensorContextId);
+
+			ConnectionContext context = getContext(sensorContextId);
+			context.addConnection(connector, address);
+			RemoteGyroscopeServiceClient<HeaderRecord> gyroClient = connector.buildRemoteClient();
 			context.start();
 			return gyroClient;
 		} catch (Exception ex) {
@@ -229,13 +261,23 @@ public final class MechIO {
 	 * @return the compass client
 	 */
 	public static RemoteCompassServiceClient<HeaderRecord> connectCompass() {
+		return connectCompass(UserSettings.getCompassAddress());
+	}
+
+	/**
+	 * Connects to the compass controller.
+	 *
+	 * @param address The address of the robot/avatar
+	 * @return the compass client
+	 */
+	public static RemoteCompassServiceClient<HeaderRecord> connectCompass(final String address) {
 		try {
-			ConnectionContext context = getContext(theSensorContextPrefix);
-			context.addConnection(
-					MioCompassConnector.getConnector(),
-					UserSettings.getCompassAddress());
-			RemoteCompassServiceClient<HeaderRecord> compassClient =
-					MioCompassConnector.getConnector().buildRemoteClient();
+			final String sensorContextId = getSensorContextId(address);
+			final MioCompassConnector connector = MioCompassConnector.getConnector(sensorContextId);
+
+			ConnectionContext context = getContext(sensorContextId);
+			context.addConnection(connector, address);
+			RemoteCompassServiceClient<HeaderRecord> compassClient = connector.buildRemoteClient();
 			context.start();
 			return compassClient;
 		} catch (Exception ex) {
@@ -251,12 +293,23 @@ public final class MechIO {
 	 * @return RemoteImageServiceClient for controlling the robot's cameras
 	 */
 	public static RemoteImageServiceClient<CameraServiceConfig> connectCameraService() {
+		return connectCameraService(UserSettings.getCameraAddress());
+	}
+
+	/**
+	 * Connects to the robot's cameras.
+	 *
+	 * @param address The address of the robot/avatar
+	 * @return RemoteImageServiceClient for controlling the robot's cameras
+	 */
+	public static RemoteImageServiceClient<CameraServiceConfig> connectCameraService(final String address) {
 		try {
-			ConnectionContext context = getContext(theCameraContextPrefix);
-			context.addConnection(MioCameraConnector.getConnector(),
-					UserSettings.getCameraAddress());
-			RemoteImageServiceClient<CameraServiceConfig> cameraClient =
-					MioCameraConnector.getConnector().buildRemoteClient();
+			final String cameraContextId = getCameraContextId(address);
+			final MioCameraConnector connector = MioCameraConnector.getConnector(cameraContextId);
+
+			ConnectionContext context = getContext(cameraContextId);
+			context.addConnection(connector, address);
+			RemoteImageServiceClient<CameraServiceConfig> cameraClient = connector.buildRemoteClient();
 
 			context.start();
 			cameraClient.start();
@@ -274,12 +327,23 @@ public final class MechIO {
 	 * @return RemoteImageRegionServiceClient for controlling the robot's face detection
 	 */
 	public static RemoteImageRegionServiceClient<FaceDetectServiceConfig> connectImageRegionService() {
+		return connectImageRegionService(UserSettings.getImageRegionAddress());
+	}
+
+	/**
+	 * Connects to the robot's face-detection service.
+	 *
+	 * @param address The address of the robot/avatar
+	 * @return RemoteImageRegionServiceClient for controlling the robot's face detection
+	 */
+	public static RemoteImageRegionServiceClient<FaceDetectServiceConfig> connectImageRegionService(final String address) {
 		try {
-			ConnectionContext context = getContext(theImageRegionContextPrefix);
-			context.addConnection(MioImageRegionConnector.getConnector(),
-					UserSettings.getImageRegionAddress());
-			RemoteImageRegionServiceClient<FaceDetectServiceConfig> imageRegionClient =
-					MioImageRegionConnector.getConnector().buildRemoteClient();
+			final String imageRegionContextId = getImageRegionContextId(address);
+			final MioImageRegionConnector connector = MioImageRegionConnector.getConnector(imageRegionContextId);
+
+			ConnectionContext context = getContext(imageRegionContextId);
+			context.addConnection(connector, address);
+			RemoteImageRegionServiceClient<FaceDetectServiceConfig> imageRegionClient = connector.buildRemoteClient();
 
 			context.start();
 			imageRegionClient.start();
