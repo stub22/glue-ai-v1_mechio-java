@@ -61,8 +61,8 @@
         <felix.gogo.command.version>0.2.2</felix.gogo.command.version>
         <felix.org.osgi.core.version>1.4.0</felix.org.osgi.core.version>
         <junit.version>4.8.2</junit.version>
-        <maven.compiler.source>1.6</maven.compiler.source>
-        <maven.compiler.target>1.6</maven.compiler.target>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
         <!--    Netbeans and OSGi can fail to run projects if "compile on save"
                 is enabled so we're disabling it.
         Discussed here: https://netbeans.org/bugzilla/show_bug.cgi?id=238494-->
