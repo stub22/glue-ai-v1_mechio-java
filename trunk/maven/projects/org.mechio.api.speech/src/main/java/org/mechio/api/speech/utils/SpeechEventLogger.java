@@ -15,36 +15,35 @@
  */
 package org.mechio.api.speech.utils;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jflux.api.core.Listener;
 import org.mechio.api.speech.SpeechEvent;
 import org.mechio.api.speech.SpeechEventList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- *
  * @author Matthew Stevenson <www.mechio.org>
  */
-public class SpeechEventLogger implements Listener<SpeechEventList<SpeechEvent>>{
-    private final static Logger theLogger = Logger.getLogger(SpeechEventLogger.class.getName());
+public class SpeechEventLogger implements Listener<SpeechEventList<SpeechEvent>> {
+	private static final Logger theLogger = LoggerFactory.getLogger(SpeechEventLogger.class);
 
-    @Override
-    public void handleEvent(SpeechEventList<SpeechEvent> t) {
-        for(SpeechEvent e: t.getSpeechEvents()) {
-            theLogger.log(Level.INFO, "[SpeechEvent:{0}]\n"
-                    + "\tspeech service id: {1}, \n"
-                    + "\tstream number: {2}, \n"
-                    + "\ttext position: {3}, \n"
-                    + "\ttext length: {4}, \n"
-                    + "\tcurrent data: {5}, \n"
-                    + "\tnext data: {6}, \n"
-                    + "\tduration: {7}, \n"
-                    + "\tstring data: {8}", 
-                    new Object[]{e.getEventType(),
-                        t.getTimestampMillisecUTC(), e.getStreamNumber(),
-                        e.getTextPosition(), e.getTextLength(),
-                        e.getCurrentData(), e.getNextData(),
-                        e.getDuration(), e.getStringData()});
-        }
-    }
+	@Override
+	public void handleEvent(SpeechEventList<SpeechEvent> t) {
+		for (SpeechEvent e : t.getSpeechEvents()) {
+			theLogger.info("[SpeechEvent:{}]\n"
+							+ "\tspeech service id: {}, \n"
+							+ "\tstream number: {}, \n"
+							+ "\ttext position: {}, \n"
+							+ "\ttext length: {}, \n"
+							+ "\tcurrent data: {}, \n"
+							+ "\tnext data: {}, \n"
+							+ "\tduration: {}, \n"
+							+ "\tstring data: {}",
+					e.getEventType(),
+					t.getTimestampMillisecUTC(), e.getStreamNumber(),
+					e.getTextPosition(), e.getTextLength(),
+					e.getCurrentData(), e.getNextData(),
+					e.getDuration(), e.getStringData());
+		}
+	}
 }

@@ -15,77 +15,75 @@
  */
 package org.mechio.api.motion.messaging;
 
-import java.util.logging.Logger;
 import org.jflux.api.common.rk.position.NormalizableRange;
 import org.jflux.api.common.rk.property.PropertyChangeNotifier;
 import org.mechio.api.motion.JointProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- *
  * @author Matthew Stevenson <www.mechio.org>
  */
 
-public class RemoteJointProperty<T> 
-        extends PropertyChangeNotifier implements JointProperty<T> {
-    private final static Logger theLogger = Logger.getLogger(RemoteJointProperty.class.getName());
-    
-    private String myPropertyName;
-    private String myDisplayName;
-    private Class<T> myPropertyClass;
-    private T myPropertyValue;
-    private NormalizableRange<T> myPropertyRange;
+public class RemoteJointProperty<T>
+		extends PropertyChangeNotifier implements JointProperty<T> {
+	private static final Logger theLogger = LoggerFactory.getLogger(RemoteJointProperty.class);
 
-    public RemoteJointProperty(
-            String propertyName, String displayName, 
-            Class<T> propertyClass, T val, NormalizableRange<T> range) {
-        if(propertyName == null || displayName == null 
-                || propertyClass == null || val == null || range == null){
-            throw new NullPointerException();
-        }
-        myPropertyName = propertyName;
-        myDisplayName = displayName;
-        myPropertyClass = propertyClass;
-        myPropertyValue = val;
-        myPropertyRange = range;
-    }
-    
-    
+	private String myPropertyName;
+	private String myDisplayName;
+	private Class<T> myPropertyClass;
+	private T myPropertyValue;
+	private NormalizableRange<T> myPropertyRange;
 
-    @Override
-    public String getPropertyName() {
-        return myPropertyName;
-    }
+	public RemoteJointProperty(
+			String propertyName, String displayName,
+			Class<T> propertyClass, T val, NormalizableRange<T> range) {
+		if (propertyName == null || displayName == null
+				|| propertyClass == null || val == null || range == null) {
+			throw new NullPointerException();
+		}
+		myPropertyName = propertyName;
+		myDisplayName = displayName;
+		myPropertyClass = propertyClass;
+		myPropertyValue = val;
+		myPropertyRange = range;
+	}
 
-    @Override
-    public String getDisplayName() {
-        return myDisplayName;
-    }
 
-    @Override
-    public Class<T> getPropertyClass() {
-        return myPropertyClass;
-    }
+	@Override
+	public String getPropertyName() {
+		return myPropertyName;
+	}
 
-    @Override
-    public boolean getWriteable() {
-        return true;
-    }
+	@Override
+	public String getDisplayName() {
+		return myDisplayName;
+	}
 
-    @Override
-    public T getValue() {
-        return myPropertyValue;
-    }
+	@Override
+	public Class<T> getPropertyClass() {
+		return myPropertyClass;
+	}
 
-    @Override
-    public void setValue(T val) {
-        myPropertyValue = val;
-//        theLogger.log(Level.INFO, 
-//                "Property [{0}] set to: {1}", 
-//                new Object[]{getDisplayName(), val.toString()});
-    }
+	@Override
+	public boolean getWriteable() {
+		return true;
+	}
 
-    @Override
-    public NormalizableRange<T> getNormalizableRange() {
-        return myPropertyRange;
-    }
+	@Override
+	public T getValue() {
+		return myPropertyValue;
+	}
+
+	@Override
+	public void setValue(T val) {
+		myPropertyValue = val;
+//        theLogger.info("Property [{}] set to: {}",
+//                getDisplayName(), val.toString());
+	}
+
+	@Override
+	public NormalizableRange<T> getNormalizableRange() {
+		return myPropertyRange;
+	}
 }

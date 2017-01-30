@@ -15,10 +15,6 @@
  */
 package org.mechio.api.motion.lifecycle;
 
-import java.util.Map;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jflux.api.common.rk.config.VersionProperty;
 import org.jflux.api.common.rk.osgi.lifecycle.ConfiguredServiceLifecycle;
 import org.jflux.api.common.rk.osgi.lifecycle.ConfiguredServiceParams;
@@ -27,61 +23,63 @@ import org.mechio.api.motion.Robot;
 import org.mechio.api.motion.jointgroup.JointGroup;
 import org.mechio.api.motion.jointgroup.RobotJointGroup;
 import org.mechio.api.motion.jointgroup.RobotJointGroupConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Map;
+import java.util.Properties;
 
 /**
- *
  * @author Matthew Stevenson <www.mechio.org>
  */
 public class RobotJointGroupLifecycle<P> extends
-        ConfiguredServiceLifecycle<JointGroup, RobotJointGroupConfig, P> {
-    private final static Logger theLogger = 
-            Logger.getLogger(RobotJointGroupLifecycle.class.getName());
-    private final static String theRobot = "robot";
-    
-    public RobotJointGroupLifecycle(Robot.Id robotId, Class<P> paramClass, 
-            String paramId, VersionProperty configFormat){
-        super(new ConfiguredServiceParams(
-                JointGroup.class, RobotJointGroupConfig.class, paramClass, 
-                null, null, paramId, RobotJointGroup.VERSION, configFormat));
-        getDependencyDescriptors().add(
-                new DescriptorBuilder(theRobot, Robot.class)
-                        .with(Robot.PROP_ID, robotId.getRobtIdString())
-                        .getDescriptor());
-        if(myRegistrationProperties == null){
-            myRegistrationProperties = new Properties();
-        }
-        myRegistrationProperties.put(Robot.PROP_ID, robotId.getRobtIdString());
-    }
-    
-    @Override
-    protected synchronized JointGroup create(Map<String, Object> dependencies) {
-        JointGroup group = super.create(dependencies);
-        if(group == null){
-            return null;
-        }
-        Robot robot = (Robot)dependencies.get(theRobot);
-        setRobot(group, robot);
-        return group;
-    }
+		ConfiguredServiceLifecycle<JointGroup, RobotJointGroupConfig, P> {
+	private static final Logger theLogger = LoggerFactory.getLogger(RobotJointGroupLifecycle.class);
+	private final static String theRobot = "robot";
 
-    @Override
-    protected void handleChange(String name, Object dependency, Map<String, Object> availableDependencies) {
-        super.handleChange(name, dependency, availableDependencies);
-        if(myService != null && theRobot.equals(name)){
-            setRobot(myService, (Robot)dependency);
-        }
-    }
-    
-    private void setRobot(JointGroup group, Robot robot){
-        if(group == null){
-            return;
-        }
-        if(!(group instanceof RobotJointGroup)){
-            theLogger.log(Level.WARNING, 
-                    "JointGroup is not a RobotJointGroup.  Found {0}.  "
-                    + "Unable to set Robot.", group.getClass());
-            return;
-        }
-        ((RobotJointGroup)group).setRobot(robot);
-    }
+	public RobotJointGroupLifecycle(Robot.Id robotId, Class<P> paramClass,
+									String paramId, VersionProperty configFormat) {
+		super(new ConfiguredServiceParams(
+				JointGroup.class, RobotJointGroupConfig.class, paramClass,
+				null, null, paramId, RobotJointGroup.VERSION, configFormat));
+		getDependencyDescriptors().add(
+				new DescriptorBuilder(theRobot, Robot.class)
+						.with(Robot.PROP_ID, robotId.getRobtIdString())
+						.getDescriptor());
+		if (myRegistrationProperties == null) {
+			myRegistrationProperties = new Properties();
+		}
+		myRegistrationProperties.put(Robot.PROP_ID, robotId.getRobtIdString());
+	}
+
+	@Override
+	protected synchronized JointGroup create(Map<String, Object> dependencies) {
+		JointGroup group = super.create(dependencies);
+		if (group == null) {
+			return null;
+		}
+		Robot robot = (Robot) dependencies.get(theRobot);
+		setRobot(group, robot);
+		return group;
+	}
+
+	@Override
+	protected void handleChange(String name, Object dependency, Map<String, Object> availableDependencies) {
+		super.handleChange(name, dependency, availableDependencies);
+		if (myService != null && theRobot.equals(name)) {
+			setRobot(myService, (Robot) dependency);
+		}
+	}
+
+	private void setRobot(JointGroup group, Robot robot) {
+		if (group == null) {
+			return;
+		}
+		if (!(group instanceof RobotJointGroup)) {
+			theLogger.warn("JointGroup is not a RobotJointGroup.  Found {}.  "
+					+ "Unable to set Robot.", group.getClass());
+			return;
+		}
+		((RobotJointGroup) group).setRobot(robot);
+	}
 }
