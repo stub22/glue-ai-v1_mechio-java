@@ -15,27 +15,23 @@
  */
 package org.mechio.api.speech.utils;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jflux.api.core.Listener;
 import org.mechio.api.speech.viseme.VisemeEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- *
  * @author Matthew Stevenson <www.mechio.org>
  */
-public class VisemeLogger implements Listener<VisemeEvent>{
-    private final static Logger theLogger = Logger.getLogger(VisemeLogger.class.getName());
-    
+public class VisemeLogger implements Listener<VisemeEvent> {
+	private static final Logger theLogger = LoggerFactory.getLogger(VisemeLogger.class);
 
-    @Override
-    public void handleEvent(VisemeEvent event) {
-        theLogger.log(Level.INFO, 
-                "[Viseme Event] cur: {0}, next: {1}, duration: {2}", 
-                new Object[]{
-                    event.getCurrentViseme(), 
-                    event.getNextViseme(),
-                    event.getDuration()});
-    }
-    
+
+	@Override
+	public void handleEvent(VisemeEvent event) {
+		theLogger.info("[Viseme Event] cur: {}, next: {}, duration: {}",
+				event.getCurrentViseme(),
+				event.getNextViseme(),
+				event.getDuration());
+	}
 }

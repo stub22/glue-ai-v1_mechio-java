@@ -15,96 +15,99 @@
  */
 package org.mechio.api.speech.viseme;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jflux.api.common.rk.utils.TimeUtils;
 import org.jflux.api.core.Listener;
 import org.mechio.api.speech.SpeechEvent;
 import org.mechio.api.speech.SpeechEventList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Converts a SpeechEvent to a VisemeEvent and notifies listeners.
- * 
+ *
  * @author Matthew Stevenson <www.mechio.org>
  */
-public class VisemeEventNotifier implements Listener<SpeechEventList<SpeechEvent>>{
-    private final static Logger theLogger = Logger.getLogger(VisemeEventNotifier.class.getName());
-    private List<Listener<VisemeEvent>> myListeners;
-    private long myRemoteStartTime;
-    private long myLocalStartTime;
-    private long myTimeOffset;
-    
-    /**
-     * Creates an empty VisemeEventNotifier.
-     */
-    public VisemeEventNotifier(){
-        myListeners = new ArrayList<Listener<VisemeEvent>>();
-    }
-    
-    /**
-     * Adds a VisemeEvent listener to be notified.
-     * @param listener VisemeEvent listener to add
-     */
-    public void addListener(Listener<VisemeEvent> listener){
-        if(!myListeners.contains(listener)){
-            myListeners.add(listener);
-        }
-    }
-    
-    /**
-     * Removes a VisemeEvent listener.
-     * @param listener VisemeEvent listener to removes
-     */
-    public void removeListener(Listener<VisemeEvent> listener){
-        if(myListeners.contains(listener)){
-            myListeners.remove(listener);
-        }
-    }
-        
-    @Override
-    public void handleEvent(SpeechEventList<SpeechEvent> eventList) {
-        if(eventList == null || eventList.getSpeechEvents().isEmpty()
-                || myListeners.isEmpty()){
-            return;
-        }
-        
-        for(SpeechEvent event: eventList.getSpeechEvents()) {
-            if(event == null || event.getEventType() == null){
-                return;
-            }
-            if(SpeechEvent.SPEECH_START.equals(event.getEventType())){
-                myLocalStartTime = TimeUtils.now();
-//                myRemoteStartTime = eventList.getTimestampMillisecUTC();
-                myRemoteStartTime = TimeUtils.now();
-                myTimeOffset = myLocalStartTime - myRemoteStartTime;
-            }else if(SpeechEvent.VISEME.equals(event.getEventType())){
-                int n = Viseme.values().length;
-                Integer cur = event.getCurrentData();
-                Integer next = event.getNextData();
-                if(cur == null || cur < 0 || cur >= n 
-                        || next == null || next < 0 || next >= n){
-                    theLogger.log(Level.WARNING, 
-                            "Received invalid viseme data: currentViseme={0}, nextViseme={1}, time={2}", 
-                            new Object[]{event.getCurrentData(), 
-                                event.getNextData()});
-                    return;
-                }
-                handleVisemeEvent(new DefaultVisemeEvent(
-                        event, myRemoteStartTime, myTimeOffset));
-            }
-        }
-    }
+public class VisemeEventNotifier implements Listener<SpeechEventList<SpeechEvent>> {
+	private static final Logger theLogger = LoggerFactory.getLogger(VisemeEventNotifier.class);
+	private List<Listener<VisemeEvent>> myListeners;
+	private long myRemoteStartTime;
+	private long myLocalStartTime;
+	private long myTimeOffset;
 
-    /**
-     * Notifies listeners of a VisemeEvent.
-     * @param event VisemeEvent to send to listeners
-     */
-    public void handleVisemeEvent(VisemeEvent event) {
-        for(Listener<VisemeEvent> l : myListeners){
-            l.handleEvent(event);
-        }
-    }
-    
+	/**
+	 * Creates an empty VisemeEventNotifier.
+	 */
+	public VisemeEventNotifier() {
+		myListeners = new ArrayList<>();
+	}
+
+	/**
+	 * Adds a VisemeEvent listener to be notified.
+	 *
+	 * @param listener VisemeEvent listener to add
+	 */
+	public void addListener(Listener<VisemeEvent> listener) {
+		if (!myListeners.contains(listener)) {
+			myListeners.add(listener);
+		}
+	}
+
+	/**
+	 * Removes a VisemeEvent listener.
+	 *
+	 * @param listener VisemeEvent listener to removes
+	 */
+	public void removeListener(Listener<VisemeEvent> listener) {
+		if (myListeners.contains(listener)) {
+			myListeners.remove(listener);
+		}
+	}
+
+	@Override
+	public void handleEvent(SpeechEventList<SpeechEvent> eventList) {
+		if (eventList == null || eventList.getSpeechEvents().isEmpty()
+				|| myListeners.isEmpty()) {
+			return;
+		}
+
+		for (SpeechEvent event : eventList.getSpeechEvents()) {
+			if (event == null || event.getEventType() == null) {
+				return;
+			}
+			if (SpeechEvent.SPEECH_START.equals(event.getEventType())) {
+				myLocalStartTime = TimeUtils.now();
+//                myRemoteStartTime = eventList.getTimestampMillisecUTC();
+				myRemoteStartTime = TimeUtils.now();
+				myTimeOffset = myLocalStartTime - myRemoteStartTime;
+			} else if (SpeechEvent.VISEME.equals(event.getEventType())) {
+				int n = Viseme.values().length;
+				Integer cur = event.getCurrentData();
+				Integer next = event.getNextData();
+				if (cur == null || cur < 0 || cur >= n
+						|| next == null || next < 0 || next >= n) {
+					theLogger.warn("Received invalid viseme data: currentViseme={}, nextViseme={}",
+							event.getCurrentData(),
+							event.getNextData());
+					return;
+				}
+				handleVisemeEvent(new DefaultVisemeEvent(
+						event, myRemoteStartTime, myTimeOffset));
+			}
+		}
+	}
+
+	/**
+	 * Notifies listeners of a VisemeEvent.
+	 *
+	 * @param event VisemeEvent to send to listeners
+	 */
+	public void handleVisemeEvent(VisemeEvent event) {
+		for (Listener<VisemeEvent> l : myListeners) {
+			l.handleEvent(event);
+		}
+	}
+
 }

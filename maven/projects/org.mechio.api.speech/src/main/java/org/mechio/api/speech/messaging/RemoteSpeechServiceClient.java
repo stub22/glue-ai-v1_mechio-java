@@ -15,8 +15,6 @@
  */
 package org.mechio.api.speech.messaging;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jflux.api.common.rk.utils.EventRepeater;
 import org.jflux.api.common.rk.utils.TimeUtils;
 import org.jflux.api.core.Listener;
@@ -35,142 +33,144 @@ import org.mechio.api.speech.SpeechService;
 import org.mechio.api.speech.utils.SpeechEventNotifier;
 import org.mechio.api.speech.utils.SpeechJobManager;
 import org.mechio.api.speech.utils.SpeechJobManagerImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- *
  * @author Matthew Stevenson <www.mechio.org>
  */
-public class RemoteSpeechServiceClient<Conf> extends 
-        DefaultServiceClient<Conf> implements SpeechService{
-    private final static Logger theLogger = 
-            Logger.getLogger(RemoteSpeechServiceClient.class.getName());
-    private String mySpeechServiceId;
-    private MessageSender<SpeechRequest> myRequestSender;
-    private MessageAsyncReceiver<SpeechEventList<SpeechEvent>> myEventReceiver;
-    private SpeechEventNotifier mySpeechEventNotifier;
-    private SpeechRequestFactory myRequestFactory;
-    private SpeechJobManager myJobManager;
-    /**
-     * Add request listeners to an EventRepeater rather than the RequestSender
-     * in order to retain listeners when the sender changes.
-     */
-    private EventRepeater<SpeechRequest> myRequestRepeater;
-    /**
-     * Connects to a remote SpeechService through Messaging components
-     */
-    public RemoteSpeechServiceClient(
-            Class<Conf> configClass,
-            String speechServiceId,
-            String remoteId,
-            MessageSender<ServiceCommand> commandSender,
-            MessageSender<Conf> configSender,
-            MessageAsyncReceiver<ServiceError> errorReceiver,
-            ServiceCommandFactory commandFactory,
-            MessageSender<SpeechRequest> requestSender,
-            MessageAsyncReceiver<SpeechEventList<SpeechEvent>> eventReceiver,
-            SpeechRequestFactory requestFactory){
-        super(speechServiceId, remoteId, 
-                commandSender, configSender, errorReceiver, commandFactory);
-        if(speechServiceId == null){
-            throw new NullPointerException();
-        }
-        mySpeechServiceId = speechServiceId;
-        mySpeechEventNotifier = new SpeechEventNotifier();
-        myRequestSender = requestSender;
-        myRequestRepeater = new EventRepeater();
-        if(myRequestSender != null){
-            myRequestSender.addListener(myRequestRepeater);
-        }
-        myRequestFactory = requestFactory;
-        myEventReceiver = eventReceiver;
-        if(myEventReceiver != null){
-            myEventReceiver.addListener(mySpeechEventNotifier);
-        }
+public class RemoteSpeechServiceClient<Conf> extends
+		DefaultServiceClient<Conf> implements SpeechService {
+	private static final Logger theLogger = LoggerFactory.getLogger(RemoteSpeechServiceClient.class);
+	private String mySpeechServiceId;
+	private MessageSender<SpeechRequest> myRequestSender;
+	private MessageAsyncReceiver<SpeechEventList<SpeechEvent>> myEventReceiver;
+	private SpeechEventNotifier mySpeechEventNotifier;
+	private SpeechRequestFactory myRequestFactory;
+	private SpeechJobManager myJobManager;
+	/**
+	 * Add request listeners to an EventRepeater rather than the RequestSender
+	 * in order to retain listeners when the sender changes.
+	 */
+	private EventRepeater<SpeechRequest> myRequestRepeater;
+
+	/**
+	 * Connects to a remote SpeechService through Messaging components
+	 */
+	public RemoteSpeechServiceClient(
+			Class<Conf> configClass,
+			String speechServiceId,
+			String remoteId,
+			MessageSender<ServiceCommand> commandSender,
+			MessageSender<Conf> configSender,
+			MessageAsyncReceiver<ServiceError> errorReceiver,
+			ServiceCommandFactory commandFactory,
+			MessageSender<SpeechRequest> requestSender,
+			MessageAsyncReceiver<SpeechEventList<SpeechEvent>> eventReceiver,
+			SpeechRequestFactory requestFactory) {
+		super(speechServiceId, remoteId,
+				commandSender, configSender, errorReceiver, commandFactory);
+		if (speechServiceId == null) {
+			throw new NullPointerException();
+		}
+		mySpeechServiceId = speechServiceId;
+		mySpeechEventNotifier = new SpeechEventNotifier();
+		myRequestSender = requestSender;
+		myRequestRepeater = new EventRepeater();
+		if (myRequestSender != null) {
+			myRequestSender.addListener(myRequestRepeater);
+		}
+		myRequestFactory = requestFactory;
+		myEventReceiver = eventReceiver;
+		if (myEventReceiver != null) {
+			myEventReceiver.addListener(mySpeechEventNotifier);
+		}
 //        myJobManager = new NaiveSpeechJobManagerImpl(this);
-        myJobManager = new SpeechJobManagerImpl(this);
-    }
-    
-    @Override
-    public String getSpeechServiceId(){
-        return mySpeechServiceId;
-    }
-    
-    @Override
-    public void start() throws Exception{
-        start(TimeUtils.now());
-    }
+		myJobManager = new SpeechJobManagerImpl(this);
+	}
 
-    @Override
-    public SpeechJob speak(String text) {
-        if(text == null){
-            throw new NullPointerException();
-        }if(myRequestSender == null || myRequestFactory == null){
-            theLogger.warning("Unable to send speech request, "
-                    + "Request Sender or Factory is null.");
-            return null;
-        }
-        theLogger.log(Level.INFO, "Speaking: {0}", text);
-        SpeechRequest req = 
-                myRequestFactory.create(getClientId(), myJobManager.getRequestIdString(), text);
-        myRequestSender.notifyListeners(req);
-        return myJobManager.createSpeechJob(req);
-    }
-    
-    @Override
-    public void cancelSpeech(){
-        send("cancelSpeech");
-    }
+	@Override
+	public String getSpeechServiceId() {
+		return mySpeechServiceId;
+	}
 
-    @Override
-    public void stop() {
-        super.stop(TimeUtils.now());
-        myEventReceiver.stop();
-        myRequestSender.stop();
-    }
-    
-    public void setSpeechRequestSender(MessageSender<SpeechRequest> sender){
-        if(myRequestSender != null){
-            myRequestSender.removeListener(myRequestRepeater);
-        }
-        myRequestSender = sender;
-        if(myRequestSender != null){
-            myRequestSender.addListener(myRequestRepeater);
-        }
-    }
-    
-    public void setSpeechEventsReceiver(
-            MessageAsyncReceiver<SpeechEventList<SpeechEvent>> receiver){
-        if(myEventReceiver != null){
-            myEventReceiver.removeListener(mySpeechEventNotifier);
-        }
-        myEventReceiver = receiver;
-        if(myEventReceiver != null){
-            myEventReceiver.addListener(mySpeechEventNotifier);
-        }
-    }
-    
-    public void setSpeechRequestFactory(SpeechRequestFactory factory){
-        myRequestFactory = factory;
-    }
+	@Override
+	public void start() throws Exception {
+		start(TimeUtils.now());
+	}
 
-    @Override
-    public void addRequestListener(Listener<SpeechRequest> listener) {
-        myRequestRepeater.addListener(listener);
-    }
+	@Override
+	public SpeechJob speak(String text) {
+		if (text == null) {
+			throw new NullPointerException();
+		}
+		if (myRequestSender == null || myRequestFactory == null) {
+			theLogger.warn("Unable to send speech request, "
+					+ "Request Sender or Factory is null.");
+			return null;
+		}
+		theLogger.info("Speaking: {}", text);
+		SpeechRequest req =
+				myRequestFactory.create(getClientId(), myJobManager.getRequestIdString(), text);
+		myRequestSender.notifyListeners(req);
+		return myJobManager.createSpeechJob(req);
+	}
 
-    @Override
-    public void removeRequestListener(Listener<SpeechRequest> listener) {
-        myRequestRepeater.removeListener(listener);
-    }
+	@Override
+	public void cancelSpeech() {
+		send("cancelSpeech");
+	}
 
-    @Override
-    public void addSpeechEventListener(Listener<SpeechEventList<SpeechEvent>> listener) {
-        mySpeechEventNotifier.addSpeechEventListener(listener);
-    }
+	@Override
+	public void stop() {
+		super.stop(TimeUtils.now());
+		myEventReceiver.stop();
+		myRequestSender.stop();
+	}
 
-    @Override
-    public void removeSpeechEventListener(Listener<SpeechEventList<SpeechEvent>> listener) {
-        mySpeechEventNotifier.removeSpeechEventListener(listener);
-    }
-    
+	public void setSpeechRequestSender(MessageSender<SpeechRequest> sender) {
+		if (myRequestSender != null) {
+			myRequestSender.removeListener(myRequestRepeater);
+		}
+		myRequestSender = sender;
+		if (myRequestSender != null) {
+			myRequestSender.addListener(myRequestRepeater);
+		}
+	}
+
+	public void setSpeechEventsReceiver(
+			MessageAsyncReceiver<SpeechEventList<SpeechEvent>> receiver) {
+		if (myEventReceiver != null) {
+			myEventReceiver.removeListener(mySpeechEventNotifier);
+		}
+		myEventReceiver = receiver;
+		if (myEventReceiver != null) {
+			myEventReceiver.addListener(mySpeechEventNotifier);
+		}
+	}
+
+	public void setSpeechRequestFactory(SpeechRequestFactory factory) {
+		myRequestFactory = factory;
+	}
+
+	@Override
+	public void addRequestListener(Listener<SpeechRequest> listener) {
+		myRequestRepeater.addListener(listener);
+	}
+
+	@Override
+	public void removeRequestListener(Listener<SpeechRequest> listener) {
+		myRequestRepeater.removeListener(listener);
+	}
+
+	@Override
+	public void addSpeechEventListener(Listener<SpeechEventList<SpeechEvent>> listener) {
+		mySpeechEventNotifier.addSpeechEventListener(listener);
+	}
+
+	@Override
+	public void removeSpeechEventListener(Listener<SpeechEventList<SpeechEvent>> listener) {
+		mySpeechEventNotifier.removeSpeechEventListener(listener);
+	}
+
 }

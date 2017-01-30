@@ -15,84 +15,83 @@
  */
 package org.mechio.api.animation.library;
 
+import org.jflux.api.common.rk.config.VersionProperty;
+import org.mechio.api.animation.Animation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.jflux.api.common.rk.config.VersionProperty;
-import org.mechio.api.animation.Animation;
 
 /**
- *
  * @author Matthew Stevenson <www.mechio.org>
  */
-public class DefaultAnimationLibrary implements AnimationLibrary{
-    private final static Logger theLogger = Logger.getLogger(DefaultAnimationLibrary.class.getName());
-    private Map<VersionProperty,Animation> myAnimationMap;
-    private List<VersionProperty> myAnimtionVersions;
-    private String myLibraryId;
-    
-    public DefaultAnimationLibrary(String libId){
-        if(libId == null){
-            throw new NullPointerException();
-        }
-        myLibraryId = libId;
-        myAnimationMap = new HashMap<VersionProperty, Animation>();
-        myAnimtionVersions = new ArrayList<VersionProperty>();
-    }
-    
-    @Override
-    public List<VersionProperty> getAnimationVersions() {
-        return myAnimtionVersions;
-    }
+public class DefaultAnimationLibrary implements AnimationLibrary {
+	private static final Logger theLogger = LoggerFactory.getLogger(DefaultAnimationLibrary.class);
+	private Map<VersionProperty, Animation> myAnimationMap;
+	private List<VersionProperty> myAnimtionVersions;
+	private String myLibraryId;
 
-    @Override
-    public Animation getAnimation(VersionProperty version) {
-        return myAnimationMap.get(version);
-    }
+	public DefaultAnimationLibrary(String libId) {
+		if (libId == null) {
+			throw new NullPointerException();
+		}
+		myLibraryId = libId;
+		myAnimationMap = new HashMap<>();
+		myAnimtionVersions = new ArrayList<>();
+	}
 
-    @Override
-    public void add(Animation animation) {
-        VersionProperty version = animation.getVersion();
-        if(myAnimationMap.containsKey(version)){
-            theLogger.log(Level.WARNING, "Not adding Animation. "
-                    + "Animation with given version ({0}) already exists.", 
-                    version);
-            return;
-        }
-        myAnimationMap.put(version, animation);
-        myAnimtionVersions.add(version);
-    }
+	@Override
+	public List<VersionProperty> getAnimationVersions() {
+		return myAnimtionVersions;
+	}
 
-    @Override
-    public void remove(Animation animation) {
-        if(!myAnimationMap.containsValue(animation)){
-            theLogger.log(Level.WARNING, 
-                    "Could not find given animation: {0}", animation);
-            return;
-        }
-        for(Entry<VersionProperty,Animation> e : myAnimationMap.entrySet()){
-            if(!animation.equals(e.getValue())){
-                continue;
-            }
-            VersionProperty prop = e.getKey();
-            myAnimationMap.remove(prop);
-            myAnimtionVersions.remove(prop);
-        }
-    }
+	@Override
+	public Animation getAnimation(VersionProperty version) {
+		return myAnimationMap.get(version);
+	}
 
-    @Override
-    public String getAnimationLibraryId() {
-        return myLibraryId;
-    }
+	@Override
+	public void add(Animation animation) {
+		VersionProperty version = animation.getVersion();
+		if (myAnimationMap.containsKey(version)) {
+			theLogger.warn("Not adding Animation. "
+							+ "Animation with given version ({}) already exists.",
+					version);
+			return;
+		}
+		myAnimationMap.put(version, animation);
+		myAnimtionVersions.add(version);
+	}
 
-    @Override
-    public void clear() {
-        myAnimationMap.clear();
-        myAnimtionVersions.clear();
-    }
-    
+	@Override
+	public void remove(Animation animation) {
+		if (!myAnimationMap.containsValue(animation)) {
+			theLogger.warn("Could not find given animation: {}", animation);
+			return;
+		}
+		for (Entry<VersionProperty, Animation> e : myAnimationMap.entrySet()) {
+			if (!animation.equals(e.getValue())) {
+				continue;
+			}
+			VersionProperty prop = e.getKey();
+			myAnimationMap.remove(prop);
+			myAnimtionVersions.remove(prop);
+		}
+	}
+
+	@Override
+	public String getAnimationLibraryId() {
+		return myLibraryId;
+	}
+
+	@Override
+	public void clear() {
+		myAnimationMap.clear();
+		myAnimtionVersions.clear();
+	}
+
 }
