@@ -16,29 +16,27 @@
 
 package org.mechio.api.audio.osgi;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jflux.api.common.rk.services.ServiceUtils;
+import org.mechio.api.audio.config.WavPlayerServiceFactory;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.mechio.api.audio.config.WavPlayerServiceFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Activator implements BundleActivator {
-    private final static Logger theLogger = 
-            Logger.getLogger(Activator.class.getName());
+	private static final Logger theLogger = LoggerFactory.getLogger(Activator.class);
 
-    @Override
-    public void start(BundleContext context) throws Exception {
-        theLogger.log(Level.INFO, "org.mechio.api.audio Activation Begin.");
-        ServiceUtils.registerFactory(
-                context, new WavPlayerServiceFactory(), null);
-        theLogger.log(Level.INFO, 
-                "org.mechio.api.audio Activation Complete.");
-    }
+	@Override
+	public void start(BundleContext context) throws Exception {
+		theLogger.info("org.mechio.api.audio Activation Begin.");
+		ServiceUtils.registerFactory(
+				context, new WavPlayerServiceFactory(), null);
+		theLogger.info("org.mechio.api.audio Activation Complete.");
+	}
 
-    @Override
-    public void stop(BundleContext context) throws Exception {
-        // TODO add deactivation code here
-    }
+	@Override
+	public void stop(BundleContext context) throws Exception {
+		// TODO add deactivation code here
+	}
 
 }

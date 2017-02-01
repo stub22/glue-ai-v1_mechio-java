@@ -16,18 +16,10 @@
 
 package org.mechio.impl.motion.osgi;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.jms.BytesMessage;
 import org.jflux.api.common.rk.services.ServiceUtils;
+import org.jflux.impl.messaging.rk.JMSAvroServiceFacade;
 import org.jflux.impl.messaging.rk.config.RKMessagingConfigUtils;
 import org.jflux.impl.services.rk.osgi.lifecycle.OSGiComponentFactory;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.mechio.impl.motion.config.RobotConfigXMLFileLoader;
-import org.mechio.impl.motion.config.RobotConfigXMLReader;
-import org.mechio.impl.motion.jointgroup.RobotJointGroupXMLFileLoader;
-import org.mechio.impl.motion.jointgroup.RobotJointGroupConfigXMLReader;
 import org.mechio.api.motion.jointgroup.RobotJointGroupFactory;
 import org.mechio.api.motion.messaging.RobotResponseFactory;
 import org.mechio.api.motion.protocol.MotionFrameEvent;
@@ -36,8 +28,11 @@ import org.mechio.api.motion.protocol.RobotRequest;
 import org.mechio.api.motion.protocol.RobotResponse;
 import org.mechio.api.motion.protocol.RobotResponse.RobotPositionResponse;
 import org.mechio.api.motion.protocol.RobotResponse.RobotStatusResponse;
-import org.jflux.impl.messaging.rk.JMSAvroServiceFacade;
+import org.mechio.impl.motion.config.RobotConfigXMLFileLoader;
+import org.mechio.impl.motion.config.RobotConfigXMLReader;
 import org.mechio.impl.motion.config.RobotConfigXMLStreamLoader;
+import org.mechio.impl.motion.jointgroup.RobotJointGroupConfigXMLReader;
+import org.mechio.impl.motion.jointgroup.RobotJointGroupXMLFileLoader;
 import org.mechio.impl.motion.jointgroup.RobotJointGroupXMLStreamLoader;
 import org.mechio.impl.motion.messaging.MotionFrameEventRecord;
 import org.mechio.impl.motion.messaging.PortableMotionFrameEvent;
@@ -52,101 +47,107 @@ import org.mechio.impl.motion.messaging.RobotRequestRecord;
 import org.mechio.impl.motion.messaging.RobotStatusResponseRecord;
 import org.mechio.impl.motion.sync.SynchronizedRobotConfigLoader;
 import org.mechio.impl.motion.sync.SynchronizedRobotConfigWriter;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.jms.BytesMessage;
 
 /**
- * 
  * @author Matthew Stevenson <www.mechio.org>
  */
 public class Activator implements BundleActivator {
-    private final static Logger theLogger = Logger.getLogger(Activator.class.getName());
-    
-    @Override
-    public void start(BundleContext context) throws Exception {
-        theLogger.log(Level.INFO, "MotionAPI Activation Begin.");
-        ServiceUtils.registerConfigLoader(
-                context, new RobotConfigXMLReader(context));
-        
-        ServiceUtils.registerConfigLoader(
-                context, new RobotConfigXMLFileLoader(context));
-        
-        ServiceUtils.registerConfigLoader(
-                context, new RobotConfigXMLStreamLoader(context));
-        
-        ServiceUtils.registerConfigLoader(
-                context, new RobotJointGroupConfigXMLReader());
-        
-        ServiceUtils.registerConfigLoader(
-                context, new RobotJointGroupXMLFileLoader());
-        
-        ServiceUtils.registerConfigLoader(
-                context, new RobotJointGroupXMLStreamLoader());
-        
-        ServiceUtils.registerFactory(
-                context, new RobotJointGroupFactory());
-        ServiceUtils.registerConfigLoader(
-                context, new SynchronizedRobotConfigLoader());
-        
-        ServiceUtils.registerConfigWriter(
-                context, new SynchronizedRobotConfigWriter(), null);
-        
-        context.registerService(RobotResponseFactory.class.getName(), 
-                new PortableRobotResponse.Factory(), null);
-        
-        RKMessagingConfigUtils.registerAvroSerializationConfig(
-                MotionFrameEvent.class, 
-                MotionFrameEventRecord.class, 
-                MotionFrameEventRecord.SCHEMA$, 
-                new PortableMotionFrameEvent.MessageRecordAdapter(), 
-                new PortableMotionFrameEvent.RecordMessageAdapter(), 
-                JMSAvroServiceFacade.AVRO_MIME_TYPE, null, 
-                new OSGiComponentFactory(context));
-        
-        RKMessagingConfigUtils.registerAvroSerializationConfig(
-                RobotRequest.class, 
-                RobotRequestRecord.class, 
-                RobotRequestRecord.SCHEMA$, 
-                new PortableRobotRequest.MessageRecordAdapter(), 
-                new PortableRobotRequest.RecordMessageAdapter(), 
-                JMSAvroServiceFacade.AVRO_MIME_TYPE, null, 
-                new OSGiComponentFactory(context));
-        
-        RKMessagingConfigUtils.registerAvroSerializationConfig(
-                RobotDefinitionResponse.class, 
-                RobotDefinitionResponseRecord.class, 
-                RobotDefinitionResponseRecord.SCHEMA$, 
-                new PortableRobotDefinitionResponse.MessageRecordAdapter(), 
-                new PortableRobotDefinitionResponse.RecordMessageAdapter(), 
-                PortableRobotResponse.MIME_ROBOT_DEFINITION_RESPONSE, null, 
-                new OSGiComponentFactory(context));
-        
-        RKMessagingConfigUtils.registerAvroSerializationConfig(
-                RobotPositionResponse.class, 
-                RobotPositionResponseRecord.class, 
-                RobotPositionResponseRecord.SCHEMA$, 
-                new PortableRobotPositionResponse.MessageRecordAdapter(), 
-                new PortableRobotPositionResponse.RecordMessageAdapter(), 
-                PortableRobotResponse.MIME_ROBOT_POSITION_RESPONSE, null, 
-                new OSGiComponentFactory(context));
-        
-        RKMessagingConfigUtils.registerAvroSerializationConfig(
-                RobotStatusResponse.class, 
-                RobotStatusResponseRecord.class, 
-                RobotStatusResponseRecord.SCHEMA$, 
-                new PortableRobotStatusResponse.MessageRecordAdapter(), 
-                new PortableRobotStatusResponse.RecordMessageAdapter(), 
-                PortableRobotResponse.MIME_ROBOT_STATUS_RESPONSE, null, 
-                new OSGiComponentFactory(context));
-        
-        RKMessagingConfigUtils.registerSerializationConfig(
-                RobotResponse.class, BytesMessage.class, 
-                new PortableRobotResponse.MessageRecordAdapter(), 
-                new PortableRobotResponse.RecordMessageAdapter(), 
-                null, null, new OSGiComponentFactory(context));
-        
-        theLogger.log(Level.INFO, "MotionAPI Activation Complete.");
-    }
+	private static final Logger theLogger = LoggerFactory.getLogger(Activator.class);
 
-    @Override
-    public void stop(BundleContext context) throws Exception {}
+	@Override
+	public void start(BundleContext context) throws Exception {
+		theLogger.info("MotionAPI Activation Begin.");
+		ServiceUtils.registerConfigLoader(
+				context, new RobotConfigXMLReader(context));
+
+		ServiceUtils.registerConfigLoader(
+				context, new RobotConfigXMLFileLoader(context));
+
+		ServiceUtils.registerConfigLoader(
+				context, new RobotConfigXMLStreamLoader(context));
+
+		ServiceUtils.registerConfigLoader(
+				context, new RobotJointGroupConfigXMLReader());
+
+		ServiceUtils.registerConfigLoader(
+				context, new RobotJointGroupXMLFileLoader());
+
+		ServiceUtils.registerConfigLoader(
+				context, new RobotJointGroupXMLStreamLoader());
+
+		ServiceUtils.registerFactory(
+				context, new RobotJointGroupFactory());
+		ServiceUtils.registerConfigLoader(
+				context, new SynchronizedRobotConfigLoader());
+
+		ServiceUtils.registerConfigWriter(
+				context, new SynchronizedRobotConfigWriter(), null);
+
+		context.registerService(RobotResponseFactory.class.getName(),
+				new PortableRobotResponse.Factory(), null);
+
+		RKMessagingConfigUtils.registerAvroSerializationConfig(
+				MotionFrameEvent.class,
+				MotionFrameEventRecord.class,
+				MotionFrameEventRecord.SCHEMA$,
+				new PortableMotionFrameEvent.MessageRecordAdapter(),
+				new PortableMotionFrameEvent.RecordMessageAdapter(),
+				JMSAvroServiceFacade.AVRO_MIME_TYPE, null,
+				new OSGiComponentFactory(context));
+
+		RKMessagingConfigUtils.registerAvroSerializationConfig(
+				RobotRequest.class,
+				RobotRequestRecord.class,
+				RobotRequestRecord.SCHEMA$,
+				new PortableRobotRequest.MessageRecordAdapter(),
+				new PortableRobotRequest.RecordMessageAdapter(),
+				JMSAvroServiceFacade.AVRO_MIME_TYPE, null,
+				new OSGiComponentFactory(context));
+
+		RKMessagingConfigUtils.registerAvroSerializationConfig(
+				RobotDefinitionResponse.class,
+				RobotDefinitionResponseRecord.class,
+				RobotDefinitionResponseRecord.SCHEMA$,
+				new PortableRobotDefinitionResponse.MessageRecordAdapter(),
+				new PortableRobotDefinitionResponse.RecordMessageAdapter(),
+				PortableRobotResponse.MIME_ROBOT_DEFINITION_RESPONSE, null,
+				new OSGiComponentFactory(context));
+
+		RKMessagingConfigUtils.registerAvroSerializationConfig(
+				RobotPositionResponse.class,
+				RobotPositionResponseRecord.class,
+				RobotPositionResponseRecord.SCHEMA$,
+				new PortableRobotPositionResponse.MessageRecordAdapter(),
+				new PortableRobotPositionResponse.RecordMessageAdapter(),
+				PortableRobotResponse.MIME_ROBOT_POSITION_RESPONSE, null,
+				new OSGiComponentFactory(context));
+
+		RKMessagingConfigUtils.registerAvroSerializationConfig(
+				RobotStatusResponse.class,
+				RobotStatusResponseRecord.class,
+				RobotStatusResponseRecord.SCHEMA$,
+				new PortableRobotStatusResponse.MessageRecordAdapter(),
+				new PortableRobotStatusResponse.RecordMessageAdapter(),
+				PortableRobotResponse.MIME_ROBOT_STATUS_RESPONSE, null,
+				new OSGiComponentFactory(context));
+
+		RKMessagingConfigUtils.registerSerializationConfig(
+				RobotResponse.class, BytesMessage.class,
+				new PortableRobotResponse.MessageRecordAdapter(),
+				new PortableRobotResponse.RecordMessageAdapter(),
+				null, null, new OSGiComponentFactory(context));
+
+		theLogger.info("MotionAPI Activation Complete.");
+	}
+
+	@Override
+	public void stop(BundleContext context) throws Exception {
+	}
 
 }

@@ -15,33 +15,31 @@
  */
 package org.mechio.integration.motion_speech;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jflux.api.common.rk.services.ServiceUtils;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
 import org.mechio.impl.speech.viseme.VisemeBindingManagerAvroConfigLoader;
 import org.mechio.impl.speech.viseme.VisemeBindingManagerAvroConfigWriter;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- *
  * @author Matthew Stevenson <www.mechio.org>
  */
 public class Activator implements BundleActivator {
-    private final static Logger theLogger = 
-            Logger.getLogger(Activator.class.getName());
-    
-    @Override
-    public void start(BundleContext context) throws Exception {
-        theLogger.log(Level.INFO, "Speech-Motion integration Activation Begin.");
-        ServiceUtils.registerConfigLoader(
-                context, new VisemeBindingManagerAvroConfigLoader());
-        ServiceUtils.registerConfigWriter(
-                context, new VisemeBindingManagerAvroConfigWriter());
-    }
-    
-    @Override
-    public void stop(BundleContext context) throws Exception {
-        //TODO add deactivation code here
-    }
+	private static final Logger theLogger = LoggerFactory.getLogger(Activator.class);
+
+	@Override
+	public void start(BundleContext context) throws Exception {
+		theLogger.info("Speech-Motion integration Activation Begin.");
+		ServiceUtils.registerConfigLoader(
+				context, new VisemeBindingManagerAvroConfigLoader());
+		ServiceUtils.registerConfigWriter(
+				context, new VisemeBindingManagerAvroConfigWriter());
+	}
+
+	@Override
+	public void stop(BundleContext context) throws Exception {
+		//TODO add deactivation code here
+	}
 }

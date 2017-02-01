@@ -15,8 +15,6 @@
  */
 package org.mechio.api.sensor.imu;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jflux.api.core.Listener;
 import org.jflux.api.core.Notifier;
 import org.jflux.api.core.util.DefaultNotifier;
@@ -24,65 +22,65 @@ import org.mechio.api.sensor.AccelerometerConfigEvent;
 import org.mechio.api.sensor.DeviceReadPeriodEvent;
 import org.mechio.api.sensor.FilteredVector3Event;
 import org.mechio.api.sensor.packet.stamp.SensorEventHeader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- *
  * @author Amy Jessica Book <jgpallack@gmail.com>
  */
 public class RemoteAccelerometerServiceClient<T extends SensorEventHeader>
-    extends DefaultNotifier<FilteredVector3Event>
-    implements AccelerometerService<T> {
-    private final static Logger theLogger =
-            Logger.getLogger(RemoteAccelerometerServiceClient.class.getName());
-    
-    private Notifier<AccelerometerConfigEvent<T>> myConfigSender;
-    private Notifier<DeviceReadPeriodEvent<T>> myReadPeriodSender;
-    private Notifier<FilteredVector3Event> myInputValueReceiver;
-    private AccelerometerValueListener myEventListener;
-    
-    public RemoteAccelerometerServiceClient(
-            Notifier<AccelerometerConfigEvent<T>> configSender,
-            Notifier<DeviceReadPeriodEvent<T>> readPeriodSender,
-            Notifier<FilteredVector3Event> inputValueReceiver) {
-        if(configSender == null || readPeriodSender == null ||
-                inputValueReceiver == null) {
-            theLogger.log(Level.SEVERE, "Null parameters.");
-            throw new IllegalArgumentException("Parameter cannot be null.");
-        }
-        
-        myConfigSender = configSender;
-        myReadPeriodSender = readPeriodSender;
-        myInputValueReceiver = inputValueReceiver;
-        
-        myEventListener = new AccelerometerValueListener();
-        myInputValueReceiver.addListener(myEventListener);
-    }
+		extends DefaultNotifier<FilteredVector3Event>
+		implements AccelerometerService<T> {
+	private static final Logger theLogger = LoggerFactory.getLogger(RemoteAccelerometerServiceClient.class);
 
-    @Override
-    public void sendConfig(AccelerometerConfigEvent<T> config) {
-        if(config == null) {
-            theLogger.log(Level.WARNING, "Null config.");
-            throw new IllegalArgumentException("Config cannot be null.");
-        }
-        
-        myConfigSender.notifyListeners(config);
-    }
+	private Notifier<AccelerometerConfigEvent<T>> myConfigSender;
+	private Notifier<DeviceReadPeriodEvent<T>> myReadPeriodSender;
+	private Notifier<FilteredVector3Event> myInputValueReceiver;
+	private AccelerometerValueListener myEventListener;
 
-    @Override
-    public void setReadPeriod(DeviceReadPeriodEvent<T> readPeriod) {
-        if(readPeriod == null) {
-            theLogger.log(Level.WARNING, "Null read period.");
-            throw new IllegalArgumentException("Read period cannot be null.");
-        }
-        
-        myReadPeriodSender.notifyListeners(readPeriod);
-    }
-    
-    class AccelerometerValueListener implements Listener<FilteredVector3Event> {
-        @Override
-        public void handleEvent(FilteredVector3Event t) {
-            notifyListeners(t);
-        }
-        
-    }
+	public RemoteAccelerometerServiceClient(
+			Notifier<AccelerometerConfigEvent<T>> configSender,
+			Notifier<DeviceReadPeriodEvent<T>> readPeriodSender,
+			Notifier<FilteredVector3Event> inputValueReceiver) {
+		if (configSender == null || readPeriodSender == null ||
+				inputValueReceiver == null) {
+			theLogger.error("Null parameters.");
+			throw new IllegalArgumentException("Parameter cannot be null.");
+		}
+
+		myConfigSender = configSender;
+		myReadPeriodSender = readPeriodSender;
+		myInputValueReceiver = inputValueReceiver;
+
+		myEventListener = new AccelerometerValueListener();
+		myInputValueReceiver.addListener(myEventListener);
+	}
+
+	@Override
+	public void sendConfig(AccelerometerConfigEvent<T> config) {
+		if (config == null) {
+			theLogger.warn("Null config.");
+			throw new IllegalArgumentException("Config cannot be null.");
+		}
+
+		myConfigSender.notifyListeners(config);
+	}
+
+	@Override
+	public void setReadPeriod(DeviceReadPeriodEvent<T> readPeriod) {
+		if (readPeriod == null) {
+			theLogger.warn("Null read period.");
+			throw new IllegalArgumentException("Read period cannot be null.");
+		}
+
+		myReadPeriodSender.notifyListeners(readPeriod);
+	}
+
+	class AccelerometerValueListener implements Listener<FilteredVector3Event> {
+		@Override
+		public void handleEvent(FilteredVector3Event t) {
+			notifyListeners(t);
+		}
+
+	}
 }

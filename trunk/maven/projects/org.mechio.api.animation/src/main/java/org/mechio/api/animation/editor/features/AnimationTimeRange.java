@@ -16,132 +16,132 @@
 
 package org.mechio.api.animation.editor.features;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jflux.impl.services.rk.osgi.OSGiUtils;
 import org.jflux.impl.services.rk.property.PropertyChangeNotifier;
-import org.osgi.framework.BundleContext;
 import org.mechio.api.animation.Animation;
 import org.mechio.api.animation.editor.AnimationEditor;
 import org.mechio.api.animation.player.AnimationPlayer;
 import org.mechio.api.animation.utils.AnimationUtils;
+import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
- *
  * @author Matthew Stevenson <www.mechio.org>
  */
-public class AnimationTimeRange extends 
-        PropertyChangeNotifier implements EditorFeature<AnimationEditor>{
-    private final static Logger theLogger = Logger.getLogger(AnimationTimeRange.class.getName());
-    public final static String PROP_START_TIME = "startTime";
-    public final static String PROP_STOP_TIME = "stopTime";
-    
-    private AnimationEditor myEditor;
-    private Long myStartTime;
-    private Long myStopTime;
-    
-    public void setEditor(AnimationEditor editor){
-        myEditor = editor;
-    }
-    
-    public void setStartTime(Long time){
-        Long old = myStartTime;
-        myStartTime = time;
-        firePropertyChange(PROP_START_TIME, old, myStartTime);
-    }
-    
-    public Long getStartTime(){
-        return myStartTime;
-    }
-    
-    public void setStopTime(Long time){
-        Long old = myStopTime;
-        myStopTime = time;
-        firePropertyChange(PROP_STOP_TIME, old, myStopTime);
-    }
-    
-    public Long getStopTime(){
-        return myStopTime;
-    }
-    
-    public SetStartAction getSetStartAction(Long time){
-        return new SetStartAction(time);
-    }
-    
-    public SetStopAction getSetStopAction(Long time){
-        return new SetStopAction(time);
-    }
-    
-    public PlayAction getPlayAction(Long time){
-        if(myEditor == null){
-            return null;
-        }
-        return new PlayAction();
-    }
-    
-    public Animation getAnimationSegment(){
-        if(myEditor == null){
-            return null;
-        }
-        Animation anim = myEditor.getEnabledAnimation();
-        anim.setStartTime(myStartTime);
-        anim.setStopTime(myStopTime);
-        return anim;
-    }
-    
-    public class SetStartAction implements ActionListener{
-        private Long myTime;
+public class AnimationTimeRange extends
+		PropertyChangeNotifier implements EditorFeature<AnimationEditor> {
+	private static final Logger theLogger = LoggerFactory.getLogger(AnimationTimeRange.class);
+	public final static String PROP_START_TIME = "startTime";
+	public final static String PROP_STOP_TIME = "stopTime";
 
-        private SetStartAction(Long time) {
-            myTime = time;
-        }
-        
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            setStartTime(myTime);
-        }
-    }
-    
-    public class SetStopAction implements ActionListener{
-        private Long myTime;
+	private AnimationEditor myEditor;
+	private Long myStartTime;
+	private Long myStopTime;
 
-        private SetStopAction(Long time) {
-            myTime = time;
-        }
-        
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            setStopTime(myTime);
-        }
-    }
-    
-    public class PlayAction implements ActionListener{
+	public void setEditor(AnimationEditor editor) {
+		myEditor = editor;
+	}
 
-        private PlayAction() {
-            if(myEditor == null){
-                throw new NullPointerException();
-            }
-        }
-        
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            if(myEditor == null){
-                return;
-            }
-            play();
-        }
-    
-        private void play(){
-            BundleContext context = OSGiUtils.getBundleContext(AnimationPlayer.class);
-            if(context == null){
-                theLogger.log(Level.SEVERE, "Unable to find BundleContext for AnimationPlayer");
-                return;
-            }
-            AnimationUtils.playAnimation(
-                    context, null, myEditor.getEnabledAnimation(), 
-                    myStartTime, myStopTime);
-        }
-    }
+	public void setStartTime(Long time) {
+		Long old = myStartTime;
+		myStartTime = time;
+		firePropertyChange(PROP_START_TIME, old, myStartTime);
+	}
+
+	public Long getStartTime() {
+		return myStartTime;
+	}
+
+	public void setStopTime(Long time) {
+		Long old = myStopTime;
+		myStopTime = time;
+		firePropertyChange(PROP_STOP_TIME, old, myStopTime);
+	}
+
+	public Long getStopTime() {
+		return myStopTime;
+	}
+
+	public SetStartAction getSetStartAction(Long time) {
+		return new SetStartAction(time);
+	}
+
+	public SetStopAction getSetStopAction(Long time) {
+		return new SetStopAction(time);
+	}
+
+	public PlayAction getPlayAction(Long time) {
+		if (myEditor == null) {
+			return null;
+		}
+		return new PlayAction();
+	}
+
+	public Animation getAnimationSegment() {
+		if (myEditor == null) {
+			return null;
+		}
+		Animation anim = myEditor.getEnabledAnimation();
+		anim.setStartTime(myStartTime);
+		anim.setStopTime(myStopTime);
+		return anim;
+	}
+
+	public class SetStartAction implements ActionListener {
+		private Long myTime;
+
+		private SetStartAction(Long time) {
+			myTime = time;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			setStartTime(myTime);
+		}
+	}
+
+	public class SetStopAction implements ActionListener {
+		private Long myTime;
+
+		private SetStopAction(Long time) {
+			myTime = time;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			setStopTime(myTime);
+		}
+	}
+
+	public class PlayAction implements ActionListener {
+
+		private PlayAction() {
+			if (myEditor == null) {
+				throw new NullPointerException();
+			}
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if (myEditor == null) {
+				return;
+			}
+			play();
+		}
+
+		private void play() {
+			BundleContext context = OSGiUtils.getBundleContext(AnimationPlayer.class);
+			if (context == null) {
+				theLogger.error("Unable to find BundleContext for AnimationPlayer");
+				return;
+			}
+			AnimationUtils.playAnimation(
+					context, null, myEditor.getEnabledAnimation(),
+					myStartTime, myStopTime);
+		}
+	}
 }

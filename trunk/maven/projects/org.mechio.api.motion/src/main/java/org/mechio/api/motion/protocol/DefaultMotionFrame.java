@@ -16,110 +16,119 @@
 
 package org.mechio.api.motion.protocol;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A DefaultMotionFrame describes the start and goal PositionSets for a set of \
  * Joints over an interval of time.
- * 
+ *
  * @param <PosMap> Type of JointPositionMap used
  * @author Matthew Stevenson <www.mechio.org>
  */
-public class DefaultMotionFrame<PosMap extends JointPositionMap> implements 
-        MotionFrame<PosMap>{
-    private final static Logger theLogger = Logger.getLogger(DefaultMotionFrame.class.getName());
-    private long myTime;
-    private long myInterval;
-    private PosMap myGoalPositions;
-    private PosMap myPreviousPositions;
+public class DefaultMotionFrame<PosMap extends JointPositionMap> implements
+		MotionFrame<PosMap> {
+	private static final Logger theLogger = LoggerFactory.getLogger(DefaultMotionFrame.class);
+	private long myTime;
+	private long myInterval;
+	private PosMap myGoalPositions;
+	private PosMap myPreviousPositions;
 
-    /**
-     * Creates an empty MotionFrame.
-     */
-    public DefaultMotionFrame(){
-        myTime = 0;
-        myInterval = 0;
-    }
+	/**
+	 * Creates an empty MotionFrame.
+	 */
+	public DefaultMotionFrame() {
+		myTime = 0;
+		myInterval = 0;
+	}
 
-    /**
-     * Sets the MotionFrame creation time. 
-     * @param time create time
-     */
-    @Override
-    public void setTimestampMillisecUTC(long time){
-        if(time <= 0){
-            theLogger.log(Level.WARNING, "Frame start time must be greater than 0.");
-            return;
-        }
-        myTime = time;
-    }
+	/**
+	 * Sets the MotionFrame creation time.
+	 *
+	 * @param time create time
+	 */
+	@Override
+	public void setTimestampMillisecUTC(long time) {
+		if (time <= 0) {
+			theLogger.warn("Frame start time must be greater than 0.");
+			return;
+		}
+		myTime = time;
+	}
 
-    /**
-     * Returns MotionFrame creation time.
-     * @return MotionFrame creation time
-     */
-    @Override
-    public long getTimestampMillisecUTC(){
-        return myTime;
-    }
-    /**
-     * Sets the time interval length for the MotionFrame.
-     * The velocity is calculated as the difference of position divided by the
-     * interval length.
-     * @param interval length of time for the frame in milliseconds
-     */
-    @Override
-    public void setFrameLengthMillisec(long interval){
-        if(interval <= 0){
-            theLogger.log(Level.WARNING, "Frame interval length must be greater than 0.");
-            return;
-        }
-        myInterval = interval;
-    }
-    
-    /**
-     * Returns the interval for the movements.
-     * @return interval time interval for the movements
-     */
-    @Override
-    public long getFrameLengthMillisec(){
-        return myInterval;
-    }
+	/**
+	 * Returns MotionFrame creation time.
+	 *
+	 * @return MotionFrame creation time
+	 */
+	@Override
+	public long getTimestampMillisecUTC() {
+		return myTime;
+	}
 
-    /**
-     * Sets the MotionFrame's goal JointPositionMap.
-     * @param pos goal JointPositionMap
-     */
-    @Override
-    public void setGoalPositions(PosMap pos){
-        myGoalPositions = pos;
-    }
+	/**
+	 * Sets the time interval length for the MotionFrame.
+	 * The velocity is calculated as the difference of position divided by the
+	 * interval length.
+	 *
+	 * @param interval length of time for the frame in milliseconds
+	 */
+	@Override
+	public void setFrameLengthMillisec(long interval) {
+		if (interval <= 0) {
+			theLogger.warn("Frame interval length must be greater than 0.");
+			return;
+		}
+		myInterval = interval;
+	}
 
-    /**
-     * Returns the MotionFrame's goal JointPositionMap.
-     * @return MotionFrame's goal JointPositionMap
-     */
-    @Override
-    public PosMap getGoalPositions(){
-        return myGoalPositions;
-    }
+	/**
+	 * Returns the interval for the movements.
+	 *
+	 * @return interval time interval for the movements
+	 */
+	@Override
+	public long getFrameLengthMillisec() {
+		return myInterval;
+	}
 
-    /**
-     * Set the MotionFrame's previous JointPositionMap.
-     * @param pos previous JointPositionMap
-     */
-    @Override
-    public void setPreviousPositions(PosMap pos){
-        myPreviousPositions = pos;
-    }
+	/**
+	 * Sets the MotionFrame's goal JointPositionMap.
+	 *
+	 * @param pos goal JointPositionMap
+	 */
+	@Override
+	public void setGoalPositions(PosMap pos) {
+		myGoalPositions = pos;
+	}
 
-    /**
-     * Returns the MotionFrame's previous JointPositionMap.
-     * @return MotionFrame's previous JointPositionMap
-     */
-    @Override
-    public PosMap getPreviousPositions(){
-        return myPreviousPositions;
-    }
+	/**
+	 * Returns the MotionFrame's goal JointPositionMap.
+	 *
+	 * @return MotionFrame's goal JointPositionMap
+	 */
+	@Override
+	public PosMap getGoalPositions() {
+		return myGoalPositions;
+	}
+
+	/**
+	 * Set the MotionFrame's previous JointPositionMap.
+	 *
+	 * @param pos previous JointPositionMap
+	 */
+	@Override
+	public void setPreviousPositions(PosMap pos) {
+		myPreviousPositions = pos;
+	}
+
+	/**
+	 * Returns the MotionFrame's previous JointPositionMap.
+	 *
+	 * @return MotionFrame's previous JointPositionMap
+	 */
+	@Override
+	public PosMap getPreviousPositions() {
+		return myPreviousPositions;
+	}
 }

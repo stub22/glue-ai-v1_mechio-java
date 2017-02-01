@@ -16,54 +16,55 @@
 
 package org.mechio.api.motion.blending;
 
-import org.mechio.api.motion.protocol.MotionFrame;
-import java.util.Map;
-import java.util.logging.Logger;
 import org.mechio.api.motion.protocol.JointPositionMap;
+import org.mechio.api.motion.protocol.MotionFrame;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 /**
  * Basic implementation of a Blender.
- * 
- * @param <MF> MotionFrame type used by this DefaultBlender
- * @param <FS> FrameSource type used by this DefaultBlender
+ *
+ * @param <MF>     MotionFrame type used by this DefaultBlender
+ * @param <FS>     FrameSource type used by this DefaultBlender
  * @param <PosMap> PositionMap type used by this DefaultBlender
- * 
  * @author Matthew Stevenson <www.mechio.org>
  */
 public class DefaultBlender<
-        MF extends MotionFrame<PosMap>,
-        FS extends FrameSource<PosMap>,
-        PosMap extends JointPositionMap> implements Blender<MF,FS,PosMap>{
-    private final static Logger theLogger = Logger.getLogger(DefaultBlender.class.getName());
-    private FrameCombiner<MF,FS,PosMap> myFrameCombiner;
-    private BlenderOutput<PosMap> myOutput;
+		MF extends MotionFrame<PosMap>,
+		FS extends FrameSource<PosMap>,
+		PosMap extends JointPositionMap> implements Blender<MF, FS, PosMap> {
+	private static final Logger theLogger = LoggerFactory.getLogger(DefaultBlender.class);
+	private FrameCombiner<MF, FS, PosMap> myFrameCombiner;
+	private BlenderOutput<PosMap> myOutput;
 
-    @Override
-    public void setFrameCombiner(FrameCombiner<MF,FS,PosMap> combiner) {
-        myFrameCombiner = combiner;
-    }
+	@Override
+	public void setFrameCombiner(FrameCombiner<MF, FS, PosMap> combiner) {
+		myFrameCombiner = combiner;
+	}
 
-    @Override
-    public FrameCombiner<MF,FS,PosMap> getFrameCombiner() {
-        return myFrameCombiner;
-    }
+	@Override
+	public FrameCombiner<MF, FS, PosMap> getFrameCombiner() {
+		return myFrameCombiner;
+	}
 
-    @Override
-    public void setOutput(BlenderOutput<PosMap> out) {
-        myOutput = out;
-    }
+	@Override
+	public void setOutput(BlenderOutput<PosMap> out) {
+		myOutput = out;
+	}
 
-    @Override
-    public void blend(long time, long interval, Map<? extends MF, ? extends FS> frames) {
-        if(frames == null || frames.isEmpty() || myFrameCombiner == null || 
-                myOutput == null){
-            return;
-        }
-        PosMap curPos = myOutput.getPositions();
-        if(curPos == null || curPos.isEmpty()){
-            return;
-        }
-        PosMap pos = myFrameCombiner.combineFrames(time, interval, curPos, frames);
-        myOutput.write(pos, interval);
-    }
+	@Override
+	public void blend(long time, long interval, Map<? extends MF, ? extends FS> frames) {
+		if (frames == null || frames.isEmpty() || myFrameCombiner == null ||
+				myOutput == null) {
+			return;
+		}
+		PosMap curPos = myOutput.getPositions();
+		if (curPos == null || curPos.isEmpty()) {
+			return;
+		}
+		PosMap pos = myFrameCombiner.combineFrames(time, interval, curPos, frames);
+		myOutput.write(pos, interval);
+	}
 }

@@ -16,48 +16,46 @@
 
 package org.mechio.impl.motion.pololu;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.mechio.api.motion.servos.ServoController;
 import org.mechio.api.motion.servos.ServoController.ServoId;
 import org.mechio.api.motion.servos.utils.ServoIdReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- *
  * @author Matthew Stevenson <www.mechio.org>
  */
-public class MaestroServoIdReader implements 
-        ServoIdReader<MaestroServo.Id> {
-    private final static Logger theLogger = 
-            Logger.getLogger(MaestroServoIdReader.class.getName());
-    
-    @Override
-    public ServoId<MaestroServo.Id> read(
-            ServoController.Id controllerId, String servoIdStr) {
-        if(controllerId == null || servoIdStr == null){
-            throw new NullPointerException();
-        }
-        MaestroServo.Id dId = read(servoIdStr);
-        return new ServoId<MaestroServo.Id>(controllerId, dId);
-    }
+public class MaestroServoIdReader implements
+		ServoIdReader<MaestroServo.Id> {
+	private static final Logger theLogger = LoggerFactory.getLogger(MaestroServoIdReader.class);
 
-    @Override
-    public MaestroServo.Id read(String servoIdStr) {
-        if(servoIdStr == null){
-            throw new NullPointerException();
-        }
-        try{
-            int id = Integer.parseInt(servoIdStr);
-            return new MaestroServo.Id((byte)id);
-        }catch(NumberFormatException ex){
-            theLogger.log(Level.SEVERE, "Could not read MaestroServo.Id", ex);
-            throw ex;
-        }
-    }
+	@Override
+	public ServoId<MaestroServo.Id> read(
+			ServoController.Id controllerId, String servoIdStr) {
+		if (controllerId == null || servoIdStr == null) {
+			throw new NullPointerException();
+		}
+		MaestroServo.Id dId = read(servoIdStr);
+		return new ServoId<>(controllerId, dId);
+	}
 
-    @Override
-    public Class<MaestroServo.Id> getServoIdClass() {
-        return MaestroServo.Id.class;
-    }
-    
+	@Override
+	public MaestroServo.Id read(String servoIdStr) {
+		if (servoIdStr == null) {
+			throw new NullPointerException();
+		}
+		try {
+			int id = Integer.parseInt(servoIdStr);
+			return new MaestroServo.Id((byte) id);
+		} catch (NumberFormatException ex) {
+			theLogger.error("Could not read MaestroServo.Id", ex);
+			throw ex;
+		}
+	}
+
+	@Override
+	public Class<MaestroServo.Id> getServoIdClass() {
+		return MaestroServo.Id.class;
+	}
+
 }

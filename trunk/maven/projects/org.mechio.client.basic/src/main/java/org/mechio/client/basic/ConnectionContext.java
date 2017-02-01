@@ -31,14 +31,14 @@ import org.jflux.impl.messaging.rk.JMSAvroMessageSender;
 import org.jflux.impl.messaging.rk.JMSBytesRecordBlockingReceiver;
 import org.jflux.impl.messaging.rk.utils.ConnectionManager;
 import org.jflux.impl.messaging.rk.utils.ConnectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.jms.BytesMessage;
 import javax.jms.Connection;
@@ -52,7 +52,7 @@ import javax.jms.Session;
  * @author Matthew Stevenson <www.mechio.org>
  */
 final class ConnectionContext {
-	private final static Logger theLogger = Logger.getLogger(ConnectionContext.class.getName());
+	private static final Logger theLogger = LoggerFactory.getLogger(ConnectionContext.class);
 	final static String QUEUE = "queue";
 	final static String TOPIC = "topic";
 
@@ -188,16 +188,14 @@ final class ConnectionContext {
 			try {
 				context.stop();
 			} catch (JMSException ex) {
-				theLogger.log(Level.WARNING,
-						"Error closing " + context.name, ex);
+				theLogger.warn("Error closing: {}", context.name, ex);
 			}
 		}
 		for (Connection con : myConnections) {
 			try {
 				con.stop();
 			} catch (JMSException ex) {
-				theLogger.log(Level.WARNING,
-						"Error closing connection", ex);
+				theLogger.warn("Error closing connection", ex);
 			}
 		}
 	}

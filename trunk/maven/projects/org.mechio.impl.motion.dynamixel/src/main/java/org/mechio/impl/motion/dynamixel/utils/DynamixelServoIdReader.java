@@ -16,49 +16,47 @@
 
 package org.mechio.impl.motion.dynamixel.utils;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.mechio.api.motion.servos.ServoController;
 import org.mechio.api.motion.servos.ServoController.ServoId;
 import org.mechio.api.motion.servos.utils.ServoIdReader;
 import org.mechio.impl.motion.dynamixel.DynamixelServo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- *
  * @author Matthew Stevenson <www.mechio.org>
  */
-public class DynamixelServoIdReader implements 
-        ServoIdReader<DynamixelServo.Id> {
-    private final static Logger theLogger = 
-            Logger.getLogger(DynamixelServoIdReader.class.getName());
-    
-    @Override
-    public ServoId<DynamixelServo.Id> read(
-            ServoController.Id controllerId, String servoIdStr) {
-        if(controllerId == null || servoIdStr == null){
-            throw new NullPointerException();
-        }
-        DynamixelServo.Id dId = read(servoIdStr);
-        return new ServoId<DynamixelServo.Id>(controllerId, dId);
-    }
+public class DynamixelServoIdReader implements
+		ServoIdReader<DynamixelServo.Id> {
+	private static final Logger theLogger = LoggerFactory.getLogger(DynamixelServoIdReader.class);
 
-    @Override
-    public DynamixelServo.Id read(String servoIdStr) {
-        if(servoIdStr == null){
-            throw new NullPointerException();
-        }
-        try{
-            int id = Integer.parseInt(servoIdStr);
-            return new DynamixelServo.Id(id);
-        }catch(NumberFormatException ex){
-            theLogger.log(Level.SEVERE, "Could not read DynamixelServo.Id", ex);
-            throw ex;
-        }
-    }
+	@Override
+	public ServoId<DynamixelServo.Id> read(
+			ServoController.Id controllerId, String servoIdStr) {
+		if (controllerId == null || servoIdStr == null) {
+			throw new NullPointerException();
+		}
+		DynamixelServo.Id dId = read(servoIdStr);
+		return new ServoId<>(controllerId, dId);
+	}
 
-    @Override
-    public Class<DynamixelServo.Id> getServoIdClass() {
-        return DynamixelServo.Id.class;
-    }
-    
+	@Override
+	public DynamixelServo.Id read(String servoIdStr) {
+		if (servoIdStr == null) {
+			throw new NullPointerException();
+		}
+		try {
+			int id = Integer.parseInt(servoIdStr);
+			return new DynamixelServo.Id(id);
+		} catch (NumberFormatException ex) {
+			theLogger.error("Could not read DynamixelServo.Id", ex);
+			throw ex;
+		}
+	}
+
+	@Override
+	public Class<DynamixelServo.Id> getServoIdClass() {
+		return DynamixelServo.Id.class;
+	}
+
 }

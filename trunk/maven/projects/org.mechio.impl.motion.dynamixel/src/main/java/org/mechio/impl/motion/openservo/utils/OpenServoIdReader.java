@@ -16,56 +16,54 @@
 
 package org.mechio.impl.motion.openservo.utils;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.mechio.api.motion.servos.ServoController;
 import org.mechio.api.motion.servos.ServoController.ServoId;
 import org.mechio.api.motion.servos.utils.ServoIdReader;
 import org.mechio.impl.motion.openservo.OpenServo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- *
  * @author Matthew Stevenson <www.mechio.org>
  */
-public class OpenServoIdReader implements 
-        ServoIdReader<OpenServo.Id> {
-    private final static Logger theLogger = 
-            Logger.getLogger(OpenServoIdReader.class.getName());
-    
-    @Override
-    public ServoId<OpenServo.Id> read(
-            ServoController.Id controllerId, String servoIdStr) {
-        if(controllerId == null || servoIdStr == null){
-            throw new NullPointerException();
-        }
-        OpenServo.Id dId = read(servoIdStr);
-        return new ServoId<OpenServo.Id>(controllerId, dId);
-    }
+public class OpenServoIdReader implements
+		ServoIdReader<OpenServo.Id> {
+	private static final Logger theLogger = LoggerFactory.getLogger(OpenServoIdReader.class);
 
-    @Override
-    public OpenServo.Id read(String servoIdStr) {
-        if(servoIdStr == null){
-            throw new NullPointerException();
-        }
-        int splitIndex = servoIdStr.indexOf("::");
-        if(splitIndex < 0 || splitIndex >= (servoIdStr.length()-2)){
-            throw new IllegalArgumentException();
-        }
-        String rs485Str = servoIdStr.substring(0, splitIndex).trim();
-        String i2cStr = servoIdStr.substring(splitIndex+2).trim();
-        try{
-            int rs485Id = Integer.parseInt(rs485Str);
-            int i2cId = Integer.parseInt(i2cStr);
-            return new OpenServo.Id(rs485Id, i2cId);
-        }catch(NumberFormatException ex){
-            theLogger.log(Level.SEVERE, "Could not read OpenServo.Id", ex);
-            throw ex;
-        }
-    }
+	@Override
+	public ServoId<OpenServo.Id> read(
+			ServoController.Id controllerId, String servoIdStr) {
+		if (controllerId == null || servoIdStr == null) {
+			throw new NullPointerException();
+		}
+		OpenServo.Id dId = read(servoIdStr);
+		return new ServoId<>(controllerId, dId);
+	}
 
-    @Override
-    public Class<OpenServo.Id> getServoIdClass() {
-        return OpenServo.Id.class;
-    }
-    
+	@Override
+	public OpenServo.Id read(String servoIdStr) {
+		if (servoIdStr == null) {
+			throw new NullPointerException();
+		}
+		int splitIndex = servoIdStr.indexOf("::");
+		if (splitIndex < 0 || splitIndex >= (servoIdStr.length() - 2)) {
+			throw new IllegalArgumentException();
+		}
+		String rs485Str = servoIdStr.substring(0, splitIndex).trim();
+		String i2cStr = servoIdStr.substring(splitIndex + 2).trim();
+		try {
+			int rs485Id = Integer.parseInt(rs485Str);
+			int i2cId = Integer.parseInt(i2cStr);
+			return new OpenServo.Id(rs485Id, i2cId);
+		} catch (NumberFormatException ex) {
+			theLogger.error("Could not read OpenServo.Id", ex);
+			throw ex;
+		}
+	}
+
+	@Override
+	public Class<OpenServo.Id> getServoIdClass() {
+		return OpenServo.Id.class;
+	}
+
 }

@@ -16,43 +16,43 @@
 
 package org.mechio.impl.motion.jointgroup;
 
-import org.mechio.api.motion.jointgroup.RobotJointGroupConfig;
-import java.io.File;
-import java.util.logging.Logger;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.jflux.api.common.rk.config.VersionProperty;
 import org.jflux.api.common.rk.services.ConfigurationLoader;
+import org.mechio.api.motion.jointgroup.RobotJointGroupConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
 
 /**
- *
  * @author Matthew Stevenson <www.mechio.org>
  */
 public class RobotJointGroupXMLFileLoader
-        implements ConfigurationLoader<RobotJointGroupConfig, File>{
-    private final static Logger theLogger = 
-            Logger.getLogger(RobotJointGroupXMLFileLoader.class.getName());
+		implements ConfigurationLoader<RobotJointGroupConfig, File> {
+	private static final Logger theLogger = LoggerFactory.getLogger(RobotJointGroupXMLFileLoader.class);
 
-    @Override
-    public VersionProperty getConfigurationFormat() {
-        return RobotJointGroupConfigXMLReader.VERSION;
-    }
+	@Override
+	public VersionProperty getConfigurationFormat() {
+		return RobotJointGroupConfigXMLReader.VERSION;
+	}
 
-    @Override
-    public RobotJointGroupConfig loadConfiguration(File param) 
-            throws ConfigurationException {
-        HierarchicalConfiguration config = new XMLConfiguration(param);
-        return RobotJointGroupConfigXMLReader.readJointGroup(null, config);
-    }
+	@Override
+	public RobotJointGroupConfig loadConfiguration(File param)
+			throws ConfigurationException {
+		HierarchicalConfiguration config = new XMLConfiguration(param);
+		return RobotJointGroupConfigXMLReader.readJointGroup(null, config);
+	}
 
-    @Override
-    public Class<RobotJointGroupConfig> getConfigurationClass() {
-        return RobotJointGroupConfig.class;
-    }
+	@Override
+	public Class<RobotJointGroupConfig> getConfigurationClass() {
+		return RobotJointGroupConfig.class;
+	}
 
-    @Override
-    public Class<File> getParameterClass() {
-        return File.class;
-    }
+	@Override
+	public Class<File> getParameterClass() {
+		return File.class;
+	}
 }

@@ -15,47 +15,46 @@
  */
 package org.mechio.api.animation.utils;
 
-import java.util.logging.Logger;
-import org.osgi.framework.BundleContext;
+import org.jflux.api.core.Listener;
+import org.jflux.impl.services.rk.osgi.SingleServiceListener;
 import org.mechio.api.animation.Animation;
 import org.mechio.api.animation.library.AnimationLibrary;
 import org.mechio.api.animation.protocol.AnimationEvent;
-import org.jflux.api.core.Listener;
-import org.jflux.impl.services.rk.osgi.SingleServiceListener;
+import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- *
  * @author Matthew Stevenson <www.mechio.org>
  */
-public class LibraryRemoteAnimationAdder implements Listener<AnimationEvent>{
-    private final static Logger theLogger = 
-            Logger.getLogger(LibraryRemoteAnimationAdder.class.getName());
-    private SingleServiceListener<AnimationLibrary> myLibraryTracker;
-    
-    public LibraryRemoteAnimationAdder(
-            BundleContext context, String libraryFilter){
-        if(context == null){
-            throw new NullPointerException();
-        }
-        myLibraryTracker = new SingleServiceListener<AnimationLibrary>(
-                AnimationLibrary.class, context, libraryFilter);
-        myLibraryTracker.start();
-    }
+public class LibraryRemoteAnimationAdder implements Listener<AnimationEvent> {
+	private static final Logger theLogger = LoggerFactory.getLogger(LibraryRemoteAnimationAdder.class);
+	private SingleServiceListener<AnimationLibrary> myLibraryTracker;
 
-    @Override
-    public void handleEvent(AnimationEvent event) {
-        if(event == null){
-            return;
-        }
-        Animation anim = event.getAnimation();
-        if(anim == null){
-            return;
-        }
-        AnimationLibrary lib = myLibraryTracker.getService();
-        if(lib == null){
-            return;
-        }
-        lib.add(anim);
-        myLibraryTracker.releaseService();
-    }
+	public LibraryRemoteAnimationAdder(
+			BundleContext context, String libraryFilter) {
+		if (context == null) {
+			throw new NullPointerException();
+		}
+		myLibraryTracker = new SingleServiceListener<>(
+				AnimationLibrary.class, context, libraryFilter);
+		myLibraryTracker.start();
+	}
+
+	@Override
+	public void handleEvent(AnimationEvent event) {
+		if (event == null) {
+			return;
+		}
+		Animation anim = event.getAnimation();
+		if (anim == null) {
+			return;
+		}
+		AnimationLibrary lib = myLibraryTracker.getService();
+		if (lib == null) {
+			return;
+		}
+		lib.add(anim);
+		myLibraryTracker.releaseService();
+	}
 }
