@@ -16,39 +16,40 @@
 
 package org.mechio.api.motion.osgi;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jflux.api.common.rk.services.ServiceUtils;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
 import org.mechio.api.motion.servos.utils.ServoRobotConnector;
 import org.mechio.api.motion.sync.SynchronizedRobotFactory;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Matthew Stevenson <www.mechio.org>
  */
 public class Activator implements BundleActivator {
-    private final static Logger theLogger = Logger.getLogger(Activator.class.getName());
+	private static final Logger theLogger = LoggerFactory.getLogger(Activator.class);
 
-    /**
-     * 
-     * @param context
-     * @throws Exception
-     */
-    @Override
-    public void start(BundleContext context) throws Exception {
-        theLogger.log(Level.INFO, "org.mechio.api.motion Activation Begin.");
-        ServiceUtils.registerFactory(context, new ServoRobotConnector());
-        ServiceUtils.registerFactory(
-                context, new SynchronizedRobotFactory());
-    }
-    
-    /**
-     * 
-     * @param context
-     * @throws Exception
-     */
-    @Override
-    public void stop(BundleContext context) throws Exception {}
+	/**
+	 *
+	 * @param context
+	 * @throws Exception
+	 */
+	@Override
+	public void start(BundleContext context) throws Exception {
+		theLogger.info("org.mechio.api.motion Activation Begin.");
+		ServiceUtils.registerFactory(context, new ServoRobotConnector());
+		ServiceUtils.registerFactory(
+				context, new SynchronizedRobotFactory());
+	}
+
+	/**
+	 *
+	 * @param context
+	 * @throws Exception
+	 */
+	@Override
+	public void stop(BundleContext context) throws Exception {
+	}
 
 }

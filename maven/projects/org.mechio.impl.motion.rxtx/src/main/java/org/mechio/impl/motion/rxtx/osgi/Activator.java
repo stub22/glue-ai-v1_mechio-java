@@ -16,26 +16,25 @@
 
 package org.mechio.impl.motion.rxtx.osgi;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * 
  * @author Matthew Stevenson <www.mechio.org>
  */
 public class Activator implements BundleActivator {
-    private final static Logger theLogger =
-            Logger.getLogger(Activator.class.getName());
-    
-    @Override
-    public void start(BundleContext context) throws Exception {
-        theLogger.log(Level.INFO, "MotionRXTXAPI Activation Begin.");
-        theLogger.log(Level.INFO, "MotionRXTXAPI Activation Complete.");
-    }
+	private static final Logger theLogger = LoggerFactory.getLogger(Activator.class);
 
-    @Override
-    public void stop(BundleContext context) throws Exception {}
+	@Override
+	public void start(BundleContext context) throws Exception {
+		theLogger.info("MotionRXTXAPI Activation Begin.");
+		theLogger.info("MotionRXTXAPI Activation Complete.");
+	}
+
+	@Override
+	public void stop(BundleContext context) throws Exception {
+	}
 
 }

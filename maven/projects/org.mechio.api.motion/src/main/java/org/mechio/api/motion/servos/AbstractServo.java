@@ -16,162 +16,166 @@
 
 package org.mechio.api.motion.servos;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.logging.Logger;
 import org.jflux.api.common.rk.position.NormalizableRange;
 import org.jflux.api.common.rk.position.NormalizedDouble;
 import org.jflux.api.common.rk.property.PropertyChangeNotifier;
 import org.mechio.api.motion.servos.config.ServoConfig;
 import org.mechio.api.motion.servos.config.ServoControllerConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 /**
  * Abstract implementation providing much of the functionality need to implement
  * various Servos.
- * @param <Id> Identifier type for this Servo
+ *
+ * @param <Id>   Identifier type for this Servo
  * @param <Conf> ServoConfig type for this Servo
  * @param <Ctrl> Servo's parent ServoController's type
- * 
  * @author Matthew Stevenson <www.mechio.org>
  */
 public abstract class AbstractServo<
-        Id, 
-        Conf extends ServoConfig<Id>, 
-        Ctrl extends ServoController<Id, Conf,
-                        ? extends AbstractServo<Id,Conf,Ctrl>,
-                        ? extends ServoControllerConfig<Id,Conf>>>
-        extends PropertyChangeNotifier 
-        implements Servo<Id,Conf>, PropertyChangeListener{
-    private static final Logger theLogger = Logger.getLogger(AbstractServo.class.getName());
-    
-    /**
-     * The Servo's Id
-     */
-    protected Id myServoId;
-    /**
-     * The Servo's configuration parameters.
-     */
-    protected Conf myConfig;
-    /**
-     * The Servo's parent ServoController.
-     */
-    protected Ctrl myController;
-    /**
-     * The Servo's current goal position.
-     */
-    protected NormalizedDouble myGoalPosition;
-    
-    private NormalizableRange<Double> myRange;
+		Id,
+		Conf extends ServoConfig<Id>,
+		Ctrl extends ServoController<Id, Conf,
+				? extends AbstractServo<Id, Conf, Ctrl>,
+				? extends ServoControllerConfig<Id, Conf>>>
+		extends PropertyChangeNotifier
+		implements Servo<Id, Conf>, PropertyChangeListener {
+	private static final Logger theLogger = LoggerFactory.getLogger(AbstractServo.class);
 
-    /**
-     * Creates a new AbstractServo from the given Servo configuration parameters
-     * and ServoController.
-     * @param config Servo configuration parameters
-     * @param controller Servo's parent ServoController
-     */
-    public AbstractServo(Conf config, Ctrl controller){
-        if(config == null){
-            throw new NullPointerException("Cannot create AbstractServo with null ServoConfig.");
-        }
-        myConfig = config;
-        myServoId = myConfig.getServoId();
-        if(myServoId == null){
-            throw new NullPointerException();
-        }
-        myController = controller;
-        myRange = new ServoRange();
-    }
+	/**
+	 * The Servo's Id
+	 */
+	protected Id myServoId;
+	/**
+	 * The Servo's configuration parameters.
+	 */
+	protected Conf myConfig;
+	/**
+	 * The Servo's parent ServoController.
+	 */
+	protected Ctrl myController;
+	/**
+	 * The Servo's current goal position.
+	 */
+	protected NormalizedDouble myGoalPosition;
 
-    @Override
-    public Id getId() {
-        return myServoId;
-    }
+	private NormalizableRange<Double> myRange;
 
-    @Override
-    public Ctrl getController() {
-        return myController;
-    }
+	/**
+	 * Creates a new AbstractServo from the given Servo configuration parameters
+	 * and ServoController.
+	 *
+	 * @param config     Servo configuration parameters
+	 * @param controller Servo's parent ServoController
+	 */
+	public AbstractServo(Conf config, Ctrl controller) {
+		if (config == null) {
+			throw new NullPointerException("Cannot create AbstractServo with null ServoConfig.");
+		}
+		myConfig = config;
+		myServoId = myConfig.getServoId();
+		if (myServoId == null) {
+			throw new NullPointerException();
+		}
+		myController = controller;
+		myRange = new ServoRange();
+	}
 
-    @Override
-    public Conf getConfig() {
-        return myConfig;
-    }
+	@Override
+	public Id getId() {
+		return myServoId;
+	}
 
-    @Override
-    public NormalizedDouble getGoalPosition(){
-        return myGoalPosition;
-    }
+	@Override
+	public Ctrl getController() {
+		return myController;
+	}
 
-    /**
-     * Returns the absolute goal position as used by the ServoController.
-     * @return the absolute goal position as used by the ServoController
-     */
-    public Integer getAbsoluteGoalPosition(){
-        if(myGoalPosition == null){
-            return null;
-        }
-        double goal = myGoalPosition.getValue();
-        double range = myConfig.getMaxPosition() - myConfig.getMinPosition();
-        return (int)(goal*range + myConfig.getMinPosition());
-    }
+	@Override
+	public Conf getConfig() {
+		return myConfig;
+	}
 
-    @Override
-    public void setGoalPosition(NormalizedDouble pos) {
-        NormalizedDouble oldPos = myGoalPosition;
-        myGoalPosition = pos;
-        firePropertyChange(PROP_GOAL_POSITION, oldPos, pos);
-    }
+	@Override
+	public NormalizedDouble getGoalPosition() {
+		return myGoalPosition;
+	}
 
-    @Override
-    public void propertyChange(PropertyChangeEvent pce) {
-        firePropertyChange(pce);
-    }
-    
-    @Override
-    public NormalizableRange<Double> getPositionRange(){
-        return myRange;
-    }
-    
-    private class ServoRange implements NormalizableRange<Double>{
-        @Override
-        public boolean isValid(Double t) {
-            int min = getMinPosition();
-            int max = getMaxPosition();
-            return max >= min 
-                    ? t >= min && t <= max 
-                    : t <= min && t >= max;
-        }
+	/**
+	 * Returns the absolute goal position as used by the ServoController.
+	 *
+	 * @return the absolute goal position as used by the ServoController
+	 */
+	public Integer getAbsoluteGoalPosition() {
+		if (myGoalPosition == null) {
+			return null;
+		}
+		double goal = myGoalPosition.getValue();
+		double range = myConfig.getMaxPosition() - myConfig.getMinPosition();
+		return (int) (goal * range + myConfig.getMinPosition());
+	}
 
-        @Override
-        public NormalizedDouble normalizeValue(Double val) {
-            if(!isValid(val)){
-                //If the value is out of range set it to the min or the max.
-                if(Math.abs(val-getMin()) < Math.abs(val-getMax())){
-                    val = getMin();
-                }else{
-                    val = getMax();
-                }
-                //return null;
-            }
-            int min = getMinPosition();
-            double norm = (val - min)/(getMaxPosition() - min);
-            return new NormalizedDouble(norm);
-        }
+	@Override
+	public void setGoalPosition(NormalizedDouble pos) {
+		NormalizedDouble oldPos = myGoalPosition;
+		myGoalPosition = pos;
+		firePropertyChange(PROP_GOAL_POSITION, oldPos, pos);
+	}
 
-        @Override
-        public Double denormalizeValue(NormalizedDouble v) {
-            int min = getMinPosition();
-            return v.getValue()*(getMaxPosition() - min) + min;
-        }
+	@Override
+	public void propertyChange(PropertyChangeEvent pce) {
+		firePropertyChange(pce);
+	}
 
-        @Override
-        public Double getMin() {
-            return (double)getMinPosition();
-        }
+	@Override
+	public NormalizableRange<Double> getPositionRange() {
+		return myRange;
+	}
 
-        @Override
-        public Double getMax() {
-            return (double)getMaxPosition();
-        }
-    }
+	private class ServoRange implements NormalizableRange<Double> {
+		@Override
+		public boolean isValid(Double t) {
+			int min = getMinPosition();
+			int max = getMaxPosition();
+			return max >= min
+					? t >= min && t <= max
+					: t <= min && t >= max;
+		}
+
+		@Override
+		public NormalizedDouble normalizeValue(Double val) {
+			if (!isValid(val)) {
+				//If the value is out of range set it to the min or the max.
+				if (Math.abs(val - getMin()) < Math.abs(val - getMax())) {
+					val = getMin();
+				} else {
+					val = getMax();
+				}
+				//return null;
+			}
+			int min = getMinPosition();
+			double norm = (val - min) / (getMaxPosition() - min);
+			return new NormalizedDouble(norm);
+		}
+
+		@Override
+		public Double denormalizeValue(NormalizedDouble v) {
+			int min = getMinPosition();
+			return v.getValue() * (getMaxPosition() - min) + min;
+		}
+
+		@Override
+		public Double getMin() {
+			return (double) getMinPosition();
+		}
+
+		@Override
+		public Double getMax() {
+			return (double) getMaxPosition();
+		}
+	}
 }

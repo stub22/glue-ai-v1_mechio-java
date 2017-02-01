@@ -31,11 +31,12 @@ import org.mechio.impl.motion.messaging.PortableRobotDefinitionResponse;
 import org.mechio.impl.motion.messaging.PortableRobotRequest;
 import org.mechio.impl.motion.messaging.PortableRobotResponse;
 import org.mechio.impl.motion.messaging.RobotDefinitionResponseRecord;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.logging.Logger;
 
 import javax.jms.Destination;
 import javax.jms.JMSException;
@@ -45,7 +46,7 @@ import javax.jms.Session;
  * @author Matthew Stevenson <www.mechio.org>
  */
 final class MioRobotConnector extends MioServiceConnector {
-	private final static Logger theLogger = Logger.getLogger(MioRobotConnector.class.getName());
+	private static final Logger theLogger = LoggerFactory.getLogger(MioRobotConnector.class);
 	final static String theDefaultId = "Avatar_ZenoR50";
 
 	private final static String RESPONSE_RECEIVER = "robotResponseReceiver";

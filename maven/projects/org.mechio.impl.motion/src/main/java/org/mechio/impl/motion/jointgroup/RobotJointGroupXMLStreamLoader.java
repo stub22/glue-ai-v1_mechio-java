@@ -16,43 +16,43 @@
 
 package org.mechio.impl.motion.jointgroup;
 
-import org.mechio.api.motion.jointgroup.RobotJointGroupConfig;
-import java.io.InputStream;
-import java.util.logging.Logger;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.jflux.api.common.rk.config.VersionProperty;
 import org.jflux.api.common.rk.services.ConfigurationLoader;
+import org.mechio.api.motion.jointgroup.RobotJointGroupConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.InputStream;
 
 /**
- *
  * @author Matthew Stevenson <www.mechio.org>
  */
 public class RobotJointGroupXMLStreamLoader
-        implements ConfigurationLoader<RobotJointGroupConfig, InputStream>{
-    private final static Logger theLogger = 
-            Logger.getLogger(RobotJointGroupXMLStreamLoader.class.getName());
+		implements ConfigurationLoader<RobotJointGroupConfig, InputStream> {
+	private static final Logger theLogger = LoggerFactory.getLogger(RobotJointGroupXMLStreamLoader.class);
 
-    @Override
-    public VersionProperty getConfigurationFormat() {
-        return RobotJointGroupConfigXMLReader.VERSION;
-    }
+	@Override
+	public VersionProperty getConfigurationFormat() {
+		return RobotJointGroupConfigXMLReader.VERSION;
+	}
 
-    @Override
-    public RobotJointGroupConfig loadConfiguration(InputStream param) 
-            throws ConfigurationException {
-        XMLConfiguration config = new XMLConfiguration();
-        config.load(param);
-        return RobotJointGroupConfigXMLReader.readJointGroup(null, config);
-    }
+	@Override
+	public RobotJointGroupConfig loadConfiguration(InputStream param)
+			throws ConfigurationException {
+		XMLConfiguration config = new XMLConfiguration();
+		config.load(param);
+		return RobotJointGroupConfigXMLReader.readJointGroup(null, config);
+	}
 
-    @Override
-    public Class<RobotJointGroupConfig> getConfigurationClass() {
-        return RobotJointGroupConfig.class;
-    }
+	@Override
+	public Class<RobotJointGroupConfig> getConfigurationClass() {
+		return RobotJointGroupConfig.class;
+	}
 
-    @Override
-    public Class<InputStream> getParameterClass() {
-        return InputStream.class;
-    }
+	@Override
+	public Class<InputStream> getParameterClass() {
+		return InputStream.class;
+	}
 }

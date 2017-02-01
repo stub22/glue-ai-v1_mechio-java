@@ -16,27 +16,25 @@
 
 package org.mechio.integration.animation_motion.osgi;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Matthew Stevenson <www.mechio.org>
  */
 public class Activator implements BundleActivator {
-    private final static Logger theLogger = Logger.getLogger(Activator.class.getName());
+    private static final Logger theLogger = LoggerFactory.getLogger(Activator.class);
     private AnimationRobotMonitor myAnimationRobotMonitor;
     
     @Override
     public void start(BundleContext context) throws Exception {
         myAnimationRobotMonitor = new AnimationRobotMonitor(context, null);
         myAnimationRobotMonitor.start();
-        theLogger.log(Level.INFO, 
-                "AnimationRobotMonitor Registered Successfully.");
-        theLogger.log(Level.INFO, 
-                "integration.animation_motion Activation Complete.");
+        theLogger.info("AnimationRobotMonitor Registered Successfully.");
+        theLogger.info("integration.animation_motion Activation Complete.");
     }
 
     @Override

@@ -16,39 +16,39 @@
 
 package org.mechio.api.motion.servos.utils;
 
-import org.mechio.api.motion.servos.ServoRobot;
-import java.util.logging.Logger;
 import org.jflux.api.common.rk.config.VersionProperty;
 import org.jflux.api.common.rk.services.ServiceFactory;
 import org.mechio.api.motion.Robot;
+import org.mechio.api.motion.servos.ServoRobot;
 import org.mechio.api.motion.servos.config.ServoRobotConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ServiceFactory for creating new ServoRobots from ServoRobotConfigs.
- * 
+ *
  * @author Matthew Stevenson <www.mechio.org>
  */
 public class ServoRobotConnector implements ServiceFactory<Robot, ServoRobotConfig> {
-    private final static Logger theLogger = 
-            Logger.getLogger(ServoRobotConnector.class.getName());
+	private static final Logger theLogger = LoggerFactory.getLogger(ServoRobotConnector.class);
 
-    @Override
-    public VersionProperty getServiceVersion() {
-        return ServoRobot.VERSION;
-    }
+	@Override
+	public VersionProperty getServiceVersion() {
+		return ServoRobot.VERSION;
+	}
 
-    @Override
-    public Robot build(ServoRobotConfig config) {
-        return new ServoRobot(config);
-    }
+	@Override
+	public Robot build(ServoRobotConfig config) {
+		return new ServoRobot(config);
+	}
 
-    @Override
-    public Class<Robot> getServiceClass() {
-        return Robot.class;
-    }
+	@Override
+	public Class<Robot> getServiceClass() {
+		return Robot.class;
+	}
 
-    @Override
-    public Class<ServoRobotConfig> getConfigurationClass() {
-        return ServoRobotConfig.class;
-    }
+	@Override
+	public Class<ServoRobotConfig> getConfigurationClass() {
+		return ServoRobotConfig.class;
+	}
 }

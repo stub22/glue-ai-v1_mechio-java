@@ -16,52 +16,52 @@
 
 package org.mechio.impl.motion.config;
 
-import java.io.InputStream;
-import java.util.logging.Logger;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.jflux.api.common.rk.config.VersionProperty;
 import org.jflux.api.common.rk.services.ConfigurationLoader;
-import org.osgi.framework.BundleContext;
 import org.mechio.api.motion.servos.config.ServoRobotConfig;
+import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.InputStream;
 
 /**
- *
  * @author Matthew Stevenson <www.mechio.org>
  */
-public class RobotConfigXMLStreamLoader 
-        implements ConfigurationLoader<ServoRobotConfig, InputStream>{
-    private final static Logger theLogger = 
-            Logger.getLogger(RobotConfigXMLStreamLoader.class.getName());
-    private BundleContext myContext;
-    
-    public RobotConfigXMLStreamLoader(BundleContext context){
-        if(context == null){
-            throw new NullPointerException();
-        }
-        myContext = context;
-    }
+public class RobotConfigXMLStreamLoader
+		implements ConfigurationLoader<ServoRobotConfig, InputStream> {
+	private static final Logger theLogger = LoggerFactory.getLogger(RobotConfigXMLStreamLoader.class);
+	private BundleContext myContext;
 
-    @Override
-    public VersionProperty getConfigurationFormat() {
-        return RobotConfigXMLReader.VERSION;
-    }
+	public RobotConfigXMLStreamLoader(BundleContext context) {
+		if (context == null) {
+			throw new NullPointerException();
+		}
+		myContext = context;
+	}
 
-    @Override
-    public ServoRobotConfig loadConfiguration(InputStream param) 
-            throws ConfigurationException {
-        XMLConfiguration config = new XMLConfiguration();
-        config.load(param);
-        return RobotConfigXMLReader.readConfig(myContext, config);
-    }
+	@Override
+	public VersionProperty getConfigurationFormat() {
+		return RobotConfigXMLReader.VERSION;
+	}
 
-    @Override
-    public Class<ServoRobotConfig> getConfigurationClass() {
-        return ServoRobotConfig.class;
-    }
+	@Override
+	public ServoRobotConfig loadConfiguration(InputStream param)
+			throws ConfigurationException {
+		XMLConfiguration config = new XMLConfiguration();
+		config.load(param);
+		return RobotConfigXMLReader.readConfig(myContext, config);
+	}
 
-    @Override
-    public Class<InputStream> getParameterClass() {
-        return InputStream.class;
-    }    
+	@Override
+	public Class<ServoRobotConfig> getConfigurationClass() {
+		return ServoRobotConfig.class;
+	}
+
+	@Override
+	public Class<InputStream> getParameterClass() {
+		return InputStream.class;
+	}
 }

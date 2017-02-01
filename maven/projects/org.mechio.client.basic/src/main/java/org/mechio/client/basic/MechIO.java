@@ -36,11 +36,11 @@ import org.mechio.api.vision.messaging.RemoteImageServiceClient;
 import org.mechio.impl.animation.xml.AnimationXMLReader;
 import org.mechio.impl.animation.xml.XPP3AnimationXMLWriter;
 import org.mechio.impl.sensor.HeaderRecord;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Framework utility methods for the MechIO Basic API
@@ -49,7 +49,7 @@ import java.util.logging.Logger;
  */
 public final class MechIO {
 	private final static String DEFAULT_CONTEXT_SUFFIX = "default";
-	private final static Logger theLogger = Logger.getLogger(MechIO.class.getName());
+	private static final Logger theLogger = LoggerFactory.getLogger(MechIO.class);
 	private final static Map<String, ConnectionContext> theConnectionMap = new HashMap<>();
 	private final static String theRobotContextPrefix = "robotContext";
 	private final static String theSpeechContextPrefix = "speechContext";
@@ -86,8 +86,7 @@ public final class MechIO {
 
 			return new RemoteRobot(robotClient, receiver);
 		} catch (Exception ex) {
-			theLogger.log(Level.SEVERE,
-					"Unable to connect to Remote Robot.", ex);
+			theLogger.error("Unable to connect to Remote Robot.", ex);
 			return null;
 		}
 	}
@@ -117,8 +116,7 @@ public final class MechIO {
 
 			return connector.buildRemoteClient();
 		} catch (Exception ex) {
-			theLogger.log(Level.SEVERE,
-					"Unable to connect to Remote Animation Player.", ex);
+			theLogger.error("Unable to connect to Remote Animation Player.", ex);
 			return null;
 		}
 	}
@@ -150,8 +148,7 @@ public final class MechIO {
 			speechClient.start();
 			return speechClient;
 		} catch (Exception ex) {
-			theLogger.log(Level.SEVERE,
-					"Unable to connect to Remote Speech Service.", ex);
+			theLogger.error("Unable to connect to Remote Speech Service.", ex);
 			return null;
 		}
 	}
@@ -185,8 +182,7 @@ public final class MechIO {
 			MioSensorConnector.initializeGpioClient(gpioClient);
 			return gpioClient;
 		} catch (Exception ex) {
-			theLogger.log(Level.SEVERE,
-					"Unable to connect to Remote Sensors.", ex);
+			theLogger.error("Unable to connect to Remote Sensors.", ex);
 			return null;
 		}
 	}
@@ -217,8 +213,7 @@ public final class MechIO {
 			context.start();
 			return accelClient;
 		} catch (Exception ex) {
-			theLogger.log(Level.SEVERE,
-					"Unable to connect to Remote Accelerometer.", ex);
+			theLogger.error("Unable to connect to Remote Accelerometer.", ex);
 			return null;
 		}
 	}
@@ -249,8 +244,7 @@ public final class MechIO {
 			context.start();
 			return gyroClient;
 		} catch (Exception ex) {
-			theLogger.log(Level.SEVERE,
-					"Unable to connect to Remote Gyroscope.", ex);
+			theLogger.error("Unable to connect to Remote Gyroscope.", ex);
 			return null;
 		}
 	}
@@ -281,8 +275,7 @@ public final class MechIO {
 			context.start();
 			return compassClient;
 		} catch (Exception ex) {
-			theLogger.log(Level.SEVERE,
-					"Unable to connect to Remote Compass.", ex);
+			theLogger.error("Unable to connect to Remote Compass.", ex);
 			return null;
 		}
 	}
@@ -315,8 +308,7 @@ public final class MechIO {
 			cameraClient.start();
 			return cameraClient;
 		} catch (Exception ex) {
-			theLogger.log(Level.SEVERE,
-					"Unable to connect to Remote Camera.", ex);
+			theLogger.error("Unable to connect to Remote Camera.", ex);
 			return null;
 		}
 	}
@@ -349,8 +341,7 @@ public final class MechIO {
 			imageRegionClient.start();
 			return imageRegionClient;
 		} catch (Exception ex) {
-			theLogger.log(Level.SEVERE,
-					"Unable to connect to Remote image region service.", ex);
+			theLogger.error("Unable to connect to Remote image region service.", ex);
 			return null;
 		}
 	}
@@ -374,7 +365,7 @@ public final class MechIO {
 		try {
 			return new AnimationXMLReader().readAnimation(filepath);
 		} catch (Exception ex) {
-			theLogger.log(Level.WARNING, "Unable to load animation.", ex);
+			theLogger.warn("Unable to load animation.", ex);
 			return null;
 		}
 	}
@@ -391,7 +382,7 @@ public final class MechIO {
 			new XPP3AnimationXMLWriter().writeAnimation(filepath, anim, null, null);
 			return true;
 		} catch (Exception ex) {
-			theLogger.log(Level.WARNING, "Unable to load animation.", ex);
+			theLogger.warn("Unable to load animation.", ex);
 			return false;
 		}
 	}
@@ -414,7 +405,7 @@ public final class MechIO {
 		try {
 			Thread.sleep(milliseconds);
 		} catch (InterruptedException ex) {
-			theLogger.log(Level.WARNING, "Sleep interrupted.", ex);
+			theLogger.warn("Sleep interrupted.", ex);
 		}
 	}
 

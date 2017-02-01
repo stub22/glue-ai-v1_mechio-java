@@ -16,37 +16,37 @@
 
 package org.mechio.api.animation.osgi;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
 import org.mechio.api.interpolation.InterpolatorDirectory;
 import org.mechio.api.interpolation.bezier.BezierInterpolatorFactory;
 import org.mechio.api.interpolation.cspline.CSplineInterpolatorFactory;
 import org.mechio.api.interpolation.linear.LinearInterpolatorFactory;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- *
  * @author Matthew Stevenson <www.mechio.org>
  */
 public class Activator implements BundleActivator {
-    private final static Logger theLogger = Logger.getLogger(Activator.class.getName());
+	private static final Logger theLogger = LoggerFactory.getLogger(Activator.class);
 
-    @Override
-    public void start(BundleContext context) throws Exception {
-        theLogger.log(Level.INFO, "AnimationControl Activation Begin.");
-        InterpolatorDirectory.instance().setContext(context);
-        InterpolatorDirectory.registerFactory(context, new CSplineInterpolatorFactory());
-        theLogger.log(Level.INFO, "CSplineInterpolatorFactory Service Registered Successfully.");
-        InterpolatorDirectory.registerFactory(context, new LinearInterpolatorFactory());
-        theLogger.log(Level.INFO, "LinearInterpolatorFactory Service Registered Successfully.");
-        InterpolatorDirectory.registerFactory(context, new BezierInterpolatorFactory());
-        theLogger.log(Level.INFO, "BezierInterpolatorFactory Service Registered Successfully.");
-        
-        theLogger.log(Level.INFO, "AnimationControl Activation Complete.");
-    }
+	@Override
+	public void start(BundleContext context) throws Exception {
+		theLogger.info("AnimationControl Activation Begin.");
+		InterpolatorDirectory.instance().setContext(context);
+		InterpolatorDirectory.registerFactory(context, new CSplineInterpolatorFactory());
+		theLogger.info("CSplineInterpolatorFactory Service Registered Successfully.");
+		InterpolatorDirectory.registerFactory(context, new LinearInterpolatorFactory());
+		theLogger.info("LinearInterpolatorFactory Service Registered Successfully.");
+		InterpolatorDirectory.registerFactory(context, new BezierInterpolatorFactory());
+		theLogger.info("BezierInterpolatorFactory Service Registered Successfully.");
 
-    @Override
-    public void stop(BundleContext context) throws Exception {}
+		theLogger.info("AnimationControl Activation Complete.");
+	}
+
+	@Override
+	public void stop(BundleContext context) throws Exception {
+	}
 
 }

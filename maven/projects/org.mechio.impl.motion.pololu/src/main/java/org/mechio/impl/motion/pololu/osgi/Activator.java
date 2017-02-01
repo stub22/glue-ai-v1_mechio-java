@@ -28,86 +28,86 @@
 
 package org.mechio.impl.motion.pololu.osgi;
 
-import java.util.Dictionary;
-import java.util.Hashtable;
-import org.mechio.impl.motion.pololu.MaestroConnector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.jflux.api.common.rk.services.ConfigurationLoader;
 import org.jflux.api.common.rk.services.Constants;
 import org.jflux.api.common.rk.services.ServiceUtils;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.mechio.impl.motion.pololu.MaestroController;
 import org.mechio.api.motion.servos.utils.ServoIdReader;
 import org.mechio.api.motion.servos.utils.ServoJointAdapter;
+import org.mechio.impl.motion.pololu.MaestroConnector;
+import org.mechio.impl.motion.pololu.MaestroController;
 import org.mechio.impl.motion.pololu.MaestroControllerConfig;
 import org.mechio.impl.motion.pololu.MaestroJointAdapter;
 import org.mechio.impl.motion.pololu.MaestroServoIdReader;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Dictionary;
+import java.util.Hashtable;
 
 /**
- * Activates the Pololu servo bundle and registers a MaestroConnector to 
+ * Activates the Pololu servo bundle and registers a MaestroConnector to
  * the OSGi service registry.
- * 
+ *
  * @author Matthew Stevenson
  */
 public class Activator implements BundleActivator {
-    private final static Logger theLogger = Logger.getLogger(Activator.class.getName());
-    
-    @Override
-    public void start(BundleContext context) throws Exception {
-        theLogger.log(Level.INFO, "PololuServoBundle Activation Begin.");
-        registerMaestroConnector(context);
-        registerServoJointAdapter(context);
-        registerServoIdReader(context);
-        registerMaestroConfigLoader(context);
-        theLogger.log(Level.INFO, "PololuServoBundle Activation Complete.");
-    }
-    
-    private void registerMaestroConnector(BundleContext context){
-        MaestroConnector connector = new MaestroConnector();
-        ServiceUtils.registerFactory(context, connector);
-        theLogger.log(Level.INFO, "MaestroConnector Service Registered Successfully.");
-    }
-    
-    private void registerServoJointAdapter(BundleContext context){
-        MaestroJointAdapter adapter = new MaestroJointAdapter();
-        Dictionary<String, Object> props = new Hashtable<String, Object>();
-        props.put(Constants.SERVICE_VERSION, 
-                MaestroController.VERSION.toString());
-        context.registerService(
-                ServoJointAdapter.class.getName(), adapter, props);
-        theLogger.log(Level.INFO, 
-                "MaestroJointAdapter Service Registered Successfully.");
-    }
-    
-    private void registerServoIdReader(BundleContext context){
-        MaestroServoIdReader reader = new MaestroServoIdReader();
-        Dictionary<String, Object> props = new Hashtable<String, Object>();
-        props.put(Constants.SERVICE_VERSION, 
-                MaestroController.VERSION.toString());
-        context.registerService(ServoIdReader.class.getName(), reader, props);
-        theLogger.log(Level.INFO, 
-                "MaestroServoIdReader Service Registered Successfully.");
-    }
-    
-    private void registerMaestroConfigLoader(BundleContext context){
-        MaestroControllerConfig.Reader reader = 
-                new MaestroControllerConfig.Reader();
-        Dictionary<String, Object> props = new Hashtable<String, Object>();
-        props.put(Constants.CONFIG_FORMAT_VERSION, 
-                MaestroControllerConfig.Reader.VERSION.toString());
-        props.put(Constants.CONFIG_CLASS, 
-                MaestroControllerConfig.class.getName());
-        props.put(Constants.CONFIG_PARAM_CLASS, 
-                HierarchicalConfiguration.class.getName());
-        context.registerService(ConfigurationLoader.class.getName(), 
-                reader, props);
-        theLogger.log(Level.INFO, "SerialServoControllerConfig XML Reader");
-    }
+	private static final Logger theLogger = LoggerFactory.getLogger(Activator.class);
 
-    @Override
-    public void stop(BundleContext context) throws Exception {}
+	@Override
+	public void start(BundleContext context) throws Exception {
+		theLogger.info("PololuServoBundle Activation Begin.");
+		registerMaestroConnector(context);
+		registerServoJointAdapter(context);
+		registerServoIdReader(context);
+		registerMaestroConfigLoader(context);
+		theLogger.info("PololuServoBundle Activation Complete.");
+	}
+
+	private void registerMaestroConnector(BundleContext context) {
+		MaestroConnector connector = new MaestroConnector();
+		ServiceUtils.registerFactory(context, connector);
+		theLogger.info("MaestroConnector Service Registered Successfully.");
+	}
+
+	private void registerServoJointAdapter(BundleContext context) {
+		MaestroJointAdapter adapter = new MaestroJointAdapter();
+		Dictionary<String, Object> props = new Hashtable<>();
+		props.put(Constants.SERVICE_VERSION,
+				MaestroController.VERSION.toString());
+		context.registerService(
+				ServoJointAdapter.class.getName(), adapter, props);
+		theLogger.info("MaestroJointAdapter Service Registered Successfully.");
+	}
+
+	private void registerServoIdReader(BundleContext context) {
+		MaestroServoIdReader reader = new MaestroServoIdReader();
+		Dictionary<String, Object> props = new Hashtable<>();
+		props.put(Constants.SERVICE_VERSION,
+				MaestroController.VERSION.toString());
+		context.registerService(ServoIdReader.class.getName(), reader, props);
+		theLogger.info("MaestroServoIdReader Service Registered Successfully.");
+	}
+
+	private void registerMaestroConfigLoader(BundleContext context) {
+		MaestroControllerConfig.Reader reader =
+				new MaestroControllerConfig.Reader();
+		Dictionary<String, Object> props = new Hashtable<>();
+		props.put(Constants.CONFIG_FORMAT_VERSION,
+				MaestroControllerConfig.Reader.VERSION.toString());
+		props.put(Constants.CONFIG_CLASS,
+				MaestroControllerConfig.class.getName());
+		props.put(Constants.CONFIG_PARAM_CLASS,
+				HierarchicalConfiguration.class.getName());
+		context.registerService(ConfigurationLoader.class.getName(),
+				reader, props);
+		theLogger.info("SerialServoControllerConfig XML Reader");
+	}
+
+	@Override
+	public void stop(BundleContext context) throws Exception {
+	}
 
 }

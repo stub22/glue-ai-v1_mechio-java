@@ -28,18 +28,12 @@
 
 package org.mechio.impl.motion.dynamixel.osgi;
 
-import java.util.Dictionary;
-import java.util.Hashtable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jflux.api.common.rk.services.Constants;
 import org.jflux.api.common.rk.services.ServiceUtils;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.mechio.impl.motion.dynamixel.DynamixelConnector;
-import org.mechio.impl.motion.dynamixel.DynamixelController;
 import org.mechio.api.motion.servos.utils.ServoIdReader;
 import org.mechio.api.motion.servos.utils.ServoJointAdapter;
+import org.mechio.impl.motion.dynamixel.DynamixelConnector;
+import org.mechio.impl.motion.dynamixel.DynamixelController;
 import org.mechio.impl.motion.dynamixel.utils.DynamixelControllerConfig;
 import org.mechio.impl.motion.dynamixel.utils.DynamixelJointAdapter;
 import org.mechio.impl.motion.dynamixel.utils.DynamixelServoIdReader;
@@ -48,75 +42,79 @@ import org.mechio.impl.motion.openservo.OpenServoController;
 import org.mechio.impl.motion.openservo.utils.OpenServoControllerConfig;
 import org.mechio.impl.motion.openservo.utils.OpenServoIdReader;
 import org.mechio.impl.motion.openservo.utils.OpenServoJointAdapter;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Dictionary;
+import java.util.Hashtable;
 
 /**
- * Activates the Dynamixel servo bundle and registers a DynamixelConnector to 
+ * Activates the Dynamixel servo bundle and registers a DynamixelConnector to
  * the OSGi service registry.
- * 
+ *
  * @author Matthew Stevenson
  */
 public class Activator implements BundleActivator {
-    private final static Logger theLogger = Logger.getLogger(Activator.class.getName());
+	private static final Logger theLogger = LoggerFactory.getLogger(Activator.class);
 
-    @Override
-    public void start(BundleContext context) throws Exception {
-        theLogger.log(Level.INFO, "DynamixelServoBundle Activation Begin.");
-        ServiceUtils.registerFactory(context, new DynamixelConnector());
-        ServiceUtils.registerConfigLoader(
-                context, new DynamixelControllerConfig.Reader());
-        registerServoJointAdapter(context);
-        registerServoIdReader(context);
-        
-        ServiceUtils.registerFactory(context, new OpenServoConnector());
-        ServiceUtils.registerConfigLoader(
-                context, new OpenServoControllerConfig.Reader());
-        registerOpenServoJointAdapter(context);
-        registerOpenServoIdReader(context);
-        theLogger.log(Level.INFO, "DynamixelServoBundle Activation Complete.");
-    }
-    
-    private void registerServoJointAdapter(BundleContext context){
-        DynamixelJointAdapter adapter = new DynamixelJointAdapter();
-        Dictionary<String, Object> props = new Hashtable<String, Object>();
-        props.put(Constants.SERVICE_VERSION, 
-                DynamixelController.VERSION.toString());
-        context.registerService(
-                ServoJointAdapter.class.getName(), adapter, props);
-        theLogger.log(Level.INFO, 
-                "DynamixelJointAdapter Service Registered Successfully.");
-    }
-    
-    private void registerServoIdReader(BundleContext context){
-        DynamixelServoIdReader reader = new DynamixelServoIdReader();
-        Dictionary<String, Object> props = new Hashtable<String, Object>();
-        props.put(Constants.SERVICE_VERSION, 
-                DynamixelController.VERSION.toString());
-        context.registerService(ServoIdReader.class.getName(), reader, props);
-        theLogger.log(Level.INFO, 
-                "DynamixelServoIdReader Service Registered Successfully.");
-    }
-    
-    private void registerOpenServoJointAdapter(BundleContext context){
-        OpenServoJointAdapter adapter = new OpenServoJointAdapter();
-        Dictionary<String, Object> props = new Hashtable<String, Object>();
-        props.put(Constants.SERVICE_VERSION, 
-                OpenServoController.VERSION.toString());
-        context.registerService(
-                ServoJointAdapter.class.getName(), adapter, props);
-        theLogger.log(Level.INFO, 
-                "OpenServoJointAdapter Service Registered Successfully.");
-    }
-    
-    private void registerOpenServoIdReader(BundleContext context){
-        OpenServoIdReader reader = new OpenServoIdReader();
-        Dictionary<String, Object> props = new Hashtable<String, Object>();
-        props.put(Constants.SERVICE_VERSION, 
-                OpenServoController.VERSION.toString());
-        context.registerService(ServoIdReader.class.getName(), reader, props);
-        theLogger.log(Level.INFO, 
-                "OpenServoIdReader Service Registered Successfully.");
-    }
-    
-    @Override
-    public void stop(BundleContext context) throws Exception {}
+	@Override
+	public void start(BundleContext context) throws Exception {
+		theLogger.info("DynamixelServoBundle Activation Begin.");
+		ServiceUtils.registerFactory(context, new DynamixelConnector());
+		ServiceUtils.registerConfigLoader(
+				context, new DynamixelControllerConfig.Reader());
+		registerServoJointAdapter(context);
+		registerServoIdReader(context);
+
+		ServiceUtils.registerFactory(context, new OpenServoConnector());
+		ServiceUtils.registerConfigLoader(
+				context, new OpenServoControllerConfig.Reader());
+		registerOpenServoJointAdapter(context);
+		registerOpenServoIdReader(context);
+		theLogger.info("DynamixelServoBundle Activation Complete.");
+	}
+
+	private void registerServoJointAdapter(BundleContext context) {
+		DynamixelJointAdapter adapter = new DynamixelJointAdapter();
+		Dictionary<String, Object> props = new Hashtable<>();
+		props.put(Constants.SERVICE_VERSION,
+				DynamixelController.VERSION.toString());
+		context.registerService(
+				ServoJointAdapter.class.getName(), adapter, props);
+		theLogger.info("DynamixelJointAdapter Service Registered Successfully.");
+	}
+
+	private void registerServoIdReader(BundleContext context) {
+		DynamixelServoIdReader reader = new DynamixelServoIdReader();
+		Dictionary<String, Object> props = new Hashtable<>();
+		props.put(Constants.SERVICE_VERSION,
+				DynamixelController.VERSION.toString());
+		context.registerService(ServoIdReader.class.getName(), reader, props);
+		theLogger.info("DynamixelServoIdReader Service Registered Successfully.");
+	}
+
+	private void registerOpenServoJointAdapter(BundleContext context) {
+		OpenServoJointAdapter adapter = new OpenServoJointAdapter();
+		Dictionary<String, Object> props = new Hashtable<>();
+		props.put(Constants.SERVICE_VERSION,
+				OpenServoController.VERSION.toString());
+		context.registerService(
+				ServoJointAdapter.class.getName(), adapter, props);
+		theLogger.info("OpenServoJointAdapter Service Registered Successfully.");
+	}
+
+	private void registerOpenServoIdReader(BundleContext context) {
+		OpenServoIdReader reader = new OpenServoIdReader();
+		Dictionary<String, Object> props = new Hashtable<>();
+		props.put(Constants.SERVICE_VERSION,
+				OpenServoController.VERSION.toString());
+		context.registerService(ServoIdReader.class.getName(), reader, props);
+		theLogger.info("OpenServoIdReader Service Registered Successfully.");
+	}
+
+	@Override
+	public void stop(BundleContext context) throws Exception {
+	}
 }

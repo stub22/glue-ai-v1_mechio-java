@@ -15,7 +15,6 @@
  */
 package org.mechio.impl.motion.openservo.feedback;
 
-import java.util.logging.Logger;
 import org.jflux.api.common.rk.utils.TimeUtils;
 import org.mechio.api.motion.servos.utils.ConnectionStatus;
 import org.mechio.impl.motion.openservo.OpenServo;
@@ -23,33 +22,34 @@ import org.mechio.impl.motion.openservo.OpenServoCommandSet;
 import org.mechio.impl.motion.openservo.OpenServoCommandSet.Register;
 import org.mechio.impl.motion.openservo.OpenServoPacket;
 import org.mechio.impl.motion.rxtx.serial.RXTXSerialPort;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- *
  * @author Matthew Stevenson <www.mechio.org>
  */
 public class OpenServoReader {
-    private final static Logger theLogger = Logger.getLogger(OpenServoReader.class.getName());
+	private static final Logger theLogger = LoggerFactory.getLogger(OpenServoReader.class);
 
-    public synchronized static OpenServoFeedbackValues getFeedback(
-            RXTXSerialPort port, OpenServo.Id id){
-        if(port == null || ConnectionStatus.CONNECTED != port.getConnectionStatus()){
-            return null;
-        }
-        int[] vals = 
-                readServo(port, id, 
-                        Register.POSITION_HI, Register.VOLTAGE_LO);
-        if(vals == null){
-            return null;
-        }
-        long now = TimeUtils.now();
-        if(validateValues(vals)){
-            return new OpenServoFeedbackValues(id, vals, now);
-        }
-        return null;
-    }
-    
-    private static boolean validateValues(int[] vals){
+	public synchronized static OpenServoFeedbackValues getFeedback(
+			RXTXSerialPort port, OpenServo.Id id) {
+		if (port == null || ConnectionStatus.CONNECTED != port.getConnectionStatus()) {
+			return null;
+		}
+		int[] vals =
+				readServo(port, id,
+						Register.POSITION_HI, Register.VOLTAGE_LO);
+		if (vals == null) {
+			return null;
+		}
+		long now = TimeUtils.now();
+		if (validateValues(vals)) {
+			return new OpenServoFeedbackValues(id, vals, now);
+		}
+		return null;
+	}
+
+	private static boolean validateValues(int[] vals) {
 //        if(vals == null){
 //            return false;
 //        }
@@ -59,48 +59,48 @@ public class OpenServoReader {
 //            }
 //        }
 //        return false;
-        return true;
-    }
-    
-    private static int[] readServo(RXTXSerialPort port,
-            OpenServo.Id id, Register regFirst, Register regLast) {
-        byte byteCount = (byte) (regLast.getRegister() - regFirst.getRegister() + 1);
-        byte[] cmd = buildReadCommand(id, regFirst, byteCount);
-        if (!port.write(cmd) 
-                || !port.flushWriter()) {
-            return null;
-        }
-        OpenServoPacket packet = readPacket(port, byteCount);
-        if(packet == null){
-            return null;
-        }
-        return parsePacket(packet, byteCount);
-    }
+		return true;
+	}
 
-    private static byte[] buildReadCommand(OpenServo.Id id, Register startRegister, int regCount) {
-        return OpenServoCommandSet.readRegisters(
-                id.getRS485Addr(), id.getI2CAddr(), startRegister, regCount);
-    }
+	private static int[] readServo(RXTXSerialPort port,
+								   OpenServo.Id id, Register regFirst, Register regLast) {
+		byte byteCount = (byte) (regLast.getRegister() - regFirst.getRegister() + 1);
+		byte[] cmd = buildReadCommand(id, regFirst, byteCount);
+		if (!port.write(cmd)
+				|| !port.flushWriter()) {
+			return null;
+		}
+		OpenServoPacket packet = readPacket(port, byteCount);
+		if (packet == null) {
+			return null;
+		}
+		return parsePacket(packet, byteCount);
+	}
 
-    public static OpenServoPacket readPacket(
-            RXTXSerialPort port, byte byteCount) {
-        int packetLen = byteCount + 5;
-        byte[] data = port.read(packetLen);
-        return OpenServoPacket.parsePacket(data, 0);
-    }
+	private static byte[] buildReadCommand(OpenServo.Id id, Register startRegister, int regCount) {
+		return OpenServoCommandSet.readRegisters(
+				id.getRS485Addr(), id.getI2CAddr(), startRegister, regCount);
+	}
 
-    public static int[] parsePacket(OpenServoPacket packet, byte byteCount) {
-        if (packet == null || packet.getData().length < byteCount) {
-                return null;
-        }
-        int[] vals = new int[byteCount/2];
-        byte[] data = packet.getData();
-        int j = 0;
-        for(int i=0; j<vals.length && i<byteCount-1; i+=2, j++){
-            int hi = (data[i] & 0xFF) << 8;
-            int lo = data[i+1] & 0xFF;
-            vals[j] = hi + lo;
-        }
-        return vals;
-    }
+	public static OpenServoPacket readPacket(
+			RXTXSerialPort port, byte byteCount) {
+		int packetLen = byteCount + 5;
+		byte[] data = port.read(packetLen);
+		return OpenServoPacket.parsePacket(data, 0);
+	}
+
+	public static int[] parsePacket(OpenServoPacket packet, byte byteCount) {
+		if (packet == null || packet.getData().length < byteCount) {
+			return null;
+		}
+		int[] vals = new int[byteCount / 2];
+		byte[] data = packet.getData();
+		int j = 0;
+		for (int i = 0; j < vals.length && i < byteCount - 1; i += 2, j++) {
+			int hi = (data[i] & 0xFF) << 8;
+			int lo = data[i + 1] & 0xFF;
+			vals[j] = hi + lo;
+		}
+		return vals;
+	}
 }
