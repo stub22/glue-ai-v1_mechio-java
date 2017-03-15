@@ -22,23 +22,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
  * @author Matthew Stevenson <www.mechio.org>
  */
 public class Activator implements BundleActivator {
-    private static final Logger theLogger = LoggerFactory.getLogger(Activator.class);
-    private AnimationRobotMonitor myAnimationRobotMonitor;
-    
-    @Override
-    public void start(BundleContext context) throws Exception {
-        myAnimationRobotMonitor = new AnimationRobotMonitor(context, null);
-        myAnimationRobotMonitor.start();
-        theLogger.info("AnimationRobotMonitor Registered Successfully.");
-        theLogger.info("integration.animation_motion Activation Complete.");
-    }
+	private static final Logger theLogger = LoggerFactory.getLogger(Activator.class);
+	private AnimationRobotMonitor myAnimationRobotMonitor;
 
-    @Override
-    public void stop(BundleContext context) throws Exception {
-    }
+	@Override
+	public void start(BundleContext context) throws Exception {
+		myAnimationRobotMonitor = new AnimationRobotMonitor(context, null);
+		myAnimationRobotMonitor.start();
+		theLogger.info("AnimationRobotMonitor Registered Successfully.");
+		theLogger.info("integration.animation_motion Activation Complete.");
+	}
+
+	@Override
+	public void stop(BundleContext context) throws Exception {
+	}
 
 }

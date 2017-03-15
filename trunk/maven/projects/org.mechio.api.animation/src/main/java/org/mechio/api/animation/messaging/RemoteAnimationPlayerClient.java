@@ -58,6 +58,8 @@ public class RemoteAnimationPlayerClient
 	private MessageAsyncReceiver<AnimationSignal> mySignalReceiver;
 	private BundleContext myContext;
 	private Map<AnimationJob, ServiceRegistration> myRegistry;
+    private static final String NULL_MEMBERS_ERROR_MESSAGE
+                = "Cannot loop animation if eventFactory or animationSender are null";
 
 	public RemoteAnimationPlayerClient(
 			BundleContext context, String animPlayerClientId,
@@ -100,8 +102,10 @@ public class RemoteAnimationPlayerClient
 
 	public AnimationJob playAnimation(Animation animation, boolean register) {
 		if (myEventFactory == null || myAnimationSender == null) {
+            theLogger.error(NULL_MEMBERS_ERROR_MESSAGE);
 			return null;
 		}
+
 		String[] names = new String[]{
 				AnimationJob.class.getName(),
 		};
@@ -132,8 +136,10 @@ public class RemoteAnimationPlayerClient
 
 	public AnimationJob loopAnimation(Animation animation, boolean register) {
 		if (myEventFactory == null || myAnimationSender == null) {
+            theLogger.error(NULL_MEMBERS_ERROR_MESSAGE);
 			return null;
 		}
+
 		String[] names = new String[]{
 				AnimationJob.class.getName(),
 		};
@@ -162,8 +168,10 @@ public class RemoteAnimationPlayerClient
 
 	public void stopAnimation(Animation animation) {
 		if (myEventFactory == null || myAnimationSender == null) {
+            theLogger.error(NULL_MEMBERS_ERROR_MESSAGE);
 			return;
 		}
+
 		AnimationEvent event =
 				myEventFactory.createAnimationEvent(
 						myAnimationPlayerId, "STOP", animation);
@@ -175,8 +183,10 @@ public class RemoteAnimationPlayerClient
 
 	public void clearAnimations() {
 		if (myEventFactory == null || myAnimationSender == null) {
+            theLogger.error(NULL_MEMBERS_ERROR_MESSAGE);
 			return;
 		}
+
 		Animation empty = new Animation(new VersionProperty("empty", "1.0"));
 		empty.addChannel(new Channel(0, "emptyChan"));
 		MotionPath path = new MotionPath();
@@ -187,7 +197,6 @@ public class RemoteAnimationPlayerClient
 				myEventFactory.createAnimationEvent(
 						myAnimationPlayerId, "CLEAR", empty);
 		myAnimationSender.notifyListeners(event);
-		return;
 	}
 
 	@Override
@@ -205,16 +214,22 @@ public class RemoteAnimationPlayerClient
 	@Override
 	public void removeAnimationJob(AnimationJob job) {
 		if (!(job instanceof RemoteAnimationJob)) {
+            theLogger.error("Cannot remove animation job '{}'. It isn't a {}",
+                            job, RemoteAnimationJob.class.getSimpleName());
 			return;
 		}
 		RemoteAnimationJob rjob = (RemoteAnimationJob) job;
 		if (!myAnimationJobs.contains(rjob)) {
+            theLogger.error("Can't remove animation job '{}', it isn't in the list of animation "
+                + "jobs.", rjob);
 			return;
 		}
 		rjob.stop(TimeUtils.now());
 		if (myContext != null) {
 			ServiceRegistration reg = myRegistry.remove(job);
 			if (reg == null) {
+                theLogger.error("Cannot unregister animation job, the service registration for '{}'"
+                    + " was null.", job);
 				return;
 			}
 			try {
@@ -285,4 +300,15 @@ public class RemoteAnimationPlayerClient
 			stopAnimation(job.getAnimation());
 		}
 	}
+
+    @Override
+    public String toString() {
+        return "RemoteAnimationPlayerClient{" + "myAnimationPlayerId=" + myAnimationPlayerId +
+            ", myRemotePlayerId=" + myRemotePlayerId + ", myAnimationSender=" + myAnimationSender +
+            ", myEventFactory=" + myEventFactory + ", myAnimationJobs=" + myAnimationJobs +
+            ", mySignalReceiver=" + mySignalReceiver + ", myRegistry=" +
+            myRegistry + '}';
+    }
+
+
 }

@@ -54,7 +54,7 @@ public class RemoteAnimationJob extends AbstractPlayable implements AnimationJob
     public AnimationPlayer getSource() {
         return myPlayer;
     }
-    
+
     @Override
     public void addAnimationListener(AnimationJobListener listener) {
         if(myAnimationListeners == null){
@@ -64,7 +64,7 @@ public class RemoteAnimationJob extends AbstractPlayable implements AnimationJob
             myAnimationListeners.add(listener);
         }
     }
-    
+
     @Override
     public void removeAnimationListener(AnimationJobListener listener) {
         if(myAnimationListeners == null){
@@ -72,12 +72,12 @@ public class RemoteAnimationJob extends AbstractPlayable implements AnimationJob
         }
         myAnimationListeners.remove(listener);
     }
-    
+
     @Override
     public Animation getAnimation(){
         return myAnimation;
     }
-    
+
     public Long getCurrentTime(long time){
         Long l = getElapsedPlayTime(time);
         if(l == null){
@@ -85,7 +85,7 @@ public class RemoteAnimationJob extends AbstractPlayable implements AnimationJob
         }
         return l+myAnimStartTime;
     }
-    
+
     @Override
     public Map<Integer,Double> advanceAnimation(long time, long interval){
         return null;
@@ -100,12 +100,12 @@ public class RemoteAnimationJob extends AbstractPlayable implements AnimationJob
         }
         return true;
     }
-    
+
     @Override
     public Long getAnimationLength(){
         return myEndTime - myAnimStartTime  + myMaxRampTimeMillisec;
     }
-    
+
     @Override
     public Long getRemainingTime(long time){
         if(getPlayState() == PlayState.COMPLETED){
@@ -148,4 +148,13 @@ public class RemoteAnimationJob extends AbstractPlayable implements AnimationJob
     public boolean getLoop() {
         return myLoopFlag;
     }
+
+    @Override
+    public String toString() {
+        return "RemoteAnimationJob{" + "myPlayer=" + myPlayer + ", myAnimation=" + myAnimation +
+            ", myMaxRampTimeMillisec=" + myMaxRampTimeMillisec + ", myLoopFlag=" + myLoopFlag +
+            ", myAnimStartTime=" + myAnimStartTime + ", myEndTime=" + myEndTime + '}';
+    }
+
+
 }
