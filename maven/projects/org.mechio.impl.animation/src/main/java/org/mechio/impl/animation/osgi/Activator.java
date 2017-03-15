@@ -25,6 +25,7 @@ import org.jflux.impl.services.rk.osgi.lifecycle.OSGiComponentFactory;
 import org.mechio.api.animation.protocol.AnimationEvent;
 import org.mechio.api.animation.protocol.AnimationSignal;
 import org.mechio.api.animation.protocol.PlayRequest;
+import org.mechio.api.animation.utils.AnimationStopper;
 import org.mechio.api.animation.xml.AnimationFileReader;
 import org.mechio.api.animation.xml.AnimationFileWriter;
 import org.mechio.impl.animation.messaging.AnimationEventRecord;
@@ -33,6 +34,7 @@ import org.mechio.impl.animation.messaging.PlayRequestRecord;
 import org.mechio.impl.animation.messaging.PortableAnimationEvent;
 import org.mechio.impl.animation.messaging.PortableAnimationSignal;
 import org.mechio.impl.animation.messaging.PortablePlayRequest;
+import org.mechio.impl.animation.utils.DefaultAnimationStopper;
 import org.mechio.impl.animation.xml.AnimationXMLReader;
 import org.mechio.impl.animation.xml.XPP3AnimationXMLWriter;
 import org.osgi.framework.BundleActivator;
@@ -54,6 +56,9 @@ public class Activator implements BundleActivator {
 
 		new OSGiComponent(context, new SimpleLifecycle(
 				new XPP3AnimationXMLWriter(), AnimationFileWriter.class)).start();
+
+        new OSGiComponent(context, new SimpleLifecycle(
+				new DefaultAnimationStopper(context), AnimationStopper.class)).start();
 
 		RKMessagingConfigUtils.registerAvroSerializationConfig(
 				AnimationEvent.class,
