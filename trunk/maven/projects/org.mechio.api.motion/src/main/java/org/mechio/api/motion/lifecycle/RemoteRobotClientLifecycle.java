@@ -36,6 +36,7 @@ import java.util.Properties;
 /**
  * @author Matthew Stevenson <www.mechio.org>
  */
+@Deprecated
 public class RemoteRobotClientLifecycle extends
 		AbstractLifecycleProvider<RemoteRobotClient, RemoteRobotClient> {
 	private static final Logger theLogger = LoggerFactory.getLogger(RemoteRobotClientLifecycle.class);

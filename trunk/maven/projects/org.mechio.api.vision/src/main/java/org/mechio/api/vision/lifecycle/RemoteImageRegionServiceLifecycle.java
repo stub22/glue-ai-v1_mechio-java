@@ -35,19 +35,20 @@ import org.mechio.api.vision.messaging.RemoteImageRegionServiceClient;
  *
  * @author Matthew Stevenson <www.mechio.org>
  */
-public class RemoteImageRegionServiceLifecycle<Conf> extends 
+@Deprecated
+public class RemoteImageRegionServiceLifecycle<Conf> extends
         AbstractLifecycleProvider<
-                ImageRegionService, 
+                ImageRegionService,
                 RemoteImageRegionServiceClient> {
     private final static String theCommandSender = "commandSender";
     private final static String theConfigSender = "configSender";
-    private final static String theErrorReceiver = "errorReceiver";   
-    private final static String theCommandFactory = "commandFactory"; 
+    private final static String theErrorReceiver = "errorReceiver";
+    private final static String theCommandFactory = "commandFactory";
     private final static String theRegionsReceiver = "imageRegionsReceiver";
     private String myClientServiceId;
     private String myHostServiceId;
     private Class<Conf> myConfigClass;
-    
+
     /**
      * Creates a new SpeechTriggerHandlerLifecycle for a SpeechService
      * @param commandSenderId SpeechService to use
@@ -84,24 +85,24 @@ public class RemoteImageRegionServiceLifecycle<Conf> extends
 
     @Override
     protected RemoteImageRegionServiceClient create(Map<String, Object> services) {
-        MessageSender<ServiceCommand> commandSender = 
+        MessageSender<ServiceCommand> commandSender =
                 (MessageSender)services.get(theCommandSender);
-        MessageSender<Conf> configSender = 
+        MessageSender<Conf> configSender =
                 (MessageSender)services.get(theConfigSender);
-        MessageAsyncReceiver<ServiceError> errorReceiver = 
+        MessageAsyncReceiver<ServiceError> errorReceiver =
                 (MessageAsyncReceiver)services.get(theErrorReceiver);
-        ServiceCommandFactory commandFactory = 
+        ServiceCommandFactory commandFactory =
                 (ServiceCommandFactory)services.get(theCommandFactory);
-        MessageAsyncReceiver<ImageEvent> imageReceiver = 
+        MessageAsyncReceiver<ImageEvent> imageReceiver =
                 (MessageAsyncReceiver)services.get(theRegionsReceiver);
         return new RemoteImageRegionServiceClient(
-                myConfigClass, myClientServiceId, myHostServiceId, 
-                commandSender, configSender, errorReceiver, 
+                myConfigClass, myClientServiceId, myHostServiceId,
+                commandSender, configSender, errorReceiver,
                 commandFactory, imageReceiver);
     }
 
     @Override
-    protected void handleChange(String name, Object dependency, 
+    protected void handleChange(String name, Object dependency,
             Map<String,Object> availableDependencies){
         if(myService == null){
             return;

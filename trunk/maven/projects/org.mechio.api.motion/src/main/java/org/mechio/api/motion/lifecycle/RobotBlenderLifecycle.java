@@ -30,34 +30,35 @@ import org.mechio.api.motion.blending.FrameCombiner;
  *
  * @author Matthew Stevenson <www.mechio.org>
  */
-public class RobotBlenderLifecycle extends 
+@Deprecated
+public class RobotBlenderLifecycle extends
         AbstractLifecycleProvider<Blender, DefaultBlender>{
     private final static String theBlenderOutputId = "blenderOutput";
     private final static String theFrameCombinerId = "frameCombiner";
-    
+
     public RobotBlenderLifecycle(Robot.Id robotId){
         super(new DescriptorListBuilder()
                 .dependency(theBlenderOutputId, BlenderOutput.class)
                     .with(Robot.PROP_ID, robotId.getRobtIdString())
-                    .with(Blender.PROP_POSITION_MAP_TYPE, 
+                    .with(Blender.PROP_POSITION_MAP_TYPE,
                             Robot.RobotPositionMap.class.getName())
                 .dependency(theFrameCombinerId, FrameCombiner.class)
                     .with(Robot.PROP_ID, robotId.getRobtIdString())
-                    .with(Blender.PROP_POSITION_MAP_TYPE, 
+                    .with(Blender.PROP_POSITION_MAP_TYPE,
                             Robot.RobotPositionMap.class.getName())
                 .getDescriptors());
         if(myRegistrationProperties == null){
             myRegistrationProperties = new Properties();
         }
         myRegistrationProperties.put(Robot.PROP_ID, robotId.getRobtIdString());
-        myRegistrationProperties.put(Blender.PROP_POSITION_MAP_TYPE, 
+        myRegistrationProperties.put(Blender.PROP_POSITION_MAP_TYPE,
                 RobotPositionMap.class.getName());
     }
 
     @Override
     protected DefaultBlender create(Map<String, Object> services) {
         BlenderOutput output = (BlenderOutput)services.get(theBlenderOutputId);
-        FrameCombiner combiner = 
+        FrameCombiner combiner =
                 (FrameCombiner)services.get(theFrameCombinerId);
         DefaultBlender blender = new DefaultBlender();
         blender.setOutput(output);

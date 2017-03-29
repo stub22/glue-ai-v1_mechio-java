@@ -23,8 +23,16 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
-			<scope>test</scope>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jflux</groupId>
+            <artifactId>org.jflux.impl.messaging.rk</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>20.0</version>
         </dependency>
     </dependencies>
     <build>

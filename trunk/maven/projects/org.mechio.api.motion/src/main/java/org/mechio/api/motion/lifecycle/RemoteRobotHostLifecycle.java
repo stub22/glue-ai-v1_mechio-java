@@ -38,6 +38,7 @@ import java.util.Map;
 /**
  * @author Matthew Stevenson <www.mechio.org>
  */
+@Deprecated
 public class RemoteRobotHostLifecycle extends
 		AbstractLifecycleProvider<RemoteRobotHost, RemoteRobotHost> {
 	private static final Logger theLogger = LoggerFactory.getLogger(RemoteRobotHostLifecycle.class);

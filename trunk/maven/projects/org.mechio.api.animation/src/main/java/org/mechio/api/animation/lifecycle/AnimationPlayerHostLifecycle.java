@@ -31,13 +31,13 @@ import org.mechio.api.animation.protocol.AnimationSignal;
  *
  * @author Matthew Stevenson <www.mechio.org>
  */
-public class AnimationPlayerHostLifecycle extends 
+public class AnimationPlayerHostLifecycle extends
         AbstractLifecycleProvider<
                 RemoteAnimationPlayerHost, RemoteAnimationPlayerHost> {
     private final static String theAnimationPlayer = "animPlayer";
     private final static String theAnimationReceiver = "animLibrary";
     private final static String theSignalSender = "signalSender";
-    
+
     public AnimationPlayerHostLifecycle(
             String animPlayerId, String animReceiverId, String signalSenderId){
         super(new DescriptorListBuilder()
@@ -45,11 +45,11 @@ public class AnimationPlayerHostLifecycle extends
                     .with(AnimationPlayer.PROP_PLAYER_ID, animPlayerId)
                 .dependency(theAnimationReceiver, MessageAsyncReceiver.class)
                     .with(Constants.PROP_MESSAGE_RECEIVER_ID, animReceiverId)
-                    .with(Constants.PROP_MESSAGE_TYPE, 
+                    .with(Constants.PROP_MESSAGE_TYPE,
                             AnimationEvent.class.getName())
                 .dependency(theSignalSender, MessageSender.class)
                     .with(Constants.PROP_MESSAGE_SENDER_ID, signalSenderId)
-                    .with(Constants.PROP_MESSAGE_TYPE, 
+                    .with(Constants.PROP_MESSAGE_TYPE,
                             AnimationSignal.class.getName())
                 .getDescriptors());
         myRegistrationProperties = new Properties();
@@ -59,11 +59,11 @@ public class AnimationPlayerHostLifecycle extends
 
     @Override
     protected RemoteAnimationPlayerHost create(Map<String, Object> dependencies) {
-        AnimationPlayer player = 
+        AnimationPlayer player =
                 (AnimationPlayer)dependencies.get(theAnimationPlayer);
-        MessageAsyncReceiver<AnimationEvent> eventReceiver = 
+        MessageAsyncReceiver<AnimationEvent> eventReceiver =
                 (MessageAsyncReceiver)dependencies.get(theAnimationReceiver);
-        MessageSender<AnimationSignal> sender = 
+        MessageSender<AnimationSignal> sender =
                 (MessageSender)dependencies.get(theSignalSender);
         RemoteAnimationPlayerHost host = new RemoteAnimationPlayerHost();
         host.setAnimationPlayer(player);
@@ -73,7 +73,7 @@ public class AnimationPlayerHostLifecycle extends
     }
 
     @Override
-    protected void handleChange(String name, Object dependency, 
+    protected void handleChange(String name, Object dependency,
             Map<String,Object> availableDependencies){
         if(myService == null){
             return;
