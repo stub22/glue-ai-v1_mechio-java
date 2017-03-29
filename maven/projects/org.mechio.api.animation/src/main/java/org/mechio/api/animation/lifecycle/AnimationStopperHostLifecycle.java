@@ -81,7 +81,7 @@ public class AnimationStopperHostLifecycle implements ServiceLifecycle<OSGIAnima
 	public OSGIAnimationStopperHost handleDependencyChange(
 			final OSGIAnimationStopperHost service, final String changeType, final String dependencyName,
 			final Object dependency, final Map<String, Object> availableDependencies) {
-		return service;
+		throw new UnsupportedOperationException("All dependencies have static update strategies.");
 	}
 
 	@Override
