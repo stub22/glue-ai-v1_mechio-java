@@ -32,6 +32,7 @@ import java.util.Properties;
 /**
  * @author Matthew Stevenson <www.mechio.org>
  */
+@Deprecated
 public class RobotJointGroupLifecycle<P> extends
 		ConfiguredServiceLifecycle<JointGroup, RobotJointGroupConfig, P> {
 	private static final Logger theLogger = LoggerFactory.getLogger(RobotJointGroupLifecycle.class);
