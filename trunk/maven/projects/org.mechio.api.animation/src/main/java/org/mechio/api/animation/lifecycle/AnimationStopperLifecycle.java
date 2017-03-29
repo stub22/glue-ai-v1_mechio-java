@@ -21,7 +21,7 @@ import org.mechio.api.animation.stopper.AnimationStopper;
 import org.mechio.api.animation.stopper.OSGIAnimationStopper;
 import org.osgi.framework.BundleContext;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +39,7 @@ public class AnimationStopperLifecycle implements ServiceLifecycle<AnimationStop
 			ServiceDependency.UpdateStrategy.STATIC,
 			null);
 
-	private final static List<ServiceDependency> theDependencies = Arrays.asList(theBundleContextDependency);
+	private final static List<ServiceDependency> theDependencies = Collections.singletonList(theBundleContextDependency);
 
 	@Override
 	public List<ServiceDependency> getDependencySpecs() {
@@ -60,7 +60,7 @@ public class AnimationStopperLifecycle implements ServiceLifecycle<AnimationStop
 	public AnimationStopper handleDependencyChange(
 			final AnimationStopper service, final String changeType, final String dependencyName,
 			final Object dependency, final Map<String, Object> availableDependencies) {
-		return service;
+		throw new UnsupportedOperationException("All dependencies have static update strategies.");
 	}
 
 	@Override

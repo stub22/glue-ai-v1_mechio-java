@@ -61,8 +61,6 @@ import java.util.Properties;
  */
 public class Activator implements BundleActivator {
 	private static final Logger theLogger = LoggerFactory.getLogger(Activator.class);
-	private static final String STOPPER_ID = "STOPPER_ID";
-	private static final String MESSAGE_RECEIVER_ID = AnimationStopperHostLifecycle.theMessageReceiverDep.getDependencyName();
 
 	@Override
 	public void start(final BundleContext context) throws Exception {
@@ -102,54 +100,7 @@ public class Activator implements BundleActivator {
 
 		registerSignalFactory(context);
 
-		final Registry registry = new OSGiRegistry(context);
-		launchAnimationStopperLifecycle(registry);
-		launchAnimationStopperHostLifecycle(registry);
-
-		final JMSAvroMessageAsyncReceiver<ServiceCommand, ServiceCommandRecord> messageReceiver =
-				JMSAvroMessageAsyncReceiverFactory.createLocalMessageReceiver(OSGIAnimationStopperHost.DESTINATION_NAME);
-
-		registerAnimationStopperBundleContext(context, AnimationStopperLifecycle.theBundleContextDependency.getDependencyName());
-		registerAnimationStopperHostMessageReceiver(context, messageReceiver);
-
 		theLogger.info("AnimationImpl Activation Complete.");
-	}
-
-	private ServiceRegistration registerAnimationStopperHostMessageReceiver(final BundleContext context,
-																			final MessageAsyncReceiver<ServiceCommand> messageAsyncReceiver) {
-		final Properties props = new Properties();
-		props.put(AnimationStopperHostLifecycle.theMessageReceiverDep.getDependencyName(), MESSAGE_RECEIVER_ID);
-		return context.registerService(MessageAsyncReceiver.class.getName(), messageAsyncReceiver, props);
-	}
-
-	private ServiceRegistration registerAnimationStopperBundleContext(final BundleContext context, final String contextId) {
-		final Properties props = new Properties();
-		props.put(AnimationStopperLifecycle.theBundleContextDependency.getDependencyName(), contextId);
-		return context.registerService(BundleContext.class.getName(), context, props);
-	}
-
-	private void launchAnimationStopperLifecycle(final Registry registry) {
-		final AnimationStopperLifecycle lifecycle = new AnimationStopperLifecycle();
-		new ServiceLauncher<>(lifecycle)
-				.bindEager(AnimationStopperLifecycle.theBundleContextDependency).property(
-				AnimationStopperLifecycle.theBundleContextDependency.getDependencyName(), "animationStopperBundleContextId")
-				.serviceRegistration().property(AnimationStopper.PROPERTY_ID, STOPPER_ID)
-				.managerRegistration()
-				.launchService(registry);
-	}
-
-	private void launchAnimationStopperHostLifecycle(final Registry registry) {
-		final AnimationStopperHostLifecycle lifecycle = new AnimationStopperHostLifecycle();
-
-		new ServiceLauncher<>(lifecycle)
-				.bindEager(AnimationStopperHostLifecycle.theAnimationStopperDep).property(
-				AnimationStopperHostLifecycle.theAnimationStopperDep.getDependencyName(), STOPPER_ID)
-				.bindEager(AnimationStopperHostLifecycle.theMessageReceiverDep).property(
-				AnimationStopperHostLifecycle.theMessageReceiverDep.getDependencyName(), MESSAGE_RECEIVER_ID)
-
-				.serviceRegistration().property(AnimationStopperHost.PROPERTY_ID, "animationStopperHostId")
-				.managerRegistration()
-				.launchService(registry);
 	}
 
 	@Override
