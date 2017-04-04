@@ -417,4 +417,12 @@ public class Animation {
 		hash = 23 * hash + (this.myStopTime != null ? this.myStopTime.hashCode() : 0);
 		return hash;
 	}
+
+    @Override
+    public String toString() {
+        return "Animation{" + "myVersion=" + myVersion + ", myStartTime=" + myStartTime +
+            ", myStopTime=" + myStopTime + '}';
+    }
+
+
 }

@@ -16,6 +16,8 @@
 package org.mechio.api.animation.lifecycle;
 
 import org.jflux.api.messaging.rk.MessageAsyncReceiver;
+import org.jflux.api.messaging.rk.qpid.QpidBrokerStarted;
+import org.jflux.api.messaging.rk.qpid.QpidBrokerStatus;
 import org.jflux.api.messaging.rk.services.ServiceCommand;
 import org.jflux.api.service.ServiceDependency;
 import org.jflux.api.service.ServiceLifecycle;
@@ -53,7 +55,15 @@ public class AnimationStopperHostLifecycle implements ServiceLifecycle<OSGIAnima
 			ServiceDependency.UpdateStrategy.STATIC,
 			null);
 
-	private final static List<ServiceDependency> theDependencies = Arrays.asList(theAnimationStopperDep, theMessageReceiverDep);
+	private final static String theQpidBrokerStarted = QpidBrokerStatus.PROPERTY_ID;
+	public final static ServiceDependency theQpidBrokerStartedDep = new ServiceDependency(theQpidBrokerStarted,
+			QpidBrokerStarted.class.getName(),
+			ServiceDependency.Cardinality.MANDATORY_UNARY,
+			ServiceDependency.UpdateStrategy.STATIC,
+			null);
+
+	private final static List<ServiceDependency> theDependencies =
+        Arrays.asList(theAnimationStopperDep, theMessageReceiverDep, theQpidBrokerStartedDep);
 
 	@Override
 	public List<ServiceDependency> getDependencySpecs() {
@@ -64,11 +74,12 @@ public class AnimationStopperHostLifecycle implements ServiceLifecycle<OSGIAnima
 	public OSGIAnimationStopperHost createService(final Map<String, Object> dependencyMap) {
 		final AnimationStopper animationStopper = (AnimationStopper) dependencyMap.get(theAnimationStopper);
 		final MessageAsyncReceiver<ServiceCommand> messageReceiver = (MessageAsyncReceiver) dependencyMap.get(theMessageReceiver);
+		final QpidBrokerStarted qpidBrokerStarted = (QpidBrokerStarted) dependencyMap.get(theQpidBrokerStarted);
 
 		final OSGIAnimationStopperHost animationStopperHost = OSGIAnimationStopperHost.create(animationStopper, messageReceiver);
 		animationStopperHost.start();
 
-		theLogger.info("Creating and starting {}.", animationStopperHost);
+		theLogger.info("Creating and starting {}. Qpid Broker Started: {}", animationStopperHost, qpidBrokerStarted);
 		return animationStopperHost;
 	}
 

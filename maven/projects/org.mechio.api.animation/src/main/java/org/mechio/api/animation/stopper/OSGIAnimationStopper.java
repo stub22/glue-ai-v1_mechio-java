@@ -16,17 +16,22 @@
 package org.mechio.api.animation.stopper;
 
 import org.mechio.api.animation.player.AnimationJob;
-import org.mechio.api.animation.player.AnimationPlayer;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Stop's animations in a BundleContext.
+ * Stop's animations in a {@link BundleContext}.
  *
  * @author Ben Jenkins <benjenkinsv95@gmail.com>
  */
@@ -43,39 +48,89 @@ public class OSGIAnimationStopper implements AnimationStopper {
 		myBundleContext = checkNotNull(bundleContext);
 	}
 
-	@Override
-	public void stopAll() {
-		theLogger.info("Stopping all animations.");
+	private List<AnimationJob> getAnimationJobs(final List<ServiceReference> serviceReferences) {
+		final ArrayList<AnimationJob> animationJobs = new ArrayList<>();
 
-		final ServiceReference[] serviceReferences;
-		try {
-			serviceReferences = myBundleContext.getAllServiceReferences(AnimationJob.class.getName(), null);
-		} catch (final InvalidSyntaxException ex) {
-			theLogger.error("Couldn't get service references", ex);
-			return;
+		for (final ServiceReference serviceReference : serviceReferences) {
+			final Object service = myBundleContext.getService(serviceReference);
+
+			if (service instanceof AnimationJob) {
+				final AnimationJob animationJob = (AnimationJob) service;
+				animationJobs.add(animationJob);
+			} else {
+				theLogger.error("{} is not an {}", serviceReference, AnimationJob.class.getName());
+			}
 		}
 
-		if (serviceReferences == null) {
+		return animationJobs;
+
+	}
+
+
+	private List<ServiceReference> getServiceReferences(final Map<String, String> animationProperties) {
+		try {
+			final String filter = LDAPFilters.createLDAPFilter(animationProperties, LDAPFilters.BooleanOperator.AND);
+			final ServiceReference[] serviceReferences = myBundleContext.getServiceReferences(AnimationJob.class.getName(), filter);
+			if (serviceReferences == null) {
+				return Collections.EMPTY_LIST;
+			}
+			return Arrays.asList(serviceReferences);
+		} catch (final InvalidSyntaxException ex) {
+			theLogger.error("Couldnt get service references", ex);
+			return Collections.EMPTY_LIST;
+		}
+	}
+
+	private List<ServiceReference> getAllServiceReferences() {
+		try {
+			final ServiceReference[] serviceReferences = myBundleContext.getAllServiceReferences(AnimationJob.class.getName(), null);
+			if (serviceReferences == null) {
+				return Collections.EMPTY_LIST;
+			}
+			return Arrays.asList(serviceReferences);
+		} catch (final InvalidSyntaxException ex) {
+			theLogger.error("Couldnt get service references", ex);
+			return Collections.EMPTY_LIST;
+		}
+	}
+
+	@Override
+	public void stopAllAnimations() {
+		final List<ServiceReference> allServiceReferences = getAllServiceReferences();
+		final List<AnimationJob> animationJobs = getAnimationJobs(allServiceReferences);
+		stopAnimationJobs(animationJobs);
+	}
+
+	/**
+	 * Stop all of the animations that match every property in {@code animationProperties}.
+	 *
+	 * @param animationProperties Properties to match an animation against. Ex.
+	 *                            "robotId=RKR25&nbsp;10000152"
+	 */
+	@Override
+	public void stopSpecificAnimations(final Map<String, String> animationProperties) {
+		final List<ServiceReference> serviceReferences = getServiceReferences(animationProperties);
+		final List<AnimationJob> animationJobs = getAnimationJobs(serviceReferences);
+		stopAnimationJobs(animationJobs);
+	}
+
+	private void stopAnimationJobs(final List<AnimationJob> animationJobs) {
+		if (animationJobs.isEmpty()) {
 			theLogger.info("No animations to stop. Ending now.");
 			return;
 		}
 
-		for (final ServiceReference serviceReference : serviceReferences) {
-			final AnimationJob animationJob = (AnimationJob) myBundleContext.getService(serviceReference);
+		theLogger.info("Stopping all animations.");
 
+		for (final AnimationJob animationJob : animationJobs) {
 			final long timestamp = System.currentTimeMillis();
-			final boolean successfulStop = animationJob.stop(timestamp);
-			if (!successfulStop) {
-				theLogger.error("Stopping animation job {} was unsuccessful!", animationJob);
-				continue;
-			}
 
-			final AnimationPlayer animationPlayer = animationJob.getSource();
-			if (animationPlayer == null) {
-				theLogger.error("Could not remove animation job {}, its source animation player was null.", animationJob);
-				continue;
+			final boolean successfulStop = animationJob.stop(timestamp);
+			if (successfulStop) {
+				theLogger.info("Stopping animation job {} succeeded.", animationJob);
+			} else {
+				theLogger.error("Stopping animation job {} failed!", animationJob);
 			}
-			animationPlayer.removeAnimationJob(animationJob);
 		}
 	}
 

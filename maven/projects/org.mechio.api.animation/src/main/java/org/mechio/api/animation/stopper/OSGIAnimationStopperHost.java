@@ -21,7 +21,13 @@ import org.mechio.api.animation.messaging.ServiceCommandHost;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Verify.verify;
 
 /**
  * Listen for ServiceCommands to stop animations and stop the specified animations accordingly.
@@ -50,13 +56,35 @@ public class OSGIAnimationStopperHost extends ServiceCommandHost implements Anim
 	@Override
 	public void handleEvent(final ServiceCommand serviceCommand) {
 
-		if (serviceCommand.getCommand().equals(STOP_ALL_COMMAND)) {
-			myAnimationStopper.stopAll();
+		theLogger.info("Received service command: " + serviceCommand);
+		final String command = serviceCommand.getCommand();
+
+		if (command.equals(STOP_ALL_COMMAND)) {
+			myAnimationStopper.stopAllAnimations();
+
+		} else if (!command.contains("=")) {
+			theLogger.error("Unknown command '{}'. Expected the stop all command '{}' or key-value property pairs ex. 'robotId=RKR25 10000152'.", command, STOP_ALL_COMMAND);
+
 		} else {
-			//TODO(ben): Stopping specific animations aren't supported yet.
-			throw new UnsupportedOperationException();
+			final Map<String, String> animationProperties = parsePropertiesCommand(command);
+			myAnimationStopper.stopSpecificAnimations(animationProperties);
 		}
 
+	}
+
+	Map<String, String> parsePropertiesCommand(final String command) {
+		// Regex: http://stackoverflow.com/a/7488676/3500171
+		final List<String> animationProperties = Arrays.asList(command.split("\\s*,\\s*"));
+		final TreeMap<String, String> propertiesMap = new TreeMap<>();
+
+		for (final String keyValuePair : animationProperties) {
+			verify(keyValuePair.contains("="), "Key Value pair '%s' doesnt have equal sign.", keyValuePair);
+
+			final String[] keyValueArray = keyValuePair.split("=");
+			propertiesMap.put(keyValueArray[0], keyValueArray[1]);
+		}
+
+		return propertiesMap;
 	}
 
 	@Override

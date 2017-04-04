@@ -168,4 +168,12 @@ public class DefaultAnimationPlayer extends DefaultNotifier<AnimationSignal>
 	public void removeAnimationSignalListener(Listener<AnimationSignal> listener) {
 		myListeners.remove(listener);
 	}
+
+    @Override
+    public String toString() {
+        return "DefaultAnimationPlayer{" + "myAnimationJobs=" + myAnimationJobs + ", myStepLength=" +
+            myStepLength + ", myRobotId=" + myRobotId + '}';
+    }
+
+
 }

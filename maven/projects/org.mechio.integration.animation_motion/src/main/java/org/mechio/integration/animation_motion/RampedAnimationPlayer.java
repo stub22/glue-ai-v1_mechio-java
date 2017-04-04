@@ -168,4 +168,13 @@ public class RampedAnimationPlayer extends DefaultNotifier<AnimationSignal>
 	public void removeAnimationSignalListener(Listener<AnimationSignal> listener) {
 		removeListener(listener);
 	}
+
+    @Override
+    public String toString() {
+        return "RampedAnimationPlayer{" + "myAnimationJobs=" + myAnimationJobs + ", myStepLength=" +
+            myStepLength + ", myRobotId=" + myRobotId + ", myMaxRampTimeMillisec=" +
+            myMaxRampTimeMillisec + '}';
+    }
+
+    
 }
