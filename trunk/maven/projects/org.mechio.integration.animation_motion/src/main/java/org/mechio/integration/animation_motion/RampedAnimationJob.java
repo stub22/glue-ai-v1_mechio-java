@@ -473,4 +473,13 @@ public class RampedAnimationJob extends AbstractPlayable implements
 	public void setAnimationSignalFactory(AnimationSignalFactory factory) {
 		mySignalFactory = factory;
 	}
+
+    @Override
+    public String toString() {
+        return "RampedAnimationJob{" + "myAnimation=" + myAnimation + ", myRobotId=" + myRobotId +
+            ", myStepLengthMillisec=" + myStepLengthMillisec + ", myRampTimeMillisec=" +
+            myRampTimeMillisec + '}';
+    }
+
+    
 }

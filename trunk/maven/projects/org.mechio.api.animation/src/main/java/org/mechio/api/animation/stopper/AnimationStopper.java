@@ -15,6 +15,8 @@
  */
 package org.mechio.api.animation.stopper;
 
+import java.util.Map;
+
 /**
  * Implementors will offer the following methods to stop animations.
  *
@@ -28,5 +30,16 @@ public interface AnimationStopper {
 	 */
 	String PROPERTY_ID = "animationStopperId";
 
-	void stopAll();
+	/**
+	 * Stop all of the animations.
+	 */
+	void stopAllAnimations();
+
+	/**
+	 * Stop all of the animations that match every property in {@code animationProperties}.
+	 *
+	 * @param animationProperties Properties to match an animation against. Ex.
+	 *                            "robotId=RKR25&nbsp;10000152"
+	 */
+	void stopSpecificAnimations(Map<String, String> animationProperties);
 }
