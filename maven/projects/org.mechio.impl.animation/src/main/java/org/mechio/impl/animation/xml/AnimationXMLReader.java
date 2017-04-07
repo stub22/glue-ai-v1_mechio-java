@@ -71,8 +71,11 @@ import static org.mechio.api.animation.xml.AnimationXML.TIME;
 public class AnimationXMLReader implements AnimationFileReader {
 	private static final Logger theLogger = LoggerFactory.getLogger(AnimationXMLReader.class);
 
-	public Animation readAnimation(final URL path) throws Exception {
-		return AnimationXMLReader.loadAnimation(path);
+	/**
+	 * Adding support for URLs so we can load animations from bundles.
+	 */
+	public Animation readAnimation(final URL url) throws Exception {
+		return AnimationXMLReader.loadAnimation(url);
 	}
 
 	@Override
@@ -80,23 +83,36 @@ public class AnimationXMLReader implements AnimationFileReader {
 		return AnimationXMLReader.loadAnimation(path);
 	}
 
-	static Animation loadAnimation(final String path) throws ConfigurationException, Exception {
-		return loadAnimation(new URL(path));
-	}
-
 	/**
 	 * Adding support for URLs so we can load animations from bundles.
 	 */
-	static Animation loadAnimation(final URL path) throws ConfigurationException, Exception {
-		Animation anim = null;
+	static Animation loadAnimation(final URL url) throws ConfigurationException, Exception {
+		try {
+			final HierarchicalConfiguration config = new XMLConfiguration(url);
+			return loadAnimation(url.getPath(), config);
+		} catch (final ConfigurationException t) {
+			// Since we are rethrowing the exception, we should not log its stack trace.
+			theLogger.warn("Cannont open XML animation file at: {}", url);
+			throw t;
+		}
+	}
+
+	static Animation loadAnimation(final String path) throws ConfigurationException, Exception {
 		try {
 			final HierarchicalConfiguration config = new XMLConfiguration(path);
-			anim = readAnimation(config);
-			return anim;
+			return loadAnimation(path, config);
 		} catch (final ConfigurationException t) {
 			// Since we are rethrowing the exception, we should not log its stack trace.
 			theLogger.warn("Cannont open XML animation file at: {}", path);
 			throw t;
+		}
+	}
+
+	static Animation loadAnimation(final String path, final HierarchicalConfiguration config) throws ConfigurationException, Exception {
+		Animation anim = null;
+		try {
+			anim = readAnimation(config);
+			return anim;
 		} catch (final Exception t) {
 			// Since we are rethrowing the exception, we should not log its stack trace.
 			theLogger.error("Error reading animation at {}", path, t);
