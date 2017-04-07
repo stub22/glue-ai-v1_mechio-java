@@ -25,6 +25,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.appdapter</groupId>
+            <artifactId>org.appdapter.bundle.core</artifactId>
+            <version>${appdapter.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.jflux</groupId>
             <artifactId>org.jflux.extern.utils.apache_commons_configuration.rk</artifactId>
         </dependency>
@@ -48,12 +53,6 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-log4j12 -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.24</version>
         </dependency>
         <dependency>
             <groupId>org.jflux</groupId>

@@ -10,10 +10,10 @@
         <version>1.0.7-SNAPSHOT</version>
         <relativePath>../../org.mechio.modules.animation/pom.xml</relativePath>
     </parent>
-    <artifactId>org.mechio.bundle.animation.stopper</artifactId>
+    <artifactId>org.mechio.bundle.animation.cleanup</artifactId>
     <packaging>bundle</packaging>
 
-    <name>org.mechio.bundle.animation.stopper OSGi Bundle</name>
+    <name>org.mechio.bundle.animation.cleanup OSGi Bundle</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -22,13 +22,8 @@
     <dependencies>
         <dependency>
             <groupId>org.mechio</groupId>
-            <artifactId>org.mechio.api.animation</artifactId>
+            <artifactId>org.mechio.impl.animation</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jflux</groupId>
-            <artifactId>org.jflux.impl.registry.osgi</artifactId>
-            <version>${jflux.version}</version>
         </dependency>
     </dependencies>
 
@@ -42,7 +37,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-Activator>
-                            org.mechio.bundle.animation.stopper.Activator
+                            org.mechio.bundle.animation.cleanup.Activator
                         </Bundle-Activator>
                         <Export-Package/>
                     </instructions>

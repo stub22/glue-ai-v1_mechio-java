@@ -13,7 +13,8 @@
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-package org.mechio.api.animation.lifecycle;
+
+package org.mechio.impl.animation.cleanup;
 
 import org.jflux.api.messaging.rk.MessageAsyncReceiver;
 import org.jflux.api.messaging.rk.qpid.QpidBrokerStarted;
