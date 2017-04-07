@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 
 import java.awt.geom.Point2D;
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -70,50 +71,61 @@ import static org.mechio.api.animation.xml.AnimationXML.TIME;
 public class AnimationXMLReader implements AnimationFileReader {
 	private static final Logger theLogger = LoggerFactory.getLogger(AnimationXMLReader.class);
 
-	@Override
-	public Animation readAnimation(String path) throws Exception {
+	public Animation readAnimation(final URL path) throws Exception {
 		return AnimationXMLReader.loadAnimation(path);
 	}
 
-	static Animation loadAnimation(String path) throws ConfigurationException, Exception {
+	@Override
+	public Animation readAnimation(final String path) throws Exception {
+		return AnimationXMLReader.loadAnimation(path);
+	}
+
+	static Animation loadAnimation(final String path) throws ConfigurationException, Exception {
+		return loadAnimation(new URL(path));
+	}
+
+	/**
+	 * Adding support for URLs so we can load animations from bundles.
+	 */
+	static Animation loadAnimation(final URL path) throws ConfigurationException, Exception {
 		Animation anim = null;
 		try {
-			HierarchicalConfiguration config = new XMLConfiguration(path);
+			final HierarchicalConfiguration config = new XMLConfiguration(path);
 			anim = readAnimation(config);
 			return anim;
-		} catch (ConfigurationException t) {
+		} catch (final ConfigurationException t) {
 			// Since we are rethrowing the exception, we should not log its stack trace.
 			theLogger.warn("Cannont open XML animation file at: {}", path);
 			throw t;
-		} catch (Exception t) {
+		} catch (final Exception t) {
 			// Since we are rethrowing the exception, we should not log its stack trace.
 			theLogger.error("Error reading animation at {}", path, t);
 			throw t;
 		}
 	}
 
-	public static Animation readAnimation(HierarchicalConfiguration config) {
-		VersionProperty version =
+	public static Animation readAnimation(final HierarchicalConfiguration config) {
+		final VersionProperty version =
 				XMLConfigUtils.readVersion(config, ANIMATION_VERSION_TYPE);
-		Animation anim = new Animation(version);
-		HierarchicalConfiguration channelsConfig =
+		final Animation anim = new Animation(version);
+		final HierarchicalConfiguration channelsConfig =
 				config.configurationAt(CHANNELS);
 		if (channelsConfig != null && !channelsConfig.isEmpty()) {
 			anim.addChannels(readChannels(channelsConfig));
 		}
 		if (config.getKeys(SYNC_POINT_GROUPS).hasNext()) {
-			HierarchicalConfiguration groupsConfig =
+			final HierarchicalConfiguration groupsConfig =
 					config.configurationAt(SYNC_POINT_GROUPS);
-			List<SyncGroupConfig> groups =
+			final List<SyncGroupConfig> groups =
 					SyncPointGroupXML.ApacheReader.readSyncPointGroupConfigs(
 							groupsConfig);
 			anim.setSyncGroupConfigs(groups);
 		}
 		if (config.getKeys(ADDONS).hasNext()) {
-			HierarchicalConfiguration addonsConfig =
+			final HierarchicalConfiguration addonsConfig =
 					config.configurationAt(ADDONS);
-			List<ServiceAddOn<Playable>> addons = readAddOns(addonsConfig);
-			for (ServiceAddOn<Playable> addon : addons) {
+			final List<ServiceAddOn<Playable>> addons = readAddOns(addonsConfig);
+			for (final ServiceAddOn<Playable> addon : addons) {
 				anim.addAddOn(addon);
 			}
 		}
@@ -124,14 +136,14 @@ public class AnimationXMLReader implements AnimationFileReader {
 		return anim;
 	}
 
-	public static List<Channel> readChannels(HierarchicalConfiguration config) {
-		List<HierarchicalConfiguration> nodes = (List<HierarchicalConfiguration>) config.configurationsAt(CHANNEL);
+	public static List<Channel> readChannels(final HierarchicalConfiguration config) {
+		final List<HierarchicalConfiguration> nodes = (List<HierarchicalConfiguration>) config.configurationsAt(CHANNEL);
 		if (nodes == null || nodes.isEmpty()) {
 			return Collections.EMPTY_LIST;
 		}
-		List<Channel> channels = new ArrayList(nodes.size());
-		for (HierarchicalConfiguration node : nodes) {
-			Channel channel = readChannel(node);
+		final List<Channel> channels = new ArrayList(nodes.size());
+		for (final HierarchicalConfiguration node : nodes) {
+			final Channel channel = readChannel(node);
 			if (channel != null) {
 				channels.add(channel);
 			}
@@ -139,60 +151,60 @@ public class AnimationXMLReader implements AnimationFileReader {
 		return channels;
 	}
 
-	public static Channel readChannel(HierarchicalConfiguration config) {
+	public static Channel readChannel(final HierarchicalConfiguration config) {
 		Integer id = XMLConfigUtils.getIntegerAttribute(config, CHANNEL_ID, null);
 		if (id == null) {
 			theLogger.warn("Unable to find {} attribute for Channel, using -1.", CHANNEL_ID);
 			id = -1;
 		}
-		String name = XMLConfigUtils.getStringAttribute(config, CHANNEL_NAME, null);
-		Channel channel = new Channel(id, name);
-		HierarchicalConfiguration pathsConfig = config.configurationAt(MOTION_PATHS);
+		final String name = XMLConfigUtils.getStringAttribute(config, CHANNEL_NAME, null);
+		final Channel channel = new Channel(id, name);
+		final HierarchicalConfiguration pathsConfig = config.configurationAt(MOTION_PATHS);
 		if (pathsConfig == null || pathsConfig.isEmpty()) {
 			return channel;
 		}
-		List<MotionPath> paths = readMotionPaths(pathsConfig);
+		final List<MotionPath> paths = readMotionPaths(pathsConfig);
 		channel.addPaths(paths);
 		return channel;
 	}
 
-	public static List<MotionPath> readMotionPaths(HierarchicalConfiguration config) {
-		List<HierarchicalConfiguration> nodes = (List<HierarchicalConfiguration>) config.configurationsAt(MOTION_PATH);
+	public static List<MotionPath> readMotionPaths(final HierarchicalConfiguration config) {
+		final List<HierarchicalConfiguration> nodes = (List<HierarchicalConfiguration>) config.configurationsAt(MOTION_PATH);
 		if (nodes == null || nodes.isEmpty()) {
 			return Collections.EMPTY_LIST;
 		}
-		List<MotionPath> paths = new ArrayList(nodes.size());
-		for (HierarchicalConfiguration node : nodes) {
+		final List<MotionPath> paths = new ArrayList(nodes.size());
+		for (final HierarchicalConfiguration node : nodes) {
 			paths.add(readMotionPath(node));
 		}
 		return paths;
 	}
 
-	public static MotionPath readMotionPath(HierarchicalConfiguration config) {
-		String name = XMLConfigUtils.getStringAttribute(config, MOTION_PATH_NAME, null);
-		InterpolatorFactory factory = readInterpolatorVersion(config);
-		MotionPath path = new MotionPath(factory);
+	public static MotionPath readMotionPath(final HierarchicalConfiguration config) {
+		final String name = XMLConfigUtils.getStringAttribute(config, MOTION_PATH_NAME, null);
+		final InterpolatorFactory factory = readInterpolatorVersion(config);
+		final MotionPath path = new MotionPath(factory);
 		path.setName(name);
-		HierarchicalConfiguration pointsConfig = config.configurationAt(CONTROL_POINTS);
+		final HierarchicalConfiguration pointsConfig = config.configurationAt(CONTROL_POINTS);
 		if (pointsConfig != null && !pointsConfig.isEmpty()) {
 			path.addPoints(readControlPoints(pointsConfig));
 		}
 		return path;
 	}
 
-	public static InterpolatorFactory readInterpolatorVersion(HierarchicalConfiguration config) {
-		VersionProperty version = XMLConfigUtils.readVersion(config, INTERPOLATION_VERSION_TYPE);
+	public static InterpolatorFactory readInterpolatorVersion(final HierarchicalConfiguration config) {
+		final VersionProperty version = XMLConfigUtils.readVersion(config, INTERPOLATION_VERSION_TYPE);
 		return InterpolatorDirectory.instance().getFactory(version);
 	}
 
-	public static List<Point2D> readControlPoints(HierarchicalConfiguration config) {
-		List<HierarchicalConfiguration> nodes = (List<HierarchicalConfiguration>) config.configurationsAt(CONTROL_POINT);
+	public static List<Point2D> readControlPoints(final HierarchicalConfiguration config) {
+		final List<HierarchicalConfiguration> nodes = (List<HierarchicalConfiguration>) config.configurationsAt(CONTROL_POINT);
 		if (nodes == null || nodes.isEmpty()) {
 			return Collections.EMPTY_LIST;
 		}
-		List<Point2D> points = new ArrayList(nodes.size());
-		for (HierarchicalConfiguration node : nodes) {
-			Point2D point = readControlPoint(node);
+		final List<Point2D> points = new ArrayList(nodes.size());
+		for (final HierarchicalConfiguration node : nodes) {
+			final Point2D point = readControlPoint(node);
 			if (point.getX() < 0.0 || point.getY() < 0.0 || point.getY() > 1.0) {
 				continue;
 			}
@@ -201,30 +213,30 @@ public class AnimationXMLReader implements AnimationFileReader {
 		return points;
 	}
 
-	public static Point2D readControlPoint(HierarchicalConfiguration config) {
-		double x = config.getDouble(TIME, -1);
-		double y = config.getDouble(POSITION, -1);
+	public static Point2D readControlPoint(final HierarchicalConfiguration config) {
+		final double x = config.getDouble(TIME, -1);
+		final double y = config.getDouble(POSITION, -1);
 		return new Point2D.Double(x, y);
 	}
 
-	public static List<ServiceAddOn<Playable>> readAddOns(HierarchicalConfiguration config) {
+	public static List<ServiceAddOn<Playable>> readAddOns(final HierarchicalConfiguration config) {
 		if (config == null) {
 			return Collections.EMPTY_LIST;
 		}
-		List<HierarchicalConfiguration> nodes = (List<HierarchicalConfiguration>) config.configurationsAt(ADDON);
+		final List<HierarchicalConfiguration> nodes = (List<HierarchicalConfiguration>) config.configurationsAt(ADDON);
 		if (nodes == null || nodes.isEmpty()) {
 			return Collections.EMPTY_LIST;
 		}
-		BundleContext context = OSGiUtils.getBundleContext(ServiceAddOnDriver.class);
+		final BundleContext context = OSGiUtils.getBundleContext(ServiceAddOnDriver.class);
 		if (context == null) {
 			return Collections.EMPTY_LIST;
 		}
-		ServiceReference[] refs = AddOnUtils.getAddOnDriverReferences(context);
-		List<ServiceAddOnDriver<Playable>> drivers =
+		final ServiceReference[] refs = AddOnUtils.getAddOnDriverReferences(context);
+		final List<ServiceAddOnDriver<Playable>> drivers =
 				getAddOnDrivers(context, refs);
-		List<ServiceAddOn<Playable>> addons = new ArrayList(nodes.size());
-		for (HierarchicalConfiguration node : nodes) {
-			ServiceAddOn<Playable> addon = readAddOn(node, drivers);
+		final List<ServiceAddOn<Playable>> addons = new ArrayList(nodes.size());
+		for (final HierarchicalConfiguration node : nodes) {
+			final ServiceAddOn<Playable> addon = readAddOn(node, drivers);
 			if (addon != null) {
 				addons.add(addon);
 			}
@@ -233,11 +245,11 @@ public class AnimationXMLReader implements AnimationFileReader {
 	}
 
 	public static List<ServiceAddOnDriver<Playable>> getAddOnDrivers(
-			BundleContext context, ServiceReference[] refs) {
-		List<ServiceAddOnDriver<Playable>> drivers = new ArrayList();
-		List<ServiceAddOnDriver> allDrivers = AddOnUtils.getAddOnDriverList(context, refs);
-		for (ServiceAddOnDriver driver : allDrivers) {
-			Class addonClass = driver.getServiceClass();
+			final BundleContext context, final ServiceReference[] refs) {
+		final List<ServiceAddOnDriver<Playable>> drivers = new ArrayList();
+		final List<ServiceAddOnDriver> allDrivers = AddOnUtils.getAddOnDriverList(context, refs);
+		for (final ServiceAddOnDriver driver : allDrivers) {
+			final Class addonClass = driver.getServiceClass();
 			if (Playable.class.isAssignableFrom(addonClass)) {
 				drivers.add(driver);
 			}
@@ -245,25 +257,25 @@ public class AnimationXMLReader implements AnimationFileReader {
 		return drivers;
 	}
 
-	public static ServiceAddOn<Playable> readAddOn(HierarchicalConfiguration config, List<ServiceAddOnDriver<Playable>> drivers) {
-		Map<String, VersionProperty> vers = XMLConfigUtils.readVersions(config,
+	public static ServiceAddOn<Playable> readAddOn(final HierarchicalConfiguration config, final List<ServiceAddOnDriver<Playable>> drivers) {
+		final Map<String, VersionProperty> vers = XMLConfigUtils.readVersions(config,
 				Constants.SERVICE_VERSION, Constants.CONFIG_FORMAT_VERSION);
-		VersionProperty serviceVers =
+		final VersionProperty serviceVers =
 				vers.get(Constants.SERVICE_VERSION);
-		VersionProperty configFormat =
+		final VersionProperty configFormat =
 				vers.get(Constants.CONFIG_FORMAT_VERSION);
-		String path = config.getString(ADDON_FILE);
+		final String path = config.getString(ADDON_FILE);
 		if (serviceVers == null || configFormat == null || path == null) {
 			return null;
 		}
-		File file = new File(path);
+		final File file = new File(path);
 		if (!file.exists()) {
 			theLogger.warn("Could not find file for AddOn.  " +
 							"File Path: {}, Service Version: {}, Config Format: {}.",
 					path, serviceVers.display(), configFormat.display());
 			return null;
 		}
-		ServiceAddOnDriver<Playable> driver =
+		final ServiceAddOnDriver<Playable> driver =
 				getDriver(serviceVers, configFormat, drivers);
 		if (driver == null) {
 			theLogger.warn("Could not find ServiceAddOnDriver.  " +
@@ -273,7 +285,7 @@ public class AnimationXMLReader implements AnimationFileReader {
 		}
 		try {
 			return driver.loadAddOn(file);
-		} catch (Exception ex) {
+		} catch (final Exception ex) {
 			theLogger.warn("There was an error loading an AddOn."
 							+ "  File Path: {}, "
 							+ "Service Version: {}, "
@@ -284,9 +296,9 @@ public class AnimationXMLReader implements AnimationFileReader {
 	}
 
 	private static ServiceAddOnDriver<Playable> getDriver(
-			VersionProperty serviceVers, VersionProperty configFormat,
-			List<ServiceAddOnDriver<Playable>> drivers) {
-		for (ServiceAddOnDriver<Playable> driver : drivers) {
+			final VersionProperty serviceVers, final VersionProperty configFormat,
+			final List<ServiceAddOnDriver<Playable>> drivers) {
+		for (final ServiceAddOnDriver<Playable> driver : drivers) {
 			if (serviceVers.equals(driver.getServiceVersion()) &&
 					configFormat.equals(driver.getConfigurationFormat())) {
 				return driver;

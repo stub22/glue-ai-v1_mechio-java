@@ -14,7 +14,7 @@
  *   limitations under the License.
  */
 
-package org.mechio.api.animation.stopper;
+package org.mechio.impl.animation.cleanup;
 
 import java.util.Map;
 

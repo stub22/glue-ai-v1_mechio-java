@@ -16,30 +16,17 @@
 
 package org.mechio.impl.animation.osgi;
 
-import org.jflux.api.messaging.rk.MessageAsyncReceiver;
-import org.jflux.api.messaging.rk.services.ServiceCommand;
-import org.jflux.api.registry.Registry;
-import org.jflux.api.service.util.ServiceLauncher;
-import org.jflux.impl.messaging.rk.JMSAvroMessageAsyncReceiver;
 import org.jflux.impl.messaging.rk.JMSAvroServiceFacade;
-import org.jflux.impl.messaging.rk.ServiceCommandRecord;
 import org.jflux.impl.messaging.rk.config.RKMessagingConfigUtils;
-import org.jflux.impl.registry.OSGiRegistry;
 import org.jflux.impl.services.rk.lifecycle.utils.SimpleLifecycle;
 import org.jflux.impl.services.rk.osgi.OSGiUtils;
 import org.jflux.impl.services.rk.osgi.lifecycle.OSGiComponent;
 import org.jflux.impl.services.rk.osgi.lifecycle.OSGiComponentFactory;
-import org.mechio.api.animation.lifecycle.AnimationStopperHostLifecycle;
-import org.mechio.api.animation.lifecycle.AnimationStopperLifecycle;
-import org.mechio.api.animation.messaging.JMSAvroMessageAsyncReceiverFactory;
 import org.mechio.api.animation.protocol.AnimationEvent;
 import org.mechio.api.animation.protocol.AnimationSignal;
 import org.mechio.api.animation.protocol.PlayRequest;
 import org.mechio.api.animation.xml.AnimationFileReader;
 import org.mechio.api.animation.xml.AnimationFileWriter;
-import org.mechio.api.animation.stopper.AnimationStopper;
-import org.mechio.api.animation.stopper.AnimationStopperHost;
-import org.mechio.api.animation.stopper.OSGIAnimationStopperHost;
 import org.mechio.impl.animation.messaging.AnimationEventRecord;
 import org.mechio.impl.animation.messaging.AnimationSignallingRecord;
 import org.mechio.impl.animation.messaging.PlayRequestRecord;
@@ -50,11 +37,8 @@ import org.mechio.impl.animation.xml.AnimationXMLReader;
 import org.mechio.impl.animation.xml.XPP3AnimationXMLWriter;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Properties;
 
 /**
  * @author Matthew Stevenson <www.mechio.org>

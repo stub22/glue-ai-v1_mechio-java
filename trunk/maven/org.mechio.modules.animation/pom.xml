@@ -13,6 +13,6 @@
     <modules>
         <module>../projects/org.mechio.api.animation</module>
         <module>../projects/org.mechio.impl.animation</module>
-        <module>../projects/org.mechio.bundle.animation.stopper</module>
+        <module>../projects/org.mechio.bundle.animation.cleanup</module>
     </modules>
 </project>

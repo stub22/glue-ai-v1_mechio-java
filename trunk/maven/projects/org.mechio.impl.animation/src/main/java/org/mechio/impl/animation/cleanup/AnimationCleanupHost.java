@@ -13,23 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mechio.api.animation.stopper;
+package org.mechio.impl.animation.cleanup;
 
 import org.jflux.api.core.Listener;
 import org.jflux.api.messaging.rk.services.ServiceCommand;
 
 /**
- * An AnimationStopperHost listens to ServiceCommands and stop's animations when it receives one.
+ * An AnimationCleanupHost listens to ServiceCommands and stop's animations when it receives one.
  *
  * @author ben
  * @since 3/29/2017.
  */
-public interface AnimationStopperHost extends Listener<ServiceCommand> {
+public interface AnimationCleanupHost extends Listener<ServiceCommand> {
 	/**
-	 * Used for registering an AnimationStopperHost to OSGI.
+	 * Used for registering an AnimationCleanupHost to OSGI.
 	 */
 	String PROPERTY_ID = "animationStopperHostId";
 
 	@Override
 	void handleEvent(ServiceCommand serviceCommand);
+
+
 }
