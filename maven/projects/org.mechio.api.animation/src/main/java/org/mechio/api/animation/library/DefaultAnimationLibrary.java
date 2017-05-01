@@ -84,11 +84,6 @@ public class DefaultAnimationLibrary implements AnimationLibrary {
 	}
 
 	@Override
-	public String getAnimationLibraryId() {
-		return myLibraryId;
-	}
-
-	@Override
 	public void clear() {
 		myAnimationMap.clear();
 		myAnimtionVersions.clear();
