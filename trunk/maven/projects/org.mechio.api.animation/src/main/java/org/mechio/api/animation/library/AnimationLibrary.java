@@ -26,8 +26,6 @@ import org.mechio.api.animation.Animation;
 public interface AnimationLibrary {
     public final static String PROP_ANIM_PLAYER_ID = "animationPlayerId";
     
-    public String getAnimationLibraryId();
-    
     public List<VersionProperty> getAnimationVersions();
     
     public Animation getAnimation(VersionProperty version);
