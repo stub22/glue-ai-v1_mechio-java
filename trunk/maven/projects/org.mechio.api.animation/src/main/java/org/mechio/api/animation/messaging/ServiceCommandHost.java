@@ -35,6 +35,7 @@ public abstract class ServiceCommandHost implements Listener<ServiceCommand> {
 	private final MessageAsyncReceiver<ServiceCommand> myMessageReceiver;
 	private Listener<ServiceCommand> listener;
 	private boolean initialized = false;
+	private boolean running = false;
 
 	/**
 	 * Creates a new {@link ServiceCommandHost}.
@@ -82,6 +83,7 @@ public abstract class ServiceCommandHost implements Listener<ServiceCommand> {
 
 		try {
 			myMessageReceiver.start();
+			running = true;
 		} catch (final Exception ex) {
 			theLogger.error("Error starting listener", ex);
 		}
@@ -96,9 +98,13 @@ public abstract class ServiceCommandHost implements Listener<ServiceCommand> {
 		try {
 			myMessageReceiver.removeListener(listener);
 			myMessageReceiver.stop();
+			running = false;
 		} catch (final Exception ex) {
 			theLogger.error("Error stopping listener", ex);
 		}
 	}
-
+	
+	public boolean isRunning() {
+		return running;
+	}
 }
